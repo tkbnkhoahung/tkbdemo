@@ -1,52 +1,51 @@
-<!DOCTYPE html>
+doctype html>
 <html lang="vi" class="h-full">
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thời Khóa Biểutitle>
-  <meta name="theme-color" content="#6366f1">
+  <meta name="theme-color" content="#5a67d8">
   <script src="https://cdn.tailwindcss.com">script>
   <script src="/_sdk/element_sdk.js">script>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
-      font-family: 'Quicksand', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
     
     :root {
-      --bg-main: #fafafa;
+      --bg-main: #fafbfc;
       --bg-secondary: #ffffff;
       --text-primary: #1a202c;
       --text-secondary: #718096;
-      --border-color: #e2e8f0;
-      --accent-color: #8b5cf6;
-      --accent-hover: #7c3aed;
+      --border-color: #e5e7eb;
+      --accent-color: #5a67d8;
+      --accent-hover: #4c51bf;
+      --lesson-bg: #f7fafc;
     }
     
     [data-theme="dark"] {
-      --bg-main: #0f172a;
-      --bg-secondary: #1e293b;
-      --text-primary: #f1f5f9;
+      --bg-main: #0f1419;
+      --bg-secondary: #1a202c;
+      --text-primary: #e2e8f0;
       --text-secondary: #94a3b8;
-      --border-color: #334155;
-      --accent-color: #a78bfa;
-      --accent-hover: #8b5cf6;
+      --border-color: #374151;
+      --accent-color: #667eea;
+      --accent-hover: #5a67d8;
+      --lesson-bg: #2d3748;
     }
     
     body {
       background: var(--bg-main);
       color: var(--text-primary);
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.2s, color 0.2s;
     }
     
     .card-bg {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-    }
-    
-    .secondary-bg {
-      background: var(--bg-main);
     }
     
     .text-primary {
@@ -63,77 +62,100 @@
     
     .schedule-grid {
       display: grid;
-      grid-template-columns: 100px repeat(5, 1fr);
-      gap: 2px;
-      background: var(--border-color);
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
+      grid-template-columns: 80px repeat(5, 1fr);
+      gap: 0;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       overflow: hidden;
     }
     
     .schedule-cell {
       background: var(--bg-secondary);
-      padding: 14px;
-      min-height: 90px;
-      position: relative;
+      padding: 12px;
+      min-height: 80px;
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .schedule-cell:nth-child(6n) {
+      border-right: none;
     }
     
     .schedule-header {
-      background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-      color: white;
-      font-weight: 700;
-      padding: 14px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 600;
+      padding: 16px 12px;
       text-align: center;
-      font-size: 1rem;
+      font-size: 0.875rem;
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: -0.01em;
+    }
+    
+    .schedule-header:last-child {
+      border-right: none;
     }
     
     .schedule-time {
       background: var(--bg-main);
-      font-weight: 700;
+      font-weight: 500;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 0.813rem;
-      color: var(--text-primary);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: -0.01em;
     }
     
     .session-header {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: white;
-      font-weight: 700;
-      padding: 12px;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      font-weight: 600;
+      padding: 10px;
       text-align: center;
-      font-size: 1.125rem;
+      font-size: 0.813rem;
       grid-column: 1 / -1;
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
     
     .lesson-card {
-      background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
-      color: white;
-      border-radius: 8px;
+      background: var(--lesson-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
       padding: 10px;
       font-size: 0.813rem;
       height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    
+    .lesson-card:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 2px 8px rgba(90, 103, 216, 0.1);
     }
     
     .lesson-subject {
-      font-weight: 700;
-      font-size: 0.938rem;
-      line-height: 1.3;
+      font-weight: 600;
+      font-size: 0.875rem;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
     }
     
     .lesson-info {
-      opacity: 0.95;
       font-size: 0.75rem;
-      line-height: 1.4;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      letter-spacing: -0.005em;
     }
     
     @media print {
@@ -156,40 +178,17 @@
       }
       
       .schedule-grid {
-        background: #e5e7eb;
-        border: 2px solid #d1d5db;
-        gap: 1px;
+        border: 1px solid #d1d5db;
       }
       
-      .schedule-cell {
-        background: white;
-        border: none;
-        page-break-inside: avoid;
-      }
-      
-      .schedule-header {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-        color: white !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      
-      .session-header {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-        color: white !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      
-      .schedule-time {
-        background: #f9fafb !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+      .schedule-cell, .schedule-header, .schedule-time {
+        background: white !important;
+        border-color: #d1d5db !important;
       }
       
       .lesson-card {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
-        color: white !important;
+        background: #f9fafb !important;
+        border-color: #d1d5db !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -201,12 +200,12 @@
     }
     
     .loading-spinner {
-      border: 3px solid rgba(139, 92, 246, 0.2);
-      border-top: 3px solid #8b5cf6;
+      border: 2px solid var(--border-color);
+      border-top: 2px solid var(--accent-color);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
+      width: 32px;
+      height: 32px;
+      animation: spin 0.8s linear infinite;
     }
     
     @keyframes spin {
@@ -217,64 +216,67 @@
     .btn-primary {
       background: var(--accent-color);
       color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      font-weight: 600;
-      transition: all 0.2s;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.15s;
       border: none;
       cursor: pointer;
+      letter-spacing: -0.01em;
     }
     
     .btn-primary:hover {
       background: var(--accent-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
     }
     
     .btn-secondary {
       background: var(--bg-secondary);
       color: var(--text-primary);
-      padding: 0.625rem 1.25rem;
-      border-radius: 0.75rem;
-      font-weight: 600;
-      transition: all 0.2s;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.15s;
       border: 1px solid var(--border-color);
       cursor: pointer;
     }
     
     .btn-secondary:hover {
-      background: var(--bg-main);
       border-color: var(--accent-color);
+      background: var(--bg-main);
     }
     
     select, input {
       background: var(--bg-secondary);
       color: var(--text-primary);
       border: 1px solid var(--border-color);
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      font-size: 0.938rem;
-      transition: all 0.2s;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      transition: all 0.15s;
+      font-family: inherit;
     }
     
     select:focus, input:focus {
       outline: none;
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.08);
     }
     
     .toast {
       position: fixed;
-      bottom: 2rem;
-      right: 2rem;
+      bottom: 24px;
+      right: 24px;
       background: var(--accent-color);
       color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.5);
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 1000;
       animation: slideIn 0.3s ease-out;
-      font-weight: 600;
+      font-weight: 500;
+      font-size: 0.875rem;
     }
     
     @keyframes slideIn {
@@ -287,6 +289,48 @@
         opacity: 1;
       }
     }
+    
+    .code-container {
+      position: relative;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    
+    .code-content {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    
+    .copy-btn:hover {
+      background: var(--accent-hover);
+    }
+    
+    .copy-btn.copied {
+      background: #10b981;
+    }
   style>
   <style>@view-transition { navigation: auto; }style>
   <script src="/_sdk/data_sdk.js" type="text/javascript">script>
@@ -295,41 +339,45 @@
   <div id="app-wrapper" class="min-h-full w-full overflow-auto">-- Loading State -->
    <div id="loading-state" class="flex flex-col items-center justify-center min-h-full p-8">
     <div class="loading-spinner mb-4">div>
-    <p class="text-primary font-semibold">Đang tải dữ liệu từ Google Sheets...p>
+    <p class="text-primary font-medium text-sm">Đang tải dữ liệu...p>
    div>-- Main Content -->
    <div id="main-content" class="hidden">-- Navigation -->
-    <nav class="no-print card-bg border-b border-custom sticky top-0 z-50">
+    <nav class="no-print card-bg border-b border-custom">
      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+      <div class="flex items-center justify-between h-14">
        <div class="flex items-center gap-3">
-        <svg class="w-9 h-9" style="color: var(--accent-color)" fill="currentColor" viewbox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z">path>
+        <svg class="w-6 h-6" style="color: var(--accent-color)" fill="currentColor" viewbox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z">path>
         svg>
         <div>
-         <h1 id="school-name" class="text-xl font-bold text-primary">Thời Khóa Biểuh1>
-         <p id="school-year" class="text-xs text-secondary">Năm học 2024-2025p>
+         <h1 id="school-name" class="text-base font-semibold text-primary" style="letter-spacing: -0.02em;">Thời Khóa Biểuh1>
+         <p id="school-year" class="text-xs text-secondary">2024-2025p>
         div>
        div>
-       <div class="flex items-center gap-2"><button onclick="toggleDarkMode()" class="btn-secondary p-2" aria-label="Toggle dark mode">
-         <svg id="icon-light" class="w-5 h-5 hidden" fill="currentColor" viewbox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z">path>
+       <div class="flex items-center gap-2"><button onclick="toggleDarkMode()" class="btn-secondary p-2" aria-label="Chuyển chế độ sáng tối">
+         <svg id="icon-light" class="w-4 h-4 hidden" fill="currentColor" viewbox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z">path>
          svg>
-         <svg id="icon-dark" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z">path>
-         svg>button> <button onclick="refreshData()" class="btn-secondary p-2" aria-label="Refresh data">
-         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">path>
+         <svg id="icon-dark" class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z">path>
+         svg>button> <button onclick="refreshData()" class="btn-secondary p-2" aria-label="Làm mới dữ liệu">
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">path>
          svg>button>
        div>
       div>
      div>
     nav>-- Controls -->
     <div class="no-print max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-     <div class="card-bg rounded-xl p-6 mb-6 shadow-sm">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-       <div><label for="view-type" class="block text-sm font-bold mb-2 text-primary">Xem theolabel> <select id="view-type" onchange="changeViewType()" class="w-full"> <option value="all">Tất cảoption> <option value="class">Theo lớpoption> <option value="teacher">Theo giáo viênoption> select>
+     <div class="card-bg rounded-lg p-5 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+       <div><label for="view-type" class="block text-xs font-medium mb-2 text-primary">Xem theolabel> <select id="view-type" onchange="changeViewType()" class="w-full"> <option value="all">Tất cảoption> <option value="class">Theo lớpoption> <option value="teacher">Theo giáo viênoption> select>
        div>
-       <div id="filter-container"><label for="filter-select" class="block text-sm font-bold mb-2 text-primary">Chọnlabel> <select id="filter-select" onchange="applyFilter()" class="w-full"> <option value="">-- Chọn --option> select>
+       <div id="filter-container"><label for="filter-select" class="block text-xs font-medium mb-2 text-primary">Chọnlabel> <select id="filter-select" onchange="applyFilter()" class="w-full"> <option value="">-- Chọn --option> select>
        div>
        <div class="flex items-end"><button onclick="printSchedule()" class="btn-primary w-full flex items-center justify-center gap-2">
-         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">path>
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">path>
          svg> In / Xuất PDF button>
+       div>
+       <div class="flex items-end"><button onclick="showCodeDialog()" class="btn-secondary w-full flex items-center justify-center gap-2">
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4">path>
+         svg> Xem mã button>
        div>
       div>
      div>
@@ -338,10 +386,34 @@
     div>
    div>-- Error State -->
    <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-full p-8 text-center">
-    <svg class="w-20 h-20 text-secondary mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">path>
+    <svg class="w-16 h-16 text-secondary mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">path>
     svg>
-    <h2 class="text-2xl font-bold mb-2 text-primary">Không thể tải dữ liệuh2>
-    <p id="error-message" class="text-secondary mb-6">Đã xảy ra lỗi khi tải dữ liệu từ Google Sheetsp><button onclick="refreshData()" class="btn-primary">Thử lạibutton>
+    <h2 class="text-xl font-semibold mb-2 text-primary">Không thể tải dữ liệuh2>
+    <p id="error-message" class="text-secondary text-sm mb-6">Đã xảy ra lỗi khi tải dữ liệu từ Google Sheetsp><button onclick="refreshData()" class="btn-primary">Thử lạibutton>
+   div>-- Code Dialog Overlay -->
+   <div id="code-dialog" class="no-print hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="hideCodeDialog(event)">
+    <div class="card-bg rounded-lg max-w-4xl w-full max-h-[80%] overflow-hidden" onclick="event.stopPropagation()">
+     <div class="p-5 border-b border-custom flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-primary">Link Google Sheetsh3><button onclick="hideCodeDialog()" class="text-secondary hover:text-primary">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">path>
+       svg>button>
+     div>
+     <div class="p-5 overflow-auto" style="max-height: calc(80vh - 140px);">
+      <p class="text-sm text-secondary mb-3">Sao chép link dưới đây để kết nối với Google Sheets của bạn:p>
+      <div class="code-container"><button class="copy-btn" onclick="copyCode()"> <span id="copy-text">Copyspan> button>
+       <div class="code-content" id="code-content">
+        https://docs.google.com/spreadsheets/d/e/2PACX-1vQwOEHVTQIC1AXGYCilV9Zo6LZLaliGTl8a4IL5CI662fRcPaIxp02ao9KO06XVXmdnTsaz_i3opSyS/pub?output=csv
+       div>
+      div>
+      <div class="mt-4 p-4 rounded-lg" style="background: var(--bg-main); border: 1px solid var(--border-color);">
+       <p class="text-xs text-secondary leading-relaxed"><strong class="text-primary">Hướng dẫn:strong><br>
+         1. Mở Google Sheets của bạn<br>
+         2. Chọn File → Share → Publish to web<br>
+         3. Chọn "Comma-separated values (.csv)"<br>
+         4. Copy link và thay thế vào mã nguồnp>
+      div>
+     div>
+    div>
    div>
   div>
   <script>
@@ -373,31 +445,8 @@
     
     const defaultConfig = {
       school_name: 'Thời Khóa Biểu',
-      school_year: 'Năm học 2024-2025'
+      school_year: '2024-2025'
     };
-    
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'tkb-cache-v1';
-        const urlsToCache = ['/'];
-        
-        self.addEventListener('install', event => {
-          event.waitUntil(
-            caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-          );
-        });
-        
-        self.addEventListener('fetch', event => {
-          event.respondWith(
-            caches.match(event.request).then(response => response || fetch(event.request))
-          );
-        });
-      `;
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl);
-    }
     
     // Parse CSV
     function parseCSV(csv) {
@@ -437,7 +486,6 @@
       const headers = data[0].map(h => h.toLowerCase().trim());
       const rows = data.slice(1);
       
-      // Tìm index các cột theo tên chính xác
       const dayIdx = headers.indexOf('day');
       const hourIdx = headers.indexOf('hour');
       const classIdx = headers.indexOf('students sets');
@@ -485,12 +533,10 @@
       let session = 'morning';
       let day = 0;
       
-      // Kiểm tra buổi (S = sáng, C = chiều)
       if (str.startsWith('C')) {
         session = 'afternoon';
       }
       
-      // Lấy số thứ
       if (str.includes('2')) day = 1;
       else if (str.includes('3')) day = 2;
       else if (str.includes('4')) day = 3;
@@ -521,16 +567,14 @@
           throw new Error('Không tìm thấy dữ liệu hợp lệ trong bảng');
         }
         
-        // Cache data for offline
         localStorage.setItem('tkb-cache', JSON.stringify({ data: allData, timestamp: Date.now() }));
         
         updateFilterOptions();
         renderSchedule();
-        showToast('✅ Đã tải dữ liệu thành công');
+        showToast('Đã tải dữ liệu thành công');
         showContent();
         
       } catch (error) {
-        // Try offline cache
         const cached = localStorage.getItem('tkb-cache');
         if (cached) {
           const { data } = JSON.parse(cached);
@@ -538,7 +582,7 @@
           scheduleData = transformData(allData);
           updateFilterOptions();
           renderSchedule();
-          showToast('📱 Đang dùng dữ liệu offline');
+          showToast('Đang dùng dữ liệu offline');
           showContent();
         } else {
           showError(error.message);
@@ -590,7 +634,7 @@
       } else if (currentView === 'teacher' && currentFilter) {
         container.innerHTML = renderSingleSchedule(currentFilter, 'teacher');
       } else {
-        container.innerHTML = '<div class="text-center text-secondary py-12 font-semibold">Vui lòng chọn lớp hoặc giáo viêndiv>';
+        container.innerHTML = '<div class="text-center text-secondary py-12 text-sm">Vui lòng chọn lớp hoặc giáo viêndiv>';
       }
     }
     
@@ -612,30 +656,26 @@
         type === 'class' ? item.class === name : item.teacher === name
       );
       
-      // Tìm các tiết có lịch cho buổi sáng
       const morningPeriods = PERIODS_MORNING.filter(period => {
         return filtered.some(l => l.session === 'morning' && l.period === period.value);
       });
       
-      // Tìm các tiết có lịch cho buổi chiều
       const afternoonPeriods = PERIODS_AFTERNOON.filter(period => {
         return filtered.some(l => l.session === 'afternoon' && l.period === period.value);
       });
       
       let html = `
-        <div class="card-bg rounded-xl overflow-hidden mb-6 shadow-lg">
-          <div class="p-6 border-b border-custom" style="background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%)">
-            <h2 class="text-2xl font-bold text-white">${type === 'class' ? 'Lớp' : 'Giáo viên'}: ${name}h2>
+        <div class="card-bg rounded-lg overflow-hidden mb-6">
+          <div class="p-4 border-b border-custom">
+            <h2 class="text-base font-semibold text-primary">${type === 'class' ? 'Lớp' : 'Giáo viên'}: ${name}h2>
           div>
-          <div class="p-6">
+          <div class="p-4">
             <div class="schedule-grid">
-              -- Header row -->
               ${DAYS.map(day => `<div class="schedule-header">${day}div>`).join('')}
       `;
       
-      // Render morning session nếu có
       if (morningPeriods.length > 0) {
-        html += `<div class="session-header">☀️ Buổi Sángdiv>`;
+        html += `<div class="session-header">Buổi Sángdiv>`;
         
         morningPeriods.forEach((period) => {
           html += `<div class="schedule-time">${period.label}div>`;
@@ -663,9 +703,8 @@
         });
       }
       
-      // Render afternoon session nếu có
       if (afternoonPeriods.length > 0) {
-        html += `<div class="session-header">🌙 Buổi Chiềudiv>`;
+        html += `<div class="session-header">Buổi Chiềudiv>`;
         
         afternoonPeriods.forEach((period) => {
           html += `<div class="schedule-time">${period.label}div>`;
@@ -714,6 +753,31 @@
       
       document.getElementById('icon-light').classList.toggle('hidden', !isDark);
       document.getElementById('icon-dark').classList.toggle('hidden', isDark);
+    }
+    
+    function showCodeDialog() {
+      document.getElementById('code-dialog').classList.remove('hidden');
+    }
+    
+    function hideCodeDialog(event) {
+      if (!event || event.target.id === 'code-dialog') {
+        document.getElementById('code-dialog').classList.add('hidden');
+      }
+    }
+    
+    function copyCode() {
+      const codeContent = document.getElementById('code-content').textContent;
+      navigator.clipboard.writeText(codeContent).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        const text = document.getElementById('copy-text');
+        btn.classList.add('copied');
+        text.textContent = 'Đã copy!';
+        
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          text.textContent = 'Copy';
+        }, 2000);
+      });
     }
     
     function showLoading() {
@@ -794,5 +858,5 @@
     // Start app
     fetchData();
   script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9beefa273755dd39',t:'MTc2ODU4MDgxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();script>body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bef042d87a908e5',t:'MTc2ODU4MTIyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();script>body>
 html>
