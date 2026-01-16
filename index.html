@@ -1291,9 +1291,9 @@
         return;
       }
 
-      const orientationModal = document.createElement('div');
-      orientationModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
-      orientationModal.innerHTML = `
+      const nameModal = document.createElement('div');
+      nameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+      nameModal.innerHTML = `
         <div class="rounded-xl shadow-2xl max-w-md w-full" style="background: var(--bg-primary);">
           <div class="px-6 py-4 gradient-header" style="border-radius: 0.75rem 0.75rem 0 0;">
             <h2 class="text-xl font-bold" style="color: white;">📱 Xuất hình thời khóa biểu</h2>
@@ -1309,26 +1309,20 @@
                 style="background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary);"
               />
             </div>
-            <p class="mb-4 text-sm" style="color: var(--text-primary);">Chọn hướng hiển thị:</p>
-            <div class="flex gap-3 mb-4">
-              <button onclick="exportWithOrientation('portrait')" class="flex-1 px-6 py-4 rounded-lg font-medium transition-all hover:scale-105" style="background: var(--accent-color); color: white;">
-                📱 Dọc<br/><span style="font-size: 0.75rem; opacity: 0.9;">1080x1920</span>
-              </button>
-              <button onclick="exportWithOrientation('landscape')" class="flex-1 px-6 py-4 rounded-lg font-medium transition-all hover:scale-105" style="background: var(--accent-color); color: white;">
-                📱 Ngang<br/><span style="font-size: 0.75rem; opacity: 0.9;">1920x1080</span>
-              </button>
-            </div>
+            <button onclick="exportWithName()" class="w-full px-6 py-4 rounded-lg font-medium transition-all hover:scale-105 mb-3" style="background: var(--accent-color); color: white;">
+              📱 Xuất hình<br/><span style="font-size: 0.75rem; opacity: 0.9;">1080x1920</span>
+            </button>
             <button onclick="this.closest('.fixed').remove()" class="w-full px-4 py-2 rounded-lg text-sm font-medium" style="color: var(--text-secondary);">
               Hủy
             </button>
           </div>
         </div>
       `;
-      document.body.appendChild(orientationModal);
+      document.body.appendChild(nameModal);
 
-      window.exportWithOrientation = async (orientation) => {
+      window.exportWithName = async () => {
         const studentName = document.getElementById('student-name-input').value.trim();
-        orientationModal.remove();
+        nameModal.remove();
         
         const toast = document.createElement('div');
         toast.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50';
@@ -1338,9 +1332,8 @@
         document.body.appendChild(toast);
 
         try {
-          const isPortrait = orientation === 'portrait';
-          const width = isPortrait ? 1080 : 1920;
-          const height = isPortrait ? 1920 : 1080;
+          const width = 1080;
+          const height = 1920;
 
           const exportContainer = document.createElement('div');
           exportContainer.style.position = 'absolute';
@@ -1348,7 +1341,7 @@
           exportContainer.style.width = width + 'px';
           exportContainer.style.height = height + 'px';
           exportContainer.style.background = getComputedStyle(document.body).getPropertyValue('--bg-secondary');
-          exportContainer.style.padding = isPortrait ? '30px' : '24px';
+          exportContainer.style.padding = '30px';
           exportContainer.style.fontFamily = "'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
           exportContainer.style.boxSizing = 'border-box';
           exportContainer.style.overflow = 'hidden';
@@ -1370,44 +1363,36 @@
           const activeMorningPeriods = morningPeriods.filter(hasLesson);
           const activeAfternoonPeriods = afternoonPeriods.filter(hasLesson);
 
-          const headerPadding = isPortrait ? '24px' : '20px';
-          const titleSize = isPortrait ? '32px' : '28px';
-          const subtitleSize = isPortrait ? '14px' : '13px';
-          const selectionSize = isPortrait ? '24px' : '22px';
-          const tablePadding = isPortrait ? '20px' : '16px';
-          const cellPadding = isPortrait ? '12px' : '10px';
-          const fontSize = isPortrait ? '13px' : '11px';
-
           const gradientStart = getComputedStyle(document.body).getPropertyValue('--accent-color');
           const gradientEnd = getComputedStyle(document.body).getPropertyValue('--text-secondary');
 
           let html = `
             <div style="background: ${getComputedStyle(document.body).getPropertyValue('--bg-primary')}; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); height: 100%; display: flex; flex-direction: column;">
               <!-- Header -->
-              <div style="padding: ${headerPadding}; background: linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%); color: white;">
-                <h1 style="font-size: ${titleSize}; font-weight: 700; margin: 0 0 6px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">📚 ${config.app_title}</h1>
-                <p style="font-size: ${subtitleSize}; margin: 0; opacity: 0.95;">${config.school_name}</p>
-                <div style="margin-top: ${isPortrait ? '16px' : '12px'}; padding-top: ${isPortrait ? '16px' : '12px'}; border-top: 2px solid rgba(255,255,255,0.3);">
-                  <p style="font-size: ${selectionSize}; margin: 0; font-weight: 600;">
+              <div style="padding: 28px; background: linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%); color: white;">
+                <h1 style="font-size: 36px; font-weight: 700; margin: 0 0 8px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">📚 ${config.app_title}</h1>
+                <p style="font-size: 16px; margin: 0; opacity: 0.95;">${config.school_name}</p>
+                <div style="margin-top: 18px; padding-top: 18px; border-top: 2px solid rgba(255,255,255,0.3);">
+                  <p style="font-size: 28px; margin: 0; font-weight: 600;">
                     ${currentView === 'class' ? `🏫 Lớp ${currentSelection}` : (currentView === 'teacher' ? `👨‍🏫 ${currentSelection}` : `🚪 Phòng ${currentSelection}`)}
                   </p>
-                  ${studentName ? `<p style="font-size: ${isPortrait ? '20px' : '18px'}; margin: ${isPortrait ? '8px' : '6px'} 0 0 0; font-weight: 600;">👤 ${studentName}</p>` : ''}
+                  ${studentName ? `<p style="font-size: 22px; margin: 10px 0 0 0; font-weight: 600;">👤 ${studentName}</p>` : ''}
                 </div>
               </div>
 
               <!-- Schedule Table -->
-              <div style="padding: ${tablePadding}; flex: 1; overflow: hidden;">
-                <table style="width: 100%; border-collapse: separate; border-spacing: 0; font-size: ${fontSize};">
+              <div style="padding: 24px; flex: 1; overflow: hidden;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0; font-size: 15px;">
                   <thead>
                     <tr>
-                      <th style="padding: ${cellPadding}; text-align: left; font-weight: 600; text-transform: uppercase; color: ${getComputedStyle(document.body).getPropertyValue('--text-secondary')}; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-right: none;">
+                      <th style="padding: 14px; text-align: left; font-weight: 600; text-transform: uppercase; color: ${getComputedStyle(document.body).getPropertyValue('--text-secondary')}; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-right: none;">
                         Tiết
                       </th>
           `;
 
           days.forEach((day, idx) => {
             html += `
-              <th style="padding: ${cellPadding}; text-align: center; font-weight: 600; text-transform: uppercase; color: ${getComputedStyle(document.body).getPropertyValue('--text-secondary')}; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
+              <th style="padding: 14px; text-align: center; font-weight: 600; text-transform: uppercase; color: ${getComputedStyle(document.body).getPropertyValue('--text-secondary')}; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
                 ${day}
               </th>
             `;
@@ -1419,9 +1404,9 @@
           activeMorningPeriods.forEach((period) => {
             const periodIdx = morningPeriods.indexOf(period);
             html += `<tr>
-              <td style="padding: ${cellPadding}; font-weight: 500; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; border-right: none; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">
-                <div style="font-weight: 600;">Sáng ${periodIdx + 1}</div>
-                <div style="opacity: 0.6; font-size: ${fontSize === '13px' ? '11px' : '10px'}; margin-top: 2px;">${morningTimes[periodIdx]}</div>
+              <td style="padding: 14px; font-weight: 500; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; border-right: none; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">
+                <div style="font-weight: 600; font-size: 15px;">Sáng ${periodIdx + 1}</div>
+                <div style="opacity: 0.6; font-size: 13px; margin-top: 2px;">${morningTimes[periodIdx]}</div>
               </td>
             `;
 
@@ -1429,15 +1414,15 @@
               const lesson = schedule[day] ? schedule[day][period] : null;
               if (lesson) {
                 html += `
-                  <td style="padding: ${isPortrait ? '8px' : '6px'}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
-                    <div style="background: ${getComputedStyle(document.body).getPropertyValue('--morning-bg')}; border-radius: ${isPortrait ? '10px' : '8px'}; padding: ${isPortrait ? '14px' : '12px'}; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-height: ${isPortrait ? '90px' : '80px'}; display: flex; flex-direction: column; justify-content: center;">
-                      <div style="font-size: ${isPortrait ? '20px' : '17px'}; font-weight: 700; margin-bottom: ${isPortrait ? '8px' : '6px'}; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; line-height: 1.2;">${lesson.subject}</div>
-                      ${currentView === 'class' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.teacher}</div>` : ''}
-                      ${currentView === 'class' && lesson.room ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
-                      ${currentView === 'teacher' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.class}</div>` : ''}
-                      ${currentView === 'teacher' && lesson.room ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
-                      ${currentView === 'room' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.class}</div>` : ''}
-                      ${currentView === 'room' && lesson.teacher ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.teacher}</div>` : ''}
+                  <td style="padding: 10px; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
+                    <div style="background: ${getComputedStyle(document.body).getPropertyValue('--morning-bg')}; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-height: 100px; display: flex; flex-direction: column; justify-content: center;">
+                      <div style="font-size: 22px; font-weight: 700; margin-bottom: 10px; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; line-height: 1.2;">${lesson.subject}</div>
+                      ${currentView === 'class' ? `<div style="font-size: 17px; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: 5px;">${lesson.teacher}</div>` : ''}
+                      ${currentView === 'class' && lesson.room ? `<div style="font-size: 15px; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
+                      ${currentView === 'teacher' ? `<div style="font-size: 17px; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: 5px;">${lesson.class}</div>` : ''}
+                      ${currentView === 'teacher' && lesson.room ? `<div style="font-size: 15px; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
+                      ${currentView === 'room' ? `<div style="font-size: 17px; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: 5px;">${lesson.class}</div>` : ''}
+                      ${currentView === 'room' && lesson.teacher ? `<div style="font-size: 15px; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.teacher}</div>` : ''}
                     </div>
                   </td>
                 `;
@@ -1453,9 +1438,9 @@
           activeAfternoonPeriods.forEach((period) => {
             const periodIdx = afternoonPeriods.indexOf(period);
             html += `<tr>
-              <td style="padding: ${cellPadding}; font-weight: 500; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; border-right: none; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">
-                <div style="font-weight: 600;">Chiều ${periodIdx + 1}</div>
-                <div style="opacity: 0.6; font-size: ${fontSize === '13px' ? '11px' : '10px'}; margin-top: 2px;">${afternoonTimes[periodIdx]}</div>
+              <td style="padding: 14px; font-weight: 500; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; border-right: none; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">
+                <div style="font-weight: 600; font-size: 15px;">Chiều ${periodIdx + 1}</div>
+                <div style="opacity: 0.6; font-size: 13px; margin-top: 2px;">${afternoonTimes[periodIdx]}</div>
               </td>
             `;
 
@@ -1463,15 +1448,15 @@
               const lesson = schedule[day] ? schedule[day][period] : null;
               if (lesson) {
                 html += `
-                  <td style="padding: ${isPortrait ? '8px' : '6px'}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
-                    <div style="background: ${getComputedStyle(document.body).getPropertyValue('--afternoon-bg')}; border-radius: ${isPortrait ? '10px' : '8px'}; padding: ${isPortrait ? '14px' : '12px'}; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-height: ${isPortrait ? '90px' : '80px'}; display: flex; flex-direction: column; justify-content: center;">
-                      <div style="font-size: ${isPortrait ? '20px' : '17px'}; font-weight: 700; margin-bottom: ${isPortrait ? '8px' : '6px'}; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; line-height: 1.2;">${lesson.subject}</div>
-                      ${currentView === 'class' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.teacher}</div>` : ''}
-                      ${currentView === 'class' && lesson.room ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
-                      ${currentView === 'teacher' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.class}</div>` : ''}
-                      ${currentView === 'teacher' && lesson.room ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
-                      ${currentView === 'room' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.class}</div>` : ''}
-                      ${currentView === 'room' && lesson.teacher ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.teacher}</div>` : ''}
+                  <td style="padding: 10px; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
+                    <div style="background: ${getComputedStyle(document.body).getPropertyValue('--afternoon-bg')}; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-height: 100px; display: flex; flex-direction: column; justify-content: center;">
+                      <div style="font-size: 22px; font-weight: 700; margin-bottom: 10px; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; line-height: 1.2;">${lesson.subject}</div>
+                      ${currentView === 'class' ? `<div style="font-size: 17px; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: 5px;">${lesson.teacher}</div>` : ''}
+                      ${currentView === 'class' && lesson.room ? `<div style="font-size: 15px; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
+                      ${currentView === 'teacher' ? `<div style="font-size: 17px; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: 5px;">${lesson.class}</div>` : ''}
+                      ${currentView === 'teacher' && lesson.room ? `<div style="font-size: 15px; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
+                      ${currentView === 'room' ? `<div style="font-size: 17px; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: 5px;">${lesson.class}</div>` : ''}
+                      ${currentView === 'room' && lesson.teacher ? `<div style="font-size: 15px; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.teacher}</div>` : ''}
                     </div>
                   </td>
                 `;
@@ -1487,8 +1472,8 @@
               </div>
 
               <!-- Footer -->
-              <div style="padding: ${isPortrait ? '16px' : '12px'} ${tablePadding}; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border-top: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; text-align: center;">
-                <p style="margin: 0; font-size: ${isPortrait ? '12px' : '11px'}; color: ${getComputedStyle(document.body).getPropertyValue('--text-secondary')};">
+              <div style="padding: 18px 24px; background: ${getComputedStyle(document.body).getPropertyValue('--bg-secondary')}; border-top: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; text-align: center;">
+                <p style="margin: 0; font-size: 13px; color: ${getComputedStyle(document.body).getPropertyValue('--text-secondary')};">
                   Xuất lúc ${new Date().toLocaleString('vi-VN')}
                 </p>
               </div>
@@ -1510,7 +1495,7 @@
           canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            const filename = `TKB_${currentSelection.replace(/\s+/g, '_')}_${orientation}_${new Date().getTime()}.png`;
+            const filename = `TKB_${currentSelection.replace(/\s+/g, '_')}_${new Date().getTime()}.png`;
             link.download = filename;
             link.href = url;
             link.click();
@@ -1533,5 +1518,5 @@
     // Auto-load from Google Sheet on page load
     loadFromGoogleSheet();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9befd331a02908e5',t:'MTc2ODU4OTcwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9befdbedb31b08e5',t:'MTc2ODU5MDA2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
