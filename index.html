@@ -1,13 +1,12 @@
-doctype html>
+DOCTYPE html>
 <html lang="vi" class="h-full">
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thời Khóa Biểutitle>
   <meta name="theme-color" content="#5a67d8">
   <script src="https://cdn.tailwindcss.com">script>
-  <script src="/_sdk/element_sdk.js">script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
       box-sizing: border-box;
@@ -35,6 +34,61 @@ doctype html>
       --accent-color: #667eea;
       --accent-hover: #5a67d8;
       --lesson-bg: #2d3748;
+    }
+    
+    [data-theme="ocean"] {
+      --bg-main: #e0f2fe;
+      --bg-secondary: #ffffff;
+      --text-primary: #0c4a6e;
+      --text-secondary: #0369a1;
+      --border-color: #7dd3fc;
+      --accent-color: #0284c7;
+      --accent-hover: #0369a1;
+      --lesson-bg: #f0f9ff;
+    }
+    
+    [data-theme="sunset"] {
+      --bg-main: #fff1f2;
+      --bg-secondary: #ffffff;
+      --text-primary: #881337;
+      --text-secondary: #be123c;
+      --border-color: #fda4af;
+      --accent-color: #e11d48;
+      --accent-hover: #be123c;
+      --lesson-bg: #fff5f7;
+    }
+    
+    [data-theme="forest"] {
+      --bg-main: #ecfdf5;
+      --bg-secondary: #ffffff;
+      --text-primary: #064e3b;
+      --text-secondary: #047857;
+      --border-color: #6ee7b7;
+      --accent-color: #059669;
+      --accent-hover: #047857;
+      --lesson-bg: #f0fdf4;
+    }
+    
+    [data-theme="lavender"] {
+      --bg-main: #faf5ff;
+      --bg-secondary: #ffffff;
+      --text-primary: #581c87;
+      --text-secondary: #7e22ce;
+      --border-color: #d8b4fe;
+      --accent-color: #9333ea;
+      --accent-hover: #7e22ce;
+      --lesson-bg: #fdf4ff;
+    }
+    
+    [data-theme="candy"] {
+      --bg-main: #fef3c7;
+      --bg-secondary: #ffffff;
+      --text-primary: #78350f;
+      --text-secondary: #b45309;
+      --border-color: #fcd34d;
+      --accent-color: #f59e0b;
+      --accent-hover: #d97706;
+      --lesson-bg: #fffbeb;
     }
     
     body {
@@ -290,132 +344,140 @@ doctype html>
       }
     }
     
-    .code-container {
-      position: relative;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 12px;
-    }
-    
-    .code-content {
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 0.75rem;
-      line-height: 1.6;
-      color: var(--text-secondary);
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-    
-    .copy-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      font-weight: 500;
+    .theme-option {
       transition: all 0.15s;
     }
     
-    .copy-btn:hover {
-      background: var(--accent-hover);
+    .theme-option:hover {
+      background: var(--accent-color);
+      color: white;
     }
     
-    .copy-btn.copied {
-      background: #10b981;
+    #theme-menu {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
   style>
-  <style>@view-transition { navigation: auto; }style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript">script>
- head>
- <body class="h-full">
-  <div id="app-wrapper" class="min-h-full w-full overflow-auto">-- Loading State -->
-   <div id="loading-state" class="flex flex-col items-center justify-center min-h-full p-8">
-    <div class="loading-spinner mb-4">div>
-    <p class="text-primary font-medium text-sm">Đang tải dữ liệu...p>
-   div>-- Main Content -->
-   <div id="main-content" class="hidden">-- Navigation -->
-    <nav class="no-print card-bg border-b border-custom">
-     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-14">
-       <div class="flex items-center gap-3">
-        <svg class="w-6 h-6" style="color: var(--accent-color)" fill="currentColor" viewbox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z">path>
-        svg>
-        <div>
-         <h1 id="school-name" class="text-base font-semibold text-primary" style="letter-spacing: -0.02em;">Thời Khóa Biểuh1>
-         <p id="school-year" class="text-xs text-secondary">2024-2025p>
+head>
+<body class="h-full">
+  <div id="app-wrapper" class="min-h-full w-full overflow-auto">
+    -- Loading State -->
+    <div id="loading-state" class="flex flex-col items-center justify-center min-h-full p-8">
+      <div class="loading-spinner mb-4">div>
+      <p class="text-primary font-medium text-sm">Đang tải dữ liệu...p>
+    div>
+    
+    -- Main Content -->
+    <div id="main-content" class="hidden">
+      -- Navigation -->
+      <nav class="no-print card-bg border-b border-custom">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+              <svg class="w-6 h-6" style="color: var(--accent-color)" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z">path>
+              svg>
+              <div>
+                <h1 id="school-name" class="text-base font-semibold text-primary" style="letter-spacing: -0.02em;">Thời Khóa Biểuh1>
+                <p id="school-year" class="text-xs text-secondary">2024-2025p>
+              div>
+            div>
+            <div class="flex items-center gap-2">
+              <div class="relative">
+                <button onclick="toggleThemeMenu()" class="btn-secondary p-2 flex items-center gap-1" aria-label="Chọn theme">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">path>
+                  svg>
+                  <span class="text-xs hidden sm:inline">Themespan>
+                button>
+                
+                -- Theme Menu -->
+                <div id="theme-menu" class="hidden absolute top-full right-0 mt-2 card-bg rounded-lg shadow-xl border border-custom p-2 z-50" style="min-width: 180px;">
+                  <button onclick="changeTheme('light')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #fafbfc 50%, #5a67d8 50%);">div>
+                    <span>Sángspan>
+                  button>
+                  <button onclick="changeTheme('dark')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #0f1419 50%, #667eea 50%);">div>
+                    <span>Tốispan>
+                  button>
+                  <button onclick="changeTheme('ocean')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #e0f2fe 50%, #0284c7 50%);">div>
+                    <span>🌊 Đại Dươngspan>
+                  button>
+                  <button onclick="changeTheme('sunset')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #fff1f2 50%, #e11d48 50%);">div>
+                    <span>🌅 Hoàng Hônspan>
+                  button>
+                  <button onclick="changeTheme('forest')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #ecfdf5 50%, #059669 50%);">div>
+                    <span>🌲 Rừng Xanhspan>
+                  button>
+                  <button onclick="changeTheme('lavender')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #faf5ff 50%, #9333ea 50%);">div>
+                    <span>💜 Lavenderspan>
+                  button>
+                  <button onclick="changeTheme('candy')" class="theme-option w-full text-left px-3 py-2 rounded text-sm hover:bg-opacity-10 flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #fef3c7 50%, #f59e0b 50%);">div>
+                    <span>🍬 Candyspan>
+                  button>
+                div>
+              div>
+              <button onclick="refreshData()" class="btn-secondary p-2" aria-label="Làm mới dữ liệu">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">path>
+                svg>
+              button>
+            div>
+          div>
         div>
-       div>
-       <div class="flex items-center gap-2"><button onclick="toggleDarkMode()" class="btn-secondary p-2" aria-label="Chuyển chế độ sáng tối">
-         <svg id="icon-light" class="w-4 h-4 hidden" fill="currentColor" viewbox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z">path>
-         svg>
-         <svg id="icon-dark" class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z">path>
-         svg>button> <button onclick="refreshData()" class="btn-secondary p-2" aria-label="Làm mới dữ liệu">
-         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">path>
-         svg>button>
-       div>
+      nav>
+      
+      -- Controls -->
+      <div class="no-print max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="card-bg rounded-lg p-5 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label for="view-type" class="block text-xs font-medium mb-2 text-primary">Xem theolabel>
+              <select id="view-type" onchange="changeViewType()" class="w-full">
+                <option value="all">Tất cảoption>
+                <option value="class">Theo lớpoption>
+                <option value="teacher">Theo giáo viênoption>
+              select>
+            div>
+            <div id="filter-container">
+              <label for="filter-select" class="block text-xs font-medium mb-2 text-primary">Chọnlabel>
+              <select id="filter-select" onchange="applyFilter()" class="w-full">
+                <option value="">-- Chọn --option>
+              select>
+            div>
+            <div class="flex items-end">
+              <button onclick="printSchedule()" class="btn-primary w-full flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">path>
+                svg>
+                In / Xuất PDF
+              button>
+            div>
+          div>
+        div>
       div>
-     div>
-    nav>-- Controls -->
-    <div class="no-print max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-     <div class="card-bg rounded-lg p-5 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-       <div><label for="view-type" class="block text-xs font-medium mb-2 text-primary">Xem theolabel> <select id="view-type" onchange="changeViewType()" class="w-full"> <option value="all">Tất cảoption> <option value="class">Theo lớpoption> <option value="teacher">Theo giáo viênoption> select>
-       div>
-       <div id="filter-container"><label for="filter-select" class="block text-xs font-medium mb-2 text-primary">Chọnlabel> <select id="filter-select" onchange="applyFilter()" class="w-full"> <option value="">-- Chọn --option> select>
-       div>
-       <div class="flex items-end"><button onclick="printSchedule()" class="btn-primary w-full flex items-center justify-center gap-2">
-         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">path>
-         svg> In / Xuất PDF button>
-       div>
-       <div class="flex items-end"><button onclick="showCodeDialog()" class="btn-secondary w-full flex items-center justify-center gap-2">
-         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4">path>
-         svg> Xem mã button>
-       div>
+      
+      -- Schedule Container -->
+      <div id="schedule-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       div>
-     div>
-    div>-- Schedule Container -->
-    <div id="schedule-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
     div>
-   div>-- Error State -->
-   <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-full p-8 text-center">
-    <svg class="w-16 h-16 text-secondary mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">path>
-    svg>
-    <h2 class="text-xl font-semibold mb-2 text-primary">Không thể tải dữ liệuh2>
-    <p id="error-message" class="text-secondary text-sm mb-6">Đã xảy ra lỗi khi tải dữ liệu từ Google Sheetsp><button onclick="refreshData()" class="btn-primary">Thử lạibutton>
-   div>-- Code Dialog Overlay -->
-   <div id="code-dialog" class="no-print hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="hideCodeDialog(event)">
-    <div class="card-bg rounded-lg max-w-4xl w-full max-h-[80%] overflow-hidden" onclick="event.stopPropagation()">
-     <div class="p-5 border-b border-custom flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-primary">Link Google Sheetsh3><button onclick="hideCodeDialog()" class="text-secondary hover:text-primary">
-       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">path>
-       svg>button>
-     div>
-     <div class="p-5 overflow-auto" style="max-height: calc(80vh - 140px);">
-      <p class="text-sm text-secondary mb-3">Sao chép link dưới đây để kết nối với Google Sheets của bạn:p>
-      <div class="code-container"><button class="copy-btn" onclick="copyCode()"> <span id="copy-text">Copyspan> button>
-       <div class="code-content" id="code-content">
-        https://docs.google.com/spreadsheets/d/e/2PACX-1vQwOEHVTQIC1AXGYCilV9Zo6LZLaliGTl8a4IL5CI662fRcPaIxp02ao9KO06XVXmdnTsaz_i3opSyS/pub?output=csv
-       div>
-      div>
-      <div class="mt-4 p-4 rounded-lg" style="background: var(--bg-main); border: 1px solid var(--border-color);">
-       <p class="text-xs text-secondary leading-relaxed"><strong class="text-primary">Hướng dẫn:strong><br>
-         1. Mở Google Sheets của bạn<br>
-         2. Chọn File → Share → Publish to web<br>
-         3. Chọn "Comma-separated values (.csv)"<br>
-         4. Copy link và thay thế vào mã nguồnp>
-      div>
-     div>
+    
+    -- Error State -->
+    <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-full p-8 text-center">
+      <svg class="w-16 h-16 text-secondary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">path>
+      svg>
+      <h2 class="text-xl font-semibold mb-2 text-primary">Không thể tải dữ liệuh2>
+      <p id="error-message" class="text-secondary text-sm mb-6">Đã xảy ra lỗi khi tải dữ liệu từ Google Sheetsp>
+      <button onclick="refreshData()" class="btn-primary">Thử lạibutton>
     div>
-   div>
   div>
+
   <script>
     const DATA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwOEHVTQIC1AXGYCilV9Zo6LZLaliGTl8a4IL5CI662fRcPaIxp02ao9KO06XVXmdnTsaz_i3opSyS/pub?output=csv';
     
@@ -441,14 +503,7 @@ doctype html>
     let teachers = new Set();
     let currentView = 'all';
     let currentFilter = '';
-    let config = {};
     
-    const defaultConfig = {
-      school_name: 'Thời Khóa Biểu',
-      school_year: '2024-2025'
-    };
-    
-    // Parse CSV
     function parseCSV(csv) {
       const lines = csv.trim().split('\n');
       const result = [];
@@ -479,7 +534,6 @@ doctype html>
       return result;
     }
     
-    // Transform data to schedule format
     function transformData(data) {
       if (!data || data.length === 0) return [];
       
@@ -551,7 +605,6 @@ doctype html>
       return match ? parseInt(match[0]) : 0;
     }
     
-    // Fetch data
     async function fetchData() {
       showLoading();
       
@@ -592,7 +645,7 @@ doctype html>
     
     function updateFilterOptions() {
       const select = document.getElementById('filter-select');
-      select.innerHTML = '<option value="">-- Chọn --option>';
+      select.innerHTML = '<option value="">-- Chọn --<\/option>';
       
       if (currentView === 'class') {
         Array.from(classes).sort().forEach(c => {
@@ -634,7 +687,7 @@ doctype html>
       } else if (currentView === 'teacher' && currentFilter) {
         container.innerHTML = renderSingleSchedule(currentFilter, 'teacher');
       } else {
-        container.innerHTML = '<div class="text-center text-secondary py-12 text-sm">Vui lòng chọn lớp hoặc giáo viêndiv>';
+        container.innerHTML = '<div class="text-center text-secondary py-12 text-sm">Vui lòng chọn lớp hoặc giáo viên<\/div>';
       }
     }
     
@@ -643,9 +696,9 @@ doctype html>
       let html = '';
       
       sortedClasses.forEach((className, idx) => {
-        html += `<div class="print-page mb-8">`;
+        html += \`<div class="print-page mb-8">\`;
         html += renderSingleSchedule(className, 'class');
-        html += `div>`;
+        html += \`<\/div>\`;
       });
       
       return html;
@@ -664,75 +717,75 @@ doctype html>
         return filtered.some(l => l.session === 'afternoon' && l.period === period.value);
       });
       
-      let html = `
+      let html = \`
         <div class="card-bg rounded-lg overflow-hidden mb-6">
           <div class="p-4 border-b border-custom">
-            <h2 class="text-base font-semibold text-primary">${type === 'class' ? 'Lớp' : 'Giáo viên'}: ${name}h2>
-          div>
+            <h2 class="text-base font-semibold text-primary">\${type === 'class' ? 'L���p' : 'Giáo viên'}: \${name}<\/h2>
+          <\/div>
           <div class="p-4">
             <div class="schedule-grid">
-              ${DAYS.map(day => `<div class="schedule-header">${day}div>`).join('')}
-      `;
+              \${DAYS.map(day => \`<div class="schedule-header">\${day}<\/div>\`).join('')}
+      \`;
       
       if (morningPeriods.length > 0) {
-        html += `<div class="session-header">Buổi Sángdiv>`;
+        html += \`<div class="session-header">Buổi Sáng<\/div>\`;
         
         morningPeriods.forEach((period) => {
-          html += `<div class="schedule-time">${period.label}div>`;
+          html += \`<div class="schedule-time">\${period.label}<\/div>\`;
           
           for (let day = 1; day <= 5; day++) {
             const lesson = filtered.find(l => l.day === day && l.session === 'morning' && l.period === period.value);
             
             if (lesson) {
-              html += `
+              html += \`
                 <div class="schedule-cell">
                   <div class="lesson-card">
-                    <div class="lesson-subject">${lesson.subject}div>
-                    ${type === 'class' ? 
-                      `<div class="lesson-info">${lesson.teacher}div>` :
-                      `<div class="lesson-info">${lesson.class}div>`
+                    <div class="lesson-subject">\${lesson.subject}<\/div>
+                    \${type === 'class' ? 
+                      \`<div class="lesson-info">\${lesson.teacher}<\/div>\` :
+                      \`<div class="lesson-info">\${lesson.class}<\/div>\`
                     }
-                    ${lesson.room ? `<div class="lesson-info">Phòng: ${lesson.room}div>` : ''}
-                  div>
-                div>
-              `;
+                    \${lesson.room ? \`<div class="lesson-info">Phòng: \${lesson.room}<\/div>\` : ''}
+                  <\/div>
+                <\/div>
+              \`;
             } else {
-              html += `<div class="schedule-cell">div>`;
+              html += \`<div class="schedule-cell"><\/div>\`;
             }
           }
         });
       }
       
       if (afternoonPeriods.length > 0) {
-        html += `<div class="session-header">Buổi Chiềudiv>`;
+        html += \`<div class="session-header">Buổi Chiều<\/div>\`;
         
         afternoonPeriods.forEach((period) => {
-          html += `<div class="schedule-time">${period.label}div>`;
+          html += \`<div class="schedule-time">\${period.label}<\/div>\`;
           
           for (let day = 1; day <= 5; day++) {
             const lesson = filtered.find(l => l.day === day && l.session === 'afternoon' && l.period === period.value);
             
             if (lesson) {
-              html += `
+              html += \`
                 <div class="schedule-cell">
                   <div class="lesson-card">
-                    <div class="lesson-subject">${lesson.subject}div>
-                    ${type === 'class' ? 
-                      `<div class="lesson-info">${lesson.teacher}div>` :
-                      `<div class="lesson-info">${lesson.class}div>`
+                    <div class="lesson-subject">\${lesson.subject}<\/div>
+                    \${type === 'class' ? 
+                      \`<div class="lesson-info">\${lesson.teacher}<\/div>\` :
+                      \`<div class="lesson-info">\${lesson.class}<\/div>\`
                     }
-                    ${lesson.room ? `<div class="lesson-info">Phòng: ${lesson.room}div>` : ''}
-                  div>
-                div>
-              `;
+                    \${lesson.room ? \`<div class="lesson-info">Phòng: \${lesson.room}<\/div>\` : ''}
+                  <\/div>
+                <\/div>
+              \`;
             } else {
-              html += `<div class="schedule-cell">div>`;
+              html += \`<div class="schedule-cell"><\/div>\`;
             }
           }
         });
       }
       
-      html += `div>div>div>`;
+      html += \`<\/div><\/div><\/div>\`;
       return html;
     }
     
@@ -744,41 +797,39 @@ doctype html>
       fetchData();
     }
     
-    function toggleDarkMode() {
-      const html = document.documentElement;
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      
-      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      
-      document.getElementById('icon-light').classList.toggle('hidden', !isDark);
-      document.getElementById('icon-dark').classList.toggle('hidden', isDark);
+    function toggleThemeMenu() {
+      const menu = document.getElementById('theme-menu');
+      menu.classList.toggle('hidden');
     }
     
-    function showCodeDialog() {
-      document.getElementById('code-dialog').classList.remove('hidden');
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('theme', themeName);
+      document.getElementById('theme-menu').classList.add('hidden');
+      showToast(\`🎨 Đã chuyển sang theme \${getThemeName(themeName)}\`);
     }
     
-    function hideCodeDialog(event) {
-      if (!event || event.target.id === 'code-dialog') {
-        document.getElementById('code-dialog').classList.add('hidden');
+    function getThemeName(theme) {
+      const names = {
+        'light': 'Sáng',
+        'dark': 'Tối',
+        'ocean': 'Đại Dương 🌊',
+        'sunset': 'Hoàng Hôn 🌅',
+        'forest': 'Rừng Xanh 🌲',
+        'lavender': 'Lavender 💜',
+        'candy': 'Candy 🍬'
+      };
+      return names[theme] || theme;
+    }
+    
+    document.addEventListener('click', function(event) {
+      const menu = document.getElementById('theme-menu');
+      const button = event.target.closest('button[onclick="toggleThemeMenu()"]');
+      
+      if (!button && !menu.contains(event.target)) {
+        menu.classList.add('hidden');
       }
-    }
-    
-    function copyCode() {
-      const codeContent = document.getElementById('code-content').textContent;
-      navigator.clipboard.writeText(codeContent).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        const text = document.getElementById('copy-text');
-        btn.classList.add('copied');
-        text.textContent = 'Đã copy!';
-        
-        setTimeout(() => {
-          btn.classList.remove('copied');
-          text.textContent = 'Copy';
-        }, 2000);
-      });
-    }
+    });
     
     function showLoading() {
       document.getElementById('loading-state').classList.remove('hidden');
@@ -812,51 +863,10 @@ doctype html>
       }, 3000);
     }
     
-    // Element SDK
-    async function onConfigChange(newConfig) {
-      config = { ...defaultConfig, ...newConfig };
-      
-      const schoolName = document.getElementById('school-name');
-      const schoolYear = document.getElementById('school-year');
-      
-      if (schoolName) schoolName.textContent = config.school_name || defaultConfig.school_name;
-      if (schoolYear) schoolYear.textContent = config.school_year || defaultConfig.school_year;
-    }
-    
-    function mapToCapabilities(cfg) {
-      return {
-        recolorables: [],
-        borderables: [],
-        fontEditable: undefined,
-        fontSizeable: undefined
-      };
-    }
-    
-    function mapToEditPanelValues(cfg) {
-      return new Map([
-        ['school_name', cfg.school_name || defaultConfig.school_name],
-        ['school_year', cfg.school_year || defaultConfig.school_year]
-      ]);
-    }
-    
-    // Initialize
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange,
-        mapToCapabilities,
-        mapToEditPanelValues
-      });
-    }
-    
-    // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    document.getElementById('icon-light').classList.toggle('hidden', savedTheme !== 'dark');
-    document.getElementById('icon-dark').classList.toggle('hidden', savedTheme === 'dark');
     
-    // Start app
     fetchData();
   script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bef042d87a908e5',t:'MTc2ODU4MTIyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();script>body>
+body>
 html>
