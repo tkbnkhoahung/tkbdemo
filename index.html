@@ -2,18 +2,22 @@
 <html lang="vi" class="h-full">
  <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thời Khóa Biểu</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" charset="utf-8"></script>
   <style>
     body {
       box-sizing: border-box;
     }
     * {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Noto Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
     @media (max-width: 768px) {
@@ -270,7 +274,7 @@
      <div class="flex flex-wrap gap-3 items-center justify-between mb-3 mobile-stack"><!-- View Toggle -->
       <div class="flex items-center gap-2 rounded-lg p-1 mobile-full" style="background: var(--bg-secondary);"><button onclick="setViewMode('overview')" id="btn-overview" class="view-btn px-4 py-2 rounded-md text-sm font-medium transition-all" style="color: var(--text-secondary);"> 📊 Tổng quan </button> <button onclick="setViewMode('class')" id="btn-class" class="view-btn active px-4 py-2 rounded-md text-sm font-medium transition-all"> 🏫 Lớp </button> <button onclick="setViewMode('teacher')" id="btn-teacher" class="view-btn px-4 py-2 rounded-md text-sm font-medium transition-all" style="color: var(--text-secondary);"> 👨‍🏫 Giáo viên </button> <button onclick="setViewMode('room')" id="btn-room" class="view-btn px-4 py-2 rounded-md text-sm font-medium transition-all" style="color: var(--text-secondary);"> 🚪 Phòng </button>
       </div>
-      <div class="flex items-center gap-2 flex-wrap mobile-full"><!-- Class Selector --> <select id="class-selector" onchange="selectClass()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); display: none;"> <option value="">🏫 Chọn lớp...</option> </select> <!-- Teacher Selector --> <select id="teacher-selector" onchange="selectTeacher()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); display: none;"> <option value="">���‍🏫 Chọn giáo vi��n...</option> </select> <!-- Room Selector --> <select id="room-selector" onchange="selectRoom()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); display: none;"> <option value="">🚪 Chọn phòng...</option> </select> <!-- Theme Selector --> <select id="theme-selector" onchange="changeTheme()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary);"> <option value="minimal">🎨 Tối giản</option> <option value="ocean">🌊 Đại dương</option> <option value="forest">🌲 Rừng xanh</option> <option value="sunset">�� Hoàng hôn</option> <option value="lavender">💜 Lavender</option> <option value="rose">🌹 Hồng</option> <option value="amber">🟡 Vàng hổ phách</option> <option value="teal">🔷 Xanh ngọc</option> <option value="indigo">🔵 Chàm</option> <option value="dark">🌙 Tối</option> <option value="mono">⚫ Đen trắng</option> </select> <!-- Load Button --> <button onclick="loadFromGoogleSheet()" id="load-sheet-btn" class="px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex-1 mobile-hide" style="background: var(--accent-color); color: white;"> <span id="load-text">Tải dữ liệu</span> </button> <!-- Import Button --> <button onclick="showImportModal()" class="px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-sm mobile-full" style="background: var(--accent-color); color: white;"> 📥 Nhập </button> <!-- Export Button --> <button onclick="exportScheduleImage()" class="px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-sm mobile-full" style="background: var(--accent-color); color: white;"> 📱 Xuất hình </button>
+      <div class="flex items-center gap-2 flex-wrap mobile-full"><!-- Class Selector --> <select id="class-selector" onchange="selectClass()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); display: none;"> <option value="">🏫 Chọn lớp...</option> </select> <!-- Teacher Selector --> <select id="teacher-selector" onchange="selectTeacher()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); display: none;"> <option value="">👨‍🏫 Chọn giáo viên...</option> </select> <!-- Room Selector --> <select id="room-selector" onchange="selectRoom()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); display: none;"> <option value="">🚪 Chọn phòng...</option> </select> <!-- Theme Selector --> <select id="theme-selector" onchange="changeTheme()" class="px-3 py-2 rounded-lg text-sm font-medium cursor-pointer mobile-full" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary);"> <option value="minimal">🎨 Tối giản</option> <option value="ocean">🌊 Đại dương</option> <option value="forest">🌲 Rừng xanh</option> <option value="sunset">🌅 Hoàng hôn</option> <option value="lavender">💜 Lavender</option> <option value="rose">🌹 Hồng</option> <option value="amber">🟡 Vàng hổ phách</option> <option value="teal">🔷 Xanh ngọc</option> <option value="indigo">🔵 Chàm</option> <option value="dark">🌙 Tối</option> <option value="mono">⚫ Đen trắng</option> </select> <!-- Load Button --> <button onclick="loadFromGoogleSheet()" id="load-sheet-btn" class="px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex-1 mobile-hide" style="background: var(--accent-color); color: white;"> <span id="load-text">Tải dữ liệu</span> </button> <!-- Import Button --> <button onclick="showImportModal()" class="px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-sm mobile-full" style="background: var(--accent-color); color: white;"> 📥 Nhập </button> <!-- Export Button --> <button onclick="exportScheduleImage()" class="px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-sm mobile-full" style="background: var(--accent-color); color: white;"> 📱 Xuất hình </button>
       </div>
      </div><!-- Search Bar -->
      <div class="relative"><input type="text" id="search-input" placeholder="Tìm kiếm lớp, giáo viên hoặc phòng..." class="w-full px-4 py-2.5 rounded-lg text-sm" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary);" oninput="handleSearch()" onfocus="showSearchResults()" onblur="setTimeout(hideSearchResults, 200)">
@@ -283,7 +287,7 @@
     <div class="rounded-xl shadow-2xl max-w-3xl w-full max-h-[90%] overflow-hidden" style="background: var(--bg-primary);" onclick="event.stopPropagation()">
      <div class="px-6 py-4" style="background: var(--accent-color); color: white;">
       <h2 class="text-xl font-bold">📥 Nhập dữ liệu thời khóa biểu</h2>
-      <p class="text-sm opacity-90 mt-1">Dán dữ li��u từ Excel hoặc CSV</p>
+      <p class="text-sm opacity-90 mt-1">Dán dữ liệu từ Excel hoặc CSV</p>
      </div>
      <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
       <div class="mb-4"><label class="block text-sm font-medium mb-2" style="color: var(--text-primary);"> Định dạng: Day | Hour | Students Sets | Subject | Teachers | Room </label>
@@ -641,7 +645,7 @@
 
         updateDropdowns();
 
-        loadText.textContent = `✓ Đã tải ${importedCount} tiết`;
+        loadText.textContent = `�� Đã tải ${importedCount} tiết`;
         
         setTimeout(() => {
           loadText.textContent = 'Tải dữ liệu';
@@ -762,7 +766,7 @@
           const hour = parseInt(parts[1]);
           const studentSet = parts[2];
           const subject = parts[3].toUpperCase();
-          const teacher = parts[4] || 'Chưa phân công';
+          const teacher = parts[4] || 'Ch����a phân công';
           const room = parts[5] || '';
 
           const isMorning = dayCode.startsWith('S');
@@ -1006,7 +1010,7 @@
           <!-- Detailed Statistics -->
           <div class="mt-4 p-4 rounded-lg" style="background: var(--bg-secondary); border: 2px solid var(--border-color);">
             <div class="text-sm font-semibold mb-3" style="color: var(--text-primary);">
-              ${currentView === 'class' ? '📊 Thống kê môn học' : (currentView === 'teacher' ? '📊 Thống kê lớp dạy' : '📊 Thống kê l���p học')}
+              ${currentView === 'class' ? '📊 Thống kê môn học' : (currentView === 'teacher' ? '📊 Thống kê lớp dạy' : '📊 Thống kê lớp học')}
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               ${Object.entries(stats.subjects).sort((a, b) => b[1] - a[1]).map(([name, count]) => `
@@ -1293,7 +1297,7 @@
       orientationModal.innerHTML = `
         <div class="rounded-xl shadow-2xl max-w-md w-full" style="background: var(--bg-primary);">
           <div class="px-6 py-4 gradient-header" style="border-radius: 0.75rem 0.75rem 0 0;">
-            <h2 class="text-xl font-bold" style="color: white;">�� Xuất hình thời khóa biểu</h2>
+            <h2 class="text-xl font-bold" style="color: white;">📱 Xuất hình thời khóa biểu</h2>
           </div>
           <div class="p-6">
             <div class="mb-6">
@@ -1346,7 +1350,7 @@
           exportContainer.style.height = height + 'px';
           exportContainer.style.background = getComputedStyle(document.body).getPropertyValue('--bg-secondary');
           exportContainer.style.padding = isPortrait ? '30px' : '24px';
-          exportContainer.style.fontFamily = 'Inter, sans-serif';
+          exportContainer.style.fontFamily = "'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
           exportContainer.style.boxSizing = 'border-box';
           exportContainer.style.overflow = 'hidden';
           document.body.appendChild(exportContainer);
@@ -1528,5 +1532,5 @@
     // Auto-load from Google Sheet on page load
     loadFromGoogleSheet();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9befa3b4e6b310a6',t:'MTc2ODU4Nzc1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9befb76fc29908e5',t:'MTc2ODU4ODU2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
