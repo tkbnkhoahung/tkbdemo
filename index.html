@@ -632,7 +632,7 @@
         }
 
         if (importedCount === 0) {
-          throw new Error('Không có dữ liệu hợp lệ');
+          throw new Error('Không có dữ liệu h���p lệ');
         }
 
         classes = Array.from(classSet).sort();
@@ -986,7 +986,7 @@
           <!-- Statistics Cards -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
             <div class="p-3 rounded-lg" style="background: var(--bg-secondary); border: 2px solid var(--border-color);">
-              <div class="text-2xl mb-1">📚</div>
+              <div class="text-2xl mb-1">��</div>
               <div class="text-2xl font-bold" style="color: var(--text-primary);">${stats.totalLessons}</div>
               <div class="text-xs font-medium" style="color: var(--text-secondary);">Tổng tiết</div>
             </div>
@@ -1010,7 +1010,7 @@
           <!-- Detailed Statistics -->
           <div class="mt-4 p-4 rounded-lg" style="background: var(--bg-secondary); border: 2px solid var(--border-color);">
             <div class="text-sm font-semibold mb-3" style="color: var(--text-primary);">
-              ${currentView === 'class' ? '📊 Thống kê môn học' : (currentView === 'teacher' ? '📊 Thống kê lớp dạy' : '📊 Thống kê lớp học')}
+              ${currentView === 'class' ? '📊 Thống kê môn học' : (currentView === 'teacher' ? '📊 Thống k�� lớp dạy' : '📊 Thống kê lớp học')}
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               ${Object.entries(stats.subjects).sort((a, b) => b[1] - a[1]).map(([name, count]) => `
@@ -1433,9 +1433,7 @@
                   <td style="padding: ${isPortrait ? '8px' : '6px'}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
                     <div style="background: ${getComputedStyle(document.body).getPropertyValue('--morning-bg')}; border-radius: ${isPortrait ? '10px' : '8px'}; padding: ${isPortrait ? '14px' : '12px'}; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-height: ${isPortrait ? '90px' : '80px'}; display: flex; flex-direction: column; justify-content: center;">
                       <div style="font-size: ${isPortrait ? '20px' : '17px'}; font-weight: 700; margin-bottom: ${isPortrait ? '8px' : '6px'}; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; line-height: 1.2;">${lesson.subject}</div>
-                      <div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">
-                        ${currentView === 'class' ? lesson.teacher : (currentView === 'teacher' ? lesson.class : lesson.class)}
-                      </div>
+                      ${currentView === 'teacher' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.class}</div>` : ''}
                       ${currentView === 'room' && lesson.teacher ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.teacher}</div>` : ''}
                       ${currentView !== 'room' && lesson.room ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
                     </div>
@@ -1466,9 +1464,7 @@
                   <td style="padding: ${isPortrait ? '8px' : '6px'}; border: 2px solid ${getComputedStyle(document.body).getPropertyValue('--border-color')}; border-top: none; ${idx < days.length - 1 ? 'border-right: none;' : ''}">
                     <div style="background: ${getComputedStyle(document.body).getPropertyValue('--afternoon-bg')}; border-radius: ${isPortrait ? '10px' : '8px'}; padding: ${isPortrait ? '14px' : '12px'}; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-height: ${isPortrait ? '90px' : '80px'}; display: flex; flex-direction: column; justify-content: center;">
                       <div style="font-size: ${isPortrait ? '20px' : '17px'}; font-weight: 700; margin-bottom: ${isPortrait ? '8px' : '6px'}; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; line-height: 1.2;">${lesson.subject}</div>
-                      ${currentView !== 'class' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">
-                        ${currentView === 'teacher' ? lesson.class : lesson.class}
-                      </div>` : ''}
+                      ${currentView === 'teacher' ? `<div style="font-size: ${isPortrait ? '15px' : '13px'}; opacity: 0.85; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')}; font-weight: 500; margin-bottom: ${isPortrait ? '4px' : '3px'};">${lesson.class}</div>` : ''}
                       ${currentView === 'room' && lesson.teacher ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.teacher}</div>` : ''}
                       ${currentView !== 'room' && lesson.room ? `<div style="font-size: ${isPortrait ? '13px' : '11px'}; opacity: 0.7; color: ${getComputedStyle(document.body).getPropertyValue('--text-primary')};">${lesson.room}</div>` : ''}
                     </div>
@@ -1532,5 +1528,5 @@
     // Auto-load from Google Sheet on page load
     loadFromGoogleSheet();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9befbd6df32308e5',t:'MTc2ODU4ODgxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9befc37674b608e5',t:'MTc2ODU4OTA1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
