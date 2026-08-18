@@ -1,754 +1,612 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0f3d66" />
-  <title>Tra cứu thời khóa biểu</title>
-  <meta name="description" content="Tra cứu thời khóa biểu theo học sinh, giáo viên và mã lớp." />
-  <link rel="preconnect" href="https://docs.google.com">
-  <style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b3b5e">
+<title>Tra cứu thời khóa biểu</title>
+<meta name="description" content="Tra cứu thời khóa biểu trực tiếp từ Google Sheets theo học sinh, giáo viên và mã lớp.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
 :root{
-  --navy:#0f3d66;
-  --navy-2:#15558b;
-  --ink:#162435;
-  --muted:#667789;
-  --line:#dbe4ec;
-  --soft:#f5f8fb;
-  --white:#fff;
-  --success:#17854b;
-  --danger:#b93838;
-  --shadow:0 10px 28px rgba(26,56,84,.10);
-  --radius:18px;
+  --navy:#0b3b5e;--navy2:#125a88;--teal:#0f766e;--ink:#172633;--muted:#6f7f8d;
+  --bg:#edf3f7;--card:#fff;--line:#dce6ed;--soft:#f6f9fb;--blueSoft:#eaf4fb;
+  --greenSoft:#e9f7f2;--amberSoft:#fff7df;--danger:#b13b3b;
+  --shadow:0 18px 48px rgba(24,61,88,.10);--radius:20px;
 }
 *{box-sizing:border-box}
-html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#eef3f7;color:var(--ink)}
-body{margin:0;min-height:100vh}
-button,input{font:inherit}
+html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(circle at 12% -10%,rgba(49,139,191,.14),transparent 31rem),
+  radial-gradient(circle at 95% 4%,rgba(15,118,110,.10),transparent 26rem),var(--bg)}
+button,input,select{font:inherit}
 button{cursor:pointer}
-.app-shell{min-height:100vh}
-.hero{background:linear-gradient(135deg,#0f3d66,#1766a4);color:white;padding:34px 20px 28px}
-.hero-inner{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
-.eyebrow{font-size:12px;letter-spacing:.18em;font-weight:800;opacity:.8;margin-bottom:8px}
-h1{font-size:clamp(30px,5vw,48px);line-height:1.05;margin:0 0 12px}
-.hero-copy{margin:0;max-width:680px;opacity:.9;line-height:1.6}
-.secondary-btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:white;border-radius:12px;padding:10px 14px;font-weight:700;white-space:nowrap}
-.secondary-btn:hover{background:rgba(255,255,255,.18)}
-.status-row{max-width:1180px;margin:18px auto 0;font-size:13px;display:flex;align-items:center;gap:8px;opacity:.92}
-.status-dot{width:9px;height:9px;border-radius:50%;background:#cbd5df;display:inline-block}
-.status-dot.ok{background:#52d68a;box-shadow:0 0 0 4px rgba(82,214,138,.15)}
-.status-dot.loading{background:#ffd166;box-shadow:0 0 0 4px rgba(255,209,102,.15)}
-.status-dot.error{background:#ff7b7b;box-shadow:0 0 0 4px rgba(255,123,123,.15)}
-.status-sep{opacity:.45}
-.container{max-width:1180px;margin:-8px auto 0;padding:0 20px 52px}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
-.stat-card{background:white;border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px rgba(20,50,80,.05)}
-.stat-number{font-size:30px;font-weight:850;color:var(--navy)}
-.stat-label{font-size:13px;color:var(--muted);margin-top:4px}
-.search-panel{position:relative;background:white;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);z-index:3}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.tab{border:1px solid var(--line);background:white;color:var(--muted);border-radius:999px;padding:9px 15px;font-weight:750}
-.tab.active{background:var(--navy);border-color:var(--navy);color:white}
-.search-wrap{position:relative}
-.search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:24px;color:#8191a1;pointer-events:none}
-#searchInput{width:100%;height:52px;border:1px solid #cdd9e3;border-radius:14px;padding:0 48px 0 47px;outline:none;background:#fbfdff;color:var(--ink)}
-#searchInput:focus{border-color:#4c8ac0;box-shadow:0 0 0 4px rgba(42,111,168,.10);background:white}
-.clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#7b8b99;font-size:28px;line-height:1}
-.search-hint{font-size:12px;color:var(--muted);margin-top:10px}
-.suggestions{position:absolute;left:20px;right:20px;top:126px;background:white;border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 38px rgba(20,50,80,.16);max-height:320px;overflow:auto;z-index:20}
-.suggestion{padding:12px 14px;border-bottom:1px solid #edf2f6;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center}
+button:disabled{opacity:.55;cursor:not-allowed}
+.topbar{background:linear-gradient(125deg,#08334f 0%,#0e507b 55%,#0e706d 120%);color:#fff}
+.topbar-inner{max-width:1240px;margin:auto;padding:34px 22px 70px;display:flex;justify-content:space-between;gap:28px;align-items:flex-start}
+.brand-kicker{font-size:12px;font-weight:800;letter-spacing:.18em;opacity:.76}
+h1{font-size:clamp(30px,4.6vw,48px);line-height:1.05;margin:8px 0 10px;letter-spacing:-.03em}
+.hero-sub{max-width:700px;margin:0;color:rgba(255,255,255,.83);line-height:1.55}
+.source-box{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.top-pill{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.09);border-radius:14px;padding:10px 13px;font-size:12px;white-space:nowrap}
+.refresh-btn{border:1px solid rgba(255,255,255,.30);background:rgba(255,255,255,.13);color:#fff;border-radius:12px;padding:9px 12px;font-weight:760;font-size:12px}
+.refresh-btn:hover{background:rgba(255,255,255,.20)}
+.status{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.82)}
+.dot{width:8px;height:8px;border-radius:50%;background:#ffd166;box-shadow:0 0 0 4px rgba(255,209,102,.13)}
+.dot.ok{background:#52d68a;box-shadow:0 0 0 4px rgba(82,214,138,.13)}
+.dot.error{background:#ff7b7b;box-shadow:0 0 0 4px rgba(255,123,123,.13)}
+.shell{max-width:1240px;margin:-42px auto 0;padding:0 22px 52px}
+.search-card{background:var(--card);border:1px solid rgba(207,220,229,.92);border-radius:24px;box-shadow:var(--shadow);padding:18px}
+.search-grid{display:grid;grid-template-columns:1.45fr 1fr 1fr;gap:12px}
+.field-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;color:#718392;margin:0 0 7px 2px}
+.field{position:relative}
+.text-input,.select-input{width:100%;height:52px;border:1px solid #d3dfe7;border-radius:14px;background:#fbfdfe;color:var(--ink);outline:none;transition:.16s}
+.text-input{padding:0 42px 0 45px}
+.select-input{padding:0 38px 0 13px;appearance:auto}
+.text-input:focus,.select-input:focus{border-color:#6ca5c9;box-shadow:0 0 0 4px rgba(39,118,168,.10);background:#fff}
+.text-input:disabled,.select-input:disabled{background:#f0f3f5;color:#98a5af}
+.search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#758999;font-size:20px}
+.clear-search{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#81909c;font-size:24px;display:none}
+.suggestions{position:absolute;left:0;right:0;top:61px;z-index:30;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 18px 42px rgba(24,61,88,.18);max-height:330px;overflow:auto}
+.suggestions.hidden{display:none}
+.suggestion{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border-bottom:1px solid #edf2f5;cursor:pointer}
 .suggestion:last-child{border-bottom:0}
-.suggestion:hover,.suggestion.active{background:#f1f7fc}
-.suggestion-main{font-weight:760}
-.suggestion-sub{font-size:12px;color:var(--muted);margin-top:3px}
-.suggestion-badge{font-size:11px;color:var(--navy);background:#e9f2fa;border-radius:999px;padding:5px 8px;white-space:nowrap}
-.hidden{display:none!important}
-.message-box{margin-top:18px;background:white;border:1px solid var(--line);border-radius:14px;padding:16px}
-.message-box.error{border-color:#f0c1c1;background:#fff8f8;color:#862e2e}
-.result-area{margin-top:22px}
-.profile-card,.section-card{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 6px 22px rgba(20,50,80,.06);overflow:hidden}
-.profile-card{padding:22px;margin-bottom:16px}
-.profile-top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
-.profile-title{margin:0;font-size:26px}
-.profile-sub{margin:5px 0 0;color:var(--muted)}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.chip{padding:7px 10px;background:#f2f6f9;border:1px solid #e0e8ef;border-radius:999px;font-size:12px}
-.section-card{margin-top:16px}
-.section-title{padding:18px 20px;border-bottom:1px solid var(--line);font-size:16px;font-weight:850;display:flex;justify-content:space-between;gap:16px;align-items:center}
-.section-note{font-size:12px;color:var(--muted);font-weight:500}
+.suggestion:hover,.suggestion.active{background:#f0f7fb}
+.s-title{font-weight:780}.s-sub{font-size:12px;color:var(--muted);margin-top:2px}.badge{font-size:11px;font-weight:750;color:#0c527c;background:#eaf4fb;border-radius:999px;padding:5px 8px;white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.stat{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat-n{font-size:27px;font-weight:850;color:var(--navy);letter-spacing:-.03em}.stat-l{font-size:12px;color:var(--muted);margin-top:3px}
+.content{margin-top:16px}
+.empty-state{background:#fff;border:1px dashed #c8d7e1;border-radius:20px;padding:56px 22px;text-align:center;color:var(--muted)}
+.empty-icon{width:56px;height:56px;margin:0 auto 14px;border-radius:18px;background:var(--blueSoft);display:grid;place-items:center;font-size:26px}
+.loader{width:28px;height:28px;border:3px solid #d7e4ec;border-top-color:var(--navy2);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-state{background:#fff8f8;border-color:#edc6c6;color:#783131}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 28px rgba(24,61,88,.06);overflow:hidden;margin-bottom:15px}
+.card-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:21px 22px;border-bottom:1px solid #e8eef2}
+.card-title{margin:0;font-size:24px;letter-spacing:-.02em}.card-sub{margin:5px 0 0;color:var(--muted);font-size:13px}
+.action-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.btn{border:1px solid #d6e1e8;background:#fff;color:#244257;border-radius:11px;padding:9px 11px;font-size:12px;font-weight:750}
+.btn:hover{background:#f5f9fc}.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.btn.primary:hover{background:#0d4b75}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:#fff}
+.profile{padding:18px 22px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{background:#f4f7f9;border:1px solid #e0e8ed;border-radius:999px;padding:7px 10px;font-size:12px}
+.section-label{font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.05em;color:#607686}
+.timetable{padding:0 22px 22px}
+.grid{display:grid;grid-template-columns:118px 1fr 1fr;border:1px solid #dfe8ee;border-radius:15px;overflow:hidden}
+.grid>div{padding:13px;border-right:1px solid #e5ecf1;border-bottom:1px solid #e5ecf1;min-height:92px}
+.grid>div:nth-child(3n){border-right:0}.grid>div:nth-last-child(-n+3){border-bottom:0}
+.grid-head{min-height:auto!important;background:#f5f8fa;color:#657887;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}
+.day-cell{font-weight:850;background:#fbfcfd}.lesson-name{font-weight:820}.lesson-code{display:inline-block;margin:5px 0 6px;background:#e7f3fa;color:#0e5683;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:800}
+.lesson-meta{font-size:12px;color:#5d7080;line-height:1.55}.dash{color:#a8b4bd}
 .table-wrap{overflow:auto}
 table{width:100%;border-collapse:collapse;min-width:760px}
-th,td{padding:13px 14px;border-bottom:1px solid #e9eff4;text-align:left;vertical-align:top}
-th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:#607184;background:#f7fafc}
-td{font-size:14px}
-tr:last-child td{border-bottom:0}
-.schedule-grid{display:grid;grid-template-columns:130px 1fr 1fr}
-.schedule-grid>div{min-height:94px;border-right:1px solid #e8eef3;border-bottom:1px solid #e8eef3;padding:14px}
-.schedule-grid .head{min-height:auto;background:#f7fafc;font-size:12px;font-weight:800;color:#607184;text-transform:uppercase}
-.schedule-grid .day{font-weight:850;background:#fbfcfd}
-.lesson-title{font-weight:850;margin-bottom:4px}
-.lesson-code{display:inline-block;font-size:11px;font-weight:800;color:#0f568f;background:#e8f2fa;border-radius:6px;padding:3px 6px;margin-bottom:7px}
-.lesson-meta{font-size:12px;color:#5d6d7d;line-height:1.55}
-.empty{color:#a1afbb}
-.roster{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 20px 20px}
-.roster-item{border:1px solid #e1e9ef;border-radius:11px;padding:10px 12px;background:#fbfdff}
-.roster-name{font-weight:720;font-size:13px}
-.roster-class{font-size:11px;color:var(--muted);margin-top:3px}
-.kpi-inline{display:flex;gap:10px;flex-wrap:wrap}
-.kpi-pill{font-size:12px;border:1px solid #dbe5ed;border-radius:10px;padding:7px 9px;background:#f8fbfd}
-footer{color:#7c8b99;text-align:center;font-size:12px;padding:24px}
-@media(max-width:800px){
-  .hero-inner{display:block}
-  .secondary-btn{margin-top:18px}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .schedule-grid{grid-template-columns:88px 1fr 1fr}
-  .roster{grid-template-columns:1fr 1fr}
+th,td{padding:12px 13px;border-bottom:1px solid #e8eef2;text-align:left;vertical-align:top}
+th{background:#f7fafb;color:#607484;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+td{font-size:13px}tr:last-child td{border-bottom:0}
+.roster{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 22px 22px}
+.person{border:1px solid #e2e9ee;background:#fbfdfe;border-radius:11px;padding:10px 11px}
+.person-name{font-size:13px;font-weight:760}.person-class{font-size:11px;color:var(--muted);margin-top:3px}
+.group-title{padding:13px 22px;background:#f6f9fb;border-top:1px solid #e5edf2;border-bottom:1px solid #e5edf2;font-size:13px;font-weight:800}
+.toast{position:fixed;right:20px;bottom:20px;z-index:100;background:#172f40;color:#fff;border-radius:12px;padding:11px 14px;font-size:12px;box-shadow:0 14px 34px rgba(0,0,0,.20);opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:none}
+.footer{text-align:center;color:#81909b;font-size:12px;padding:20px}
+.export-surface{background:#fff}
+@media(max-width:900px){
+  .search-grid{grid-template-columns:1fr 1fr}.search-grid .student-field{grid-column:1/-1}
+  .stats{grid-template-columns:repeat(2,1fr)}.roster{grid-template-columns:1fr 1fr}
 }
-@media(max-width:560px){
-  .container{padding-left:12px;padding-right:12px}
-  .hero{padding-left:16px;padding-right:16px}
-  .stats-grid{gap:8px}
-  .stat-card{padding:14px}
-  .stat-number{font-size:25px}
-  .search-panel{padding:14px}
-  .suggestions{left:14px;right:14px;top:120px}
-  .schedule-grid{display:block}
-  .schedule-grid .head{display:none}
-  .schedule-grid .day{border-top:8px solid #eef3f7;min-height:auto}
-  .schedule-grid>div{border-right:0}
-  .schedule-grid .lesson::before{content:attr(data-ca);display:block;font-size:11px;font-weight:800;color:#738495;text-transform:uppercase;margin-bottom:7px}
-  .roster{grid-template-columns:1fr}
-  .profile-top{display:block}
+@media(max-width:620px){
+  .topbar-inner{padding:28px 15px 62px;display:block}.source-box{align-items:flex-start;margin-top:15px}
+  .shell{padding:0 11px 35px}.search-card{padding:12px}.search-grid{grid-template-columns:1fr}
+  .search-grid .student-field{grid-column:auto}.stats{gap:7px}.stat{padding:13px}
+  .card-head{display:block;padding:17px}.action-row{justify-content:flex-start;margin-top:13px}
+  .profile,.timetable{padding-left:14px;padding-right:14px}.grid{display:block}.grid-head{display:none}
+  .grid>div{border-right:0!important}.day-cell{min-height:auto!important;background:#eef5f8!important;border-top:6px solid var(--bg)}
+  .lesson-cell:before{content:attr(data-ca);display:block;font-size:10px;text-transform:uppercase;color:#7a8d9b;font-weight:850;margin-bottom:6px}
+  .roster{grid-template-columns:1fr;padding-left:14px;padding-right:14px}.group-title{padding-left:14px;padding-right:14px}
 }
 @media print{
-  .hero,.stats-grid,.search-panel,footer{display:none!important}
-  body,html{background:white}
-  .container{max-width:none;margin:0;padding:0}
-  .profile-card,.section-card{box-shadow:none;border:0}
+  body{background:#fff}.topbar,.search-card,.stats,.footer,.no-print{display:none!important}
+  .shell{max-width:none;margin:0;padding:0}.card{box-shadow:none;border:0}
 }
-
 </style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="hero">
-      <div class="hero-inner">
-        <div>
-          <div class="eyebrow">THỜI KHÓA BIỂU</div>
-          <h1>Tra cứu lịch học</h1>
-          <p class="hero-copy">Tìm nhanh theo học sinh, giáo viên hoặc mã lớp. Dữ liệu được tải trực tiếp từ Google Sheets.</p>
-        </div>
-        <button id="refreshBtn" class="secondary-btn" type="button" aria-label="Làm mới dữ liệu">
-          <span aria-hidden="true">↻</span> Làm mới
-        </button>
-      </div>
-      <div class="status-row">
-        <span id="statusDot" class="status-dot loading"></span>
-        <span id="statusText">Đang tải dữ liệu…</span>
-        <span class="status-sep">•</span>
-        <span id="updatedAt">—</span>
-      </div>
-    </header>
-
-    <main class="container">
-      <section class="stats-grid" aria-label="Thống kê">
-        <article class="stat-card">
-          <div id="studentCount" class="stat-number">—</div>
-          <div class="stat-label">Học sinh</div>
-        </article>
-        <article class="stat-card">
-          <div id="teacherCount" class="stat-number">—</div>
-          <div class="stat-label">Giáo viên</div>
-        </article>
-        <article class="stat-card">
-          <div id="classCount" class="stat-number">—</div>
-          <div class="stat-label">Mã lớp</div>
-        </article>
-        <article class="stat-card">
-          <div id="roomCount" class="stat-number">—</div>
-          <div class="stat-label">Phòng</div>
-        </article>
-      </section>
-
-      <section class="search-panel">
-        <div class="tabs" role="tablist" aria-label="Kiểu tra cứu">
-          <button class="tab active" data-mode="student" role="tab" aria-selected="true">Học sinh</button>
-          <button class="tab" data-mode="teacher" role="tab" aria-selected="false">Giáo viên</button>
-          <button class="tab" data-mode="class" role="tab" aria-selected="false">Mã lớp</button>
-        </div>
-
-        <div class="search-wrap">
-          <span class="search-icon" aria-hidden="true">⌕</span>
-          <input id="searchInput" type="search" autocomplete="off" placeholder="Nhập tên học sinh hoặc lớp gốc…" aria-label="Tìm kiếm" />
-          <button id="clearBtn" class="clear-btn hidden" type="button" aria-label="Xóa tìm kiếm">×</button>
-        </div>
-        <div id="suggestions" class="suggestions hidden" role="listbox"></div>
-        <div class="search-hint" id="searchHint">Có thể nhập tên có dấu hoặc không dấu.</div>
-      </section>
-
-      <section id="messageBox" class="message-box hidden"></section>
-      <section id="result" class="result-area" aria-live="polite"></section>
-    </main>
-
-    <footer>
-      <div>Tra cứu thời khóa biểu • Dữ liệu từ Google Sheets</div>
-    </footer>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <div class="brand-kicker">TRA CỨU • THỜI KHÓA BIỂU</div>
+      <h1>Lịch học rõ ràng, tra cứu thật nhanh.</h1>
+      <p class="hero-sub">Dữ liệu được đọc trực tiếp từ Google Sheets. Chỉ cần cập nhật Sheet, sau đó bấm Làm mới để webapp lấy dữ liệu mới.</p>
+    </div>
+    <div class="source-box">
+      <div class="top-pill">Nguồn: Google Sheets • gid 0</div>
+      <button id="refreshBtn" class="refresh-btn" type="button">↻ Làm mới dữ liệu</button>
+      <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Đang tải dữ liệu…</span></div>
+    </div>
   </div>
+</div>
 
-  <script>
-window.APP_CONFIG = {
-  spreadsheetId: "1vrR5oSkXy4jNSlwjODxnW43QS6-dOw7884eLlEka6s8",
-  gid: "0",
-  schoolName: "",
-  // Nếu Google Sheet đổi tab, cập nhật gid ở đây.
-  // Sheet phải được chia sẻ ở chế độ người có link có thể xem.
-};
+<main class="shell">
+  <section class="search-card no-print">
+    <div class="search-grid">
+      <div class="field student-field">
+        <div class="field-label">Tìm học sinh</div>
+        <div style="position:relative">
+          <span class="search-icon">⌕</span>
+          <input id="studentSearch" class="text-input" type="search" autocomplete="off" placeholder="Đang tải dữ liệu…" disabled>
+          <button id="clearSearch" class="clear-search" aria-label="Xóa">×</button>
+          <div id="studentSuggestions" class="suggestions hidden"></div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Chọn giáo viên</div>
+        <select id="teacherSelect" class="select-input" disabled><option value="">— Đang tải —</option></select>
+      </div>
+      <div class="field">
+        <div class="field-label">Chọn mã lớp</div>
+        <select id="classSelect" class="select-input" disabled><option value="">— Đang tải —</option></select>
+      </div>
+    </div>
+  </section>
 
-</script>
+  <section class="stats no-print">
+    <div class="stat"><div id="studentCount" class="stat-n">—</div><div class="stat-l">Học sinh</div></div>
+    <div class="stat"><div id="teacherCount" class="stat-n">—</div><div class="stat-l">Giáo viên</div></div>
+    <div class="stat"><div id="classCount" class="stat-n">—</div><div class="stat-l">Mã lớp</div></div>
+    <div class="stat"><div id="roomCount" class="stat-n">—</div><div class="stat-l">Phòng có mã</div></div>
+  </section>
+
+  <div id="content" class="content">
+    <div class="empty-state"><div class="loader"></div><strong>Đang tải dữ liệu từ Google Sheets…</strong></div>
+  </div>
+</main>
+
+<div class="footer no-print">Webapp tra cứu thời khóa biểu • Nguồn dữ liệu cập nhật trực tiếp từ Google Sheets</div>
+<div id="toast" class="toast"></div>
+
 <script>
 (() => {
   "use strict";
 
-  const CONFIG = window.APP_CONFIG || {};
-  const SPREADSHEET_ID = CONFIG.spreadsheetId;
-  const GID = String(CONFIG.gid || "0");
+  const SHEET_ID = "1vrR5oSkXy4jNSlwjODxnW43QS6-dOw7884eLlEka6s8";
+  const GID = "0";
+  const GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
 
-  const state = {
-    rows: [],
-    columns: [],
-    students: [],
-    teachers: [],
-    classes: [],
-    slots: [],
-    mode: "student",
-    selected: null,
-    activeSuggestion: -1,
-  };
+  let STUDENTS = [];
+  let teacherMap = new Map();
+  let classMap = new Map();
+  let teachers = [];
+  let classes = [];
+  let currentExportEl = null;
+  let currentStudent = null;
+  let loadSeq = 0;
 
-  const $ = (id) => document.getElementById(id);
-  const els = {
-    statusDot: $("statusDot"),
-    statusText: $("statusText"),
-    updatedAt: $("updatedAt"),
-    refreshBtn: $("refreshBtn"),
-    searchInput: $("searchInput"),
-    clearBtn: $("clearBtn"),
-    suggestions: $("suggestions"),
-    searchHint: $("searchHint"),
-    messageBox: $("messageBox"),
-    result: $("result"),
-    studentCount: $("studentCount"),
-    teacherCount: $("teacherCount"),
-    classCount: $("classCount"),
-    roomCount: $("roomCount"),
-  };
+  const qs = s => document.querySelector(s);
+  const content = qs("#content");
+  const search = qs("#studentSearch");
+  const suggestions = qs("#studentSuggestions");
+  const clearBtn = qs("#clearSearch");
+  const teacherSelect = qs("#teacherSelect");
+  const classSelect = qs("#classSelect");
+  const refreshBtn = qs("#refreshBtn");
 
-  function normalizeText(value) {
-    return String(value ?? "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D")
-      .toLowerCase()
-      .replace(/\s+/g, " ")
-      .trim();
+  const norm = v => String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D").toLowerCase().replace(/\s+/g," ").trim();
+  const esc = v => String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  const slug = v => norm(v).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const toast = msg => { const t=qs("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); };
+
+  function setStatus(kind, text){
+    qs("#statusDot").className = `dot${kind ? " "+kind : ""}`;
+    qs("#statusText").textContent = text;
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+  function disableControls(disabled){
+    search.disabled = disabled;
+    teacherSelect.disabled = disabled;
+    classSelect.disabled = disabled;
+    refreshBtn.disabled = disabled;
+    if(disabled) search.placeholder = "Đang tải dữ liệu…";
+    else search.placeholder = "Nhập tên học sinh hoặc lớp gốc…";
   }
 
-  function csvParse(text) {
-    const rows = [];
-    let row = [];
-    let cell = "";
-    let quoted = false;
+  function loadGoogleSheet(){
+    const seq = ++loadSeq;
+    disableControls(true);
+    setStatus("", "Đang tải dữ liệu…");
+    content.innerHTML = `<div class="empty-state"><div class="loader"></div><strong>Đang tải dữ liệu từ Google Sheets…</strong></div>`;
 
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      if (quoted) {
-        if (ch === '"') {
-          if (text[i + 1] === '"') {
-            cell += '"';
-            i++;
-          } else {
-            quoted = false;
-          }
-        } else {
-          cell += ch;
+    const callbackName = `__sheetCallback_${Date.now()}_${seq}`;
+    const script = document.createElement("script");
+    const timeout = setTimeout(() => failLoad(new Error("Quá thời gian tải dữ liệu từ Google Sheets."), callbackName, script, seq), 15000);
+
+    window[callbackName] = response => {
+      if(seq !== loadSeq) return cleanup();
+      clearTimeout(timeout);
+      try{
+        if(!response || response.status === "error" || !response.table){
+          const msg = response?.errors?.[0]?.detailed_message || response?.errors?.[0]?.message || "Google Sheets không trả về dữ liệu.";
+          throw new Error(msg);
         }
-      } else {
-        if (ch === '"') quoted = true;
-        else if (ch === ",") {
-          row.push(cell);
-          cell = "";
-        } else if (ch === "\n") {
-          row.push(cell.replace(/\r$/, ""));
-          rows.push(row);
-          row = [];
-          cell = "";
-        } else {
-          cell += ch;
-        }
+        const matrix = gvizToMatrix(response.table);
+        STUDENTS = buildStudents(matrix);
+        buildIndexes();
+        populateControls();
+        updateStats();
+        disableControls(false);
+        setStatus("ok", `Đã tải ${STUDENTS.length.toLocaleString("vi-VN")} học sinh • ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}`);
+        content.innerHTML = `<div class="empty-state"><div class="empty-icon">⌕</div><strong>Chọn đối tượng cần tra cứu</strong><div style="margin-top:6px">Tìm học sinh hoặc chọn nhanh giáo viên / mã lớp ở phía trên.</div></div>`;
+      }catch(err){
+        failLoad(err, callbackName, script, seq);
+        return;
       }
-    }
-    row.push(cell.replace(/\r$/, ""));
-    if (row.some(v => v !== "")) rows.push(row);
-    return rows;
-  }
+      cleanup();
 
-  function buildCsvUrl() {
-    return `https://docs.google.com/spreadsheets/d/${encodeURIComponent(SPREADSHEET_ID)}/gviz/tq?tqx=out:csv&gid=${encodeURIComponent(GID)}&t=${Date.now()}`;
-  }
-
-  async function loadData() {
-    setStatus("loading", "Đang tải dữ liệu…");
-    hideMessage();
-    els.refreshBtn.disabled = true;
-
-    try {
-      const response = await fetch(buildCsvUrl(), { cache: "no-store" });
-      if (!response.ok) throw new Error(`Google Sheets trả về HTTP ${response.status}`);
-      const text = await response.text();
-
-      if (!text || /<!doctype html>|<html/i.test(text)) {
-        throw new Error("Không đọc được CSV. Hãy kiểm tra quyền chia sẻ Google Sheet.");
+      function cleanup(){
+        try{ delete window[callbackName]; }catch(_){}
+        script.remove();
       }
+    };
 
-      const matrix = csvParse(text);
-      if (matrix.length < 2) throw new Error("Google Sheet chưa có dữ liệu.");
-
-      const columns = matrix[0].map(v => String(v || "").trim());
-      const required = ["Họ và tên", "Lớp gốc"];
-      const missing = required.filter(h => !columns.includes(h));
-      if (missing.length) {
-        throw new Error(`Thiếu cột bắt buộc: ${missing.join(", ")}`);
-      }
-
-      state.columns = columns;
-      state.rows = matrix.slice(1)
-        .filter(r => r.some(v => String(v).trim() !== ""))
-        .map((values, index) => {
-          const obj = {};
-          columns.forEach((c, i) => obj[c] = String(values[i] ?? "").trim());
-          obj.__row = index + 2;
-          obj.__studentId = obj["Student_ID"] || `HS${String(index + 1).padStart(4, "0")}`;
-          return obj;
-        });
-
-      state.slots = detectSlots(columns);
-      if (!state.slots.length) {
-        throw new Error("Không nhận diện được các cột thời khóa biểu. Tên cột phải có dạng “Sáng T2 - Ca 1 - Môn học/Mã lớp/Giáo viên/Phòng”.");
-      }
-
-      buildIndexes();
-      updateStats();
-      setStatus("ok", `Đã tải ${state.rows.length.toLocaleString("vi-VN")} học sinh`);
-      els.updatedAt.textContent = `Cập nhật lúc ${new Date().toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"})}`;
-
-      if (state.selected) {
-        const old = state.selected;
-        state.selected = null;
-        selectEntity(old.key);
-      }
-    } catch (err) {
-      console.error(err);
-      setStatus("error", "Không tải được dữ liệu");
-      showMessage(
-        `Không thể đọc Google Sheet. ${escapeHtml(err.message)} ` +
-        `Hãy đặt quyền chia sẻ của Sheet thành <strong>“Bất kỳ ai có đường liên kết – Người xem”</strong>, rồi bấm <strong>Làm mới</strong>.`,
-        true
-      );
-    } finally {
-      els.refreshBtn.disabled = false;
-    }
+    const tqx = encodeURIComponent(`out:json;responseHandler:${callbackName}`);
+    script.src = `${GVIZ_BASE}?gid=${encodeURIComponent(GID)}&headers=1&tqx=${tqx}&t=${Date.now()}`;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      failLoad(new Error("Không kết nối được tới Google Sheets."), callbackName, script, seq);
+    };
+    document.head.appendChild(script);
   }
 
-  function detectSlots(columns) {
-    const groups = new Map();
-    const rx = /^(Sáng|Chiều)\s+T(\d+)\s*-\s*Ca\s*(\d+)\s*-\s*(Môn học|Mã lớp|Giáo viên|Phòng)$/i;
-    columns.forEach(col => {
-      const m = col.match(rx);
-      if (!m) return;
-      const period = titleCase(m[1]);
-      const dayNumber = Number(m[2]);
-      const ca = Number(m[3]);
-      const field = normalizeText(m[4]);
-      const key = `${period}|${dayNumber}|${ca}`;
-      if (!groups.has(key)) groups.set(key, { period, dayNumber, ca, fields: {} });
-      groups.get(key).fields[field] = col;
-    });
-
-    return [...groups.values()]
-      .map(s => ({
-        ...s,
-        day: `Thứ ${s.dayNumber}`,
-        subjectCol: s.fields["mon hoc"],
-        codeCol: s.fields["ma lop"],
-        teacherCol: s.fields["giao vien"],
-        roomCol: s.fields["phong"],
-      }))
-      .filter(s => s.subjectCol && s.codeCol)
-      .sort((a,b) => a.dayNumber - b.dayNumber || a.ca - b.ca);
-  }
-
-  function titleCase(s) {
-    s = String(s || "").toLowerCase();
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  }
-
-  function getLessons(row) {
-    return state.slots.map(slot => ({
-      ...slot,
-      subject: row[slot.subjectCol] || "",
-      code: row[slot.codeCol] || "",
-      teacher: slot.teacherCol ? (row[slot.teacherCol] || "") : "",
-      room: slot.roomCol ? (row[slot.roomCol] || "") : "",
-    })).filter(x => x.subject && normalizeText(x.subject) !== "trong" && x.code);
-  }
-
-  function buildIndexes() {
-    state.students = state.rows.map(row => ({
-      key: row.__studentId,
-      name: row["Họ và tên"],
-      originalClass: row["Lớp gốc"],
-      row,
-      search: normalizeText(`${row["Họ và tên"]} ${row["Lớp gốc"]}`),
-    }));
-
-    const teacherMap = new Map();
-    const classMap = new Map();
-
-    state.rows.forEach(row => {
-      for (const lesson of getLessons(row)) {
-        if (lesson.teacher) {
-          const tKey = normalizeText(lesson.teacher);
-          if (!teacherMap.has(tKey)) teacherMap.set(tKey, { key: tKey, name: lesson.teacher, search: tKey, lessons: [] });
-          teacherMap.get(tKey).lessons.push({ ...lesson, student: row });
-        }
-
-        const cKey = normalizeText(lesson.code);
-        if (!classMap.has(cKey)) {
-          classMap.set(cKey, {
-            key: cKey,
-            code: lesson.code,
-            subject: lesson.subject,
-            teacher: lesson.teacher,
-            room: lesson.room,
-            period: lesson.period,
-            day: lesson.day,
-            dayNumber: lesson.dayNumber,
-            ca: lesson.ca,
-            students: [],
-            search: normalizeText(`${lesson.code} ${lesson.subject} ${lesson.teacher}`)
-          });
-        }
-        classMap.get(cKey).students.push(row);
-      }
-    });
-
-    state.teachers = [...teacherMap.values()].sort((a,b) => a.name.localeCompare(b.name, "vi"));
-    state.classes = [...classMap.values()].sort((a,b) => a.code.localeCompare(b.code, "vi"));
-  }
-
-  function updateStats() {
-    const roomSet = new Set();
-    state.rows.forEach(row => getLessons(row).forEach(x => { if (x.room) roomSet.add(x.room); }));
-    els.studentCount.textContent = state.students.length.toLocaleString("vi-VN");
-    els.teacherCount.textContent = state.teachers.length.toLocaleString("vi-VN");
-    els.classCount.textContent = state.classes.length.toLocaleString("vi-VN");
-    els.roomCount.textContent = roomSet.size.toLocaleString("vi-VN");
-  }
-
-  function setStatus(kind, text) {
-    els.statusDot.className = `status-dot ${kind}`;
-    els.statusText.textContent = text;
-  }
-
-  function showMessage(html, isError = false) {
-    els.messageBox.innerHTML = html;
-    els.messageBox.className = `message-box${isError ? " error" : ""}`;
-  }
-
-  function hideMessage() {
-    els.messageBox.className = "message-box hidden";
-    els.messageBox.innerHTML = "";
-  }
-
-  function currentList() {
-    return state.mode === "student" ? state.students : state.mode === "teacher" ? state.teachers : state.classes;
-  }
-
-  function searchItems(query) {
-    const q = normalizeText(query);
-    if (!q) return [];
-    return currentList()
-      .filter(item => {
-        if (state.mode === "student") return item.search.includes(q);
-        if (state.mode === "teacher") return item.search.includes(q);
-        return item.search.includes(q);
-      })
-      .slice(0, 12);
-  }
-
-  function renderSuggestions() {
-    const q = els.searchInput.value;
-    els.clearBtn.classList.toggle("hidden", !q);
-
-    if (!q.trim()) {
-      els.suggestions.classList.add("hidden");
-      return;
-    }
-
-    const items = searchItems(q);
-    if (!items.length) {
-      els.suggestions.innerHTML = `<div class="suggestion"><div><div class="suggestion-main">Không tìm thấy</div><div class="suggestion-sub">Thử nhập một phần tên hoặc mã lớp.</div></div></div>`;
-      els.suggestions.classList.remove("hidden");
-      return;
-    }
-
-    state.activeSuggestion = -1;
-    els.suggestions.innerHTML = items.map((item, i) => {
-      if (state.mode === "student") {
-        return `<div class="suggestion" data-key="${escapeHtml(item.key)}" data-index="${i}" role="option">
-          <div><div class="suggestion-main">${escapeHtml(item.name)}</div><div class="suggestion-sub">Lớp gốc: ${escapeHtml(item.originalClass)}</div></div>
-          <span class="suggestion-badge">Học sinh</span>
-        </div>`;
-      }
-      if (state.mode === "teacher") {
-        const uniqueClasses = uniqueClassSessions(item.lessons).length;
-        return `<div class="suggestion" data-key="${escapeHtml(item.key)}" data-index="${i}" role="option">
-          <div><div class="suggestion-main">${escapeHtml(item.name)}</div><div class="suggestion-sub">${uniqueClasses} lớp/ca</div></div>
-          <span class="suggestion-badge">Giáo viên</span>
-        </div>`;
-      }
-      return `<div class="suggestion" data-key="${escapeHtml(item.key)}" data-index="${i}" role="option">
-        <div><div class="suggestion-main">${escapeHtml(item.code)}</div><div class="suggestion-sub">${escapeHtml(item.subject)} • ${escapeHtml(item.teacher || "Chưa có GV")}</div></div>
-        <span class="suggestion-badge">${item.students.length} HS</span>
-      </div>`;
-    }).join("");
-
-    els.suggestions.querySelectorAll(".suggestion[data-key]").forEach(el => {
-      el.addEventListener("click", () => selectEntity(el.dataset.key));
-    });
-    els.suggestions.classList.remove("hidden");
-  }
-
-  function uniqueClassSessions(lessons) {
-    const map = new Map();
-    lessons.forEach(x => {
-      const k = `${x.dayNumber}|${x.ca}|${normalizeText(x.code)}`;
-      if (!map.has(k)) map.set(k, x);
-    });
-    return [...map.values()].sort((a,b) => a.dayNumber - b.dayNumber || a.ca - b.ca || a.code.localeCompare(b.code,"vi"));
-  }
-
-  function selectEntity(key) {
-    let item;
-    if (state.mode === "student") item = state.students.find(x => x.key === key);
-    else if (state.mode === "teacher") item = state.teachers.find(x => x.key === key);
-    else item = state.classes.find(x => x.key === key);
-    if (!item) return;
-
-    state.selected = { mode: state.mode, key };
-    els.suggestions.classList.add("hidden");
-    els.searchInput.value = state.mode === "student" ? item.name : state.mode === "teacher" ? item.name : item.code;
-    els.clearBtn.classList.remove("hidden");
-    hideMessage();
-
-    if (state.mode === "student") renderStudent(item);
-    else if (state.mode === "teacher") renderTeacher(item);
-    else renderClass(item);
-  }
-
-  function lessonCell(lesson, ca) {
-    if (!lesson) return `<div class="lesson" data-ca="Ca ${ca}"><span class="empty">—</span></div>`;
-    return `<div class="lesson" data-ca="Ca ${ca}">
-      <div class="lesson-title">${escapeHtml(lesson.subject)}</div>
-      <div class="lesson-code">${escapeHtml(lesson.code)}</div>
-      <div class="lesson-meta">
-        ${lesson.teacher ? `GV: ${escapeHtml(lesson.teacher)}<br>` : ""}
-        ${lesson.room ? `Phòng: ${escapeHtml(lesson.room)}` : ""}
-      </div>
+  function failLoad(err, callbackName, script, seq){
+    if(seq !== loadSeq) return;
+    try{ delete window[callbackName]; }catch(_){}
+    try{ script.remove(); }catch(_){}
+    disableControls(true);
+    refreshBtn.disabled = false;
+    setStatus("error", "Không tải được dữ liệu");
+    content.innerHTML = `<div class="empty-state error-state">
+      <div class="empty-icon">!</div>
+      <strong>Không đọc được Google Sheet</strong>
+      <div style="margin-top:8px;line-height:1.6">${esc(err.message)}</div>
+      <div style="margin-top:8px;font-size:12px">Hãy kiểm tra Sheet đang để quyền <b>Bất kỳ ai có đường liên kết – Người xem</b>, sau đó bấm <b>Làm mới dữ liệu</b>.</div>
     </div>`;
   }
 
-  function renderStudent(item) {
-    const r = item.row;
-    const lessons = getLessons(r);
-    const byKey = new Map(lessons.map(x => [`${x.dayNumber}-${x.ca}`, x]));
-    const days = [...new Set(state.slots.map(s => s.dayNumber))].sort((a,b) => a-b);
-
-    const chips = [
-      ["TC1", r["Môn tự chọn 1"]],
-      ["TC2", r["Môn tự chọn 2"]],
-      ["Thể dục", r["Thể dục tự chọn"]],
-      ["CTNT", r["Chương trình nhà trường"]],
-      ["AVBN", r["Đăng ký AVBN"]],
-      ["MOS", r["Đăng ký MOS"]],
-    ].filter(x => x[1]);
-
-    const grid = `
-      <div class="schedule-grid">
-        <div class="head">Buổi</div><div class="head">Ca 1</div><div class="head">Ca 2</div>
-        ${days.map(day => `
-          <div class="day">Thứ ${day}</div>
-          ${lessonCell(byKey.get(`${day}-1`),1)}
-          ${lessonCell(byKey.get(`${day}-2`),2)}
-        `).join("")}
-      </div>`;
-
-    els.result.innerHTML = `
-      <article class="profile-card">
-        <div class="profile-top">
-          <div>
-            <h2 class="profile-title">${escapeHtml(item.name)}</h2>
-            <div class="profile-sub">Lớp gốc: <strong>${escapeHtml(item.originalClass)}</strong></div>
-          </div>
-          <div class="kpi-inline">
-            <span class="kpi-pill">${lessons.length} lớp/hoạt động</span>
-          </div>
-        </div>
-        <div class="chips">${chips.map(x => `<span class="chip"><strong>${escapeHtml(x[0])}:</strong> ${escapeHtml(x[1])}</span>`).join("")}</div>
-      </article>
-      <article class="section-card">
-        <div class="section-title"><span>Thời khóa biểu</span><span class="section-note">Sáng • Ca 1–2</span></div>
-        ${grid}
-      </article>`;
+  function gvizToMatrix(table){
+    const headers = (table.cols || []).map(c => String(c.label || c.id || "").trim());
+    const body = (table.rows || []).map(row => {
+      const cells = row.c || [];
+      return headers.map((_,i) => {
+        const c = cells[i];
+        if(!c) return "";
+        if(c.f !== undefined && c.f !== null) return String(c.f);
+        if(c.v === undefined || c.v === null) return "";
+        return String(c.v);
+      });
+    });
+    return [headers, ...body];
   }
 
-  function renderTeacher(item) {
-    const lessons = uniqueClassSessions(item.lessons);
-    const rows = lessons.map(l => {
-      const roster = item.lessons.filter(x => x.dayNumber === l.dayNumber && x.ca === l.ca && normalizeText(x.code) === normalizeText(l.code));
-      const uniqueStudents = new Set(roster.map(x => x.student.__studentId));
-      return `<tr>
-        <td>${escapeHtml(l.day)}</td>
-        <td>Ca ${l.ca}</td>
-        <td>${escapeHtml(l.subject)}</td>
-        <td><strong>${escapeHtml(l.code)}</strong></td>
-        <td>${escapeHtml(l.room || "—")}</td>
-        <td>${uniqueStudents.size}</td>
-      </tr>`;
-    }).join("");
+  function buildStudents(matrix){
+    if(!matrix || matrix.length < 2) throw new Error("Sheet không có dữ liệu.");
+    const headers = matrix[0].map(x => String(x||"").trim());
 
-    els.result.innerHTML = `
-      <article class="profile-card">
-        <div class="profile-top">
-          <div><h2 class="profile-title">${escapeHtml(item.name)}</h2><div class="profile-sub">Thời khóa biểu giáo viên</div></div>
-          <div class="kpi-inline"><span class="kpi-pill">${lessons.length} lớp/ca</span></div>
-        </div>
-      </article>
-      <article class="section-card">
-        <div class="section-title"><span>Lịch dạy</span><span class="section-note">Đã gộp học sinh trùng mã lớp</span></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>Thứ</th><th>Ca</th><th>Môn</th><th>Mã lớp</th><th>Phòng</th><th>Sĩ số</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table></div>
-      </article>`;
-  }
+    const required = ["Họ và tên","Lớp gốc"];
+    const missing = required.filter(h => !headers.includes(h));
+    if(missing.length) throw new Error(`Thiếu cột bắt buộc: ${missing.join(", ")}.`);
 
-  function renderClass(item) {
-    const students = [...new Map(item.students.map(s => [s.__studentId, s])).values()]
-      .sort((a,b) => (a["Lớp gốc"] || "").localeCompare(b["Lớp gốc"] || "", "vi") || (a["Họ và tên"] || "").localeCompare(b["Họ và tên"] || "", "vi"));
+    const getIndex = h => headers.indexOf(h);
+    const slotRx = /^(Sáng|Chiều)\s+T(\d+)\s*-\s*Ca\s*(\d+)\s*-\s*(Môn học|Mã lớp|Giáo viên|Phòng)$/i;
+    const slotMap = new Map();
 
-    els.result.innerHTML = `
-      <article class="profile-card">
-        <div class="profile-top">
-          <div>
-            <h2 class="profile-title">${escapeHtml(item.code)}</h2>
-            <div class="profile-sub">${escapeHtml(item.subject)} • ${escapeHtml(item.day)} • Ca ${item.ca}</div>
-          </div>
-          <div class="kpi-inline"><span class="kpi-pill">${students.length} học sinh</span></div>
-        </div>
-        <div class="chips">
-          ${item.teacher ? `<span class="chip"><strong>Giáo viên:</strong> ${escapeHtml(item.teacher)}</span>` : ""}
-          ${item.room ? `<span class="chip"><strong>Phòng:</strong> ${escapeHtml(item.room)}</span>` : ""}
-        </div>
-      </article>
-      <article class="section-card">
-        <div class="section-title"><span>Danh sách học sinh</span><span class="section-note">${students.length} học sinh</span></div>
-        <div class="roster">
-          ${students.map(s => `<div class="roster-item"><div class="roster-name">${escapeHtml(s["Họ và tên"])}</div><div class="roster-class">${escapeHtml(s["Lớp gốc"])}</div></div>`).join("")}
-        </div>
-      </article>`;
-  }
-
-  function setMode(mode) {
-    state.mode = mode;
-    state.selected = null;
-    els.result.innerHTML = "";
-    els.searchInput.value = "";
-    els.clearBtn.classList.add("hidden");
-    els.suggestions.classList.add("hidden");
-
-    document.querySelectorAll(".tab").forEach(btn => {
-      const active = btn.dataset.mode === mode;
-      btn.classList.toggle("active", active);
-      btn.setAttribute("aria-selected", active ? "true" : "false");
+    headers.forEach((h,idx) => {
+      const m = h.match(slotRx);
+      if(!m) return;
+      const period = m[1].charAt(0).toUpperCase()+m[1].slice(1).toLowerCase();
+      const dayNum = Number(m[2]), session = Number(m[3]), field = norm(m[4]);
+      const key = `${period}|${dayNum}|${session}`;
+      if(!slotMap.has(key)) slotMap.set(key,{period,dayNum,session,fields:{}});
+      slotMap.get(key).fields[field] = idx;
     });
 
-    if (mode === "student") {
-      els.searchInput.placeholder = "Nhập tên học sinh hoặc lớp gốc…";
-      els.searchHint.textContent = "Có thể nhập tên có dấu hoặc không dấu.";
-    } else if (mode === "teacher") {
-      els.searchInput.placeholder = "Nhập tên giáo viên…";
-      els.searchHint.textContent = "Hiển thị lịch dạy đã gộp theo mã lớp.";
-    } else {
-      els.searchInput.placeholder = "Nhập mã lớp, ví dụ TC_TIN_9…";
-      els.searchHint.textContent = "Hiển thị môn, giáo viên, phòng, thời gian và danh sách học sinh.";
-    }
-    els.searchInput.focus();
+    const slots = [...slotMap.values()]
+      .map(s=>({
+        ...s,
+        subjectIdx:s.fields["mon hoc"],
+        codeIdx:s.fields["ma lop"],
+        teacherIdx:s.fields["giao vien"],
+        roomIdx:s.fields["phong"]
+      }))
+      .filter(s=>Number.isInteger(s.subjectIdx) && Number.isInteger(s.codeIdx))
+      .sort((a,b)=>a.dayNum-b.dayNum||a.session-b.session);
+
+    if(!slots.length) throw new Error("Không nhận diện được các cột thời khóa biểu.");
+
+    const ci = {
+      id:getIndex("Student_ID"), name:getIndex("Họ và tên"), originalClass:getIndex("Lớp gốc"),
+      elective1:getIndex("Môn tự chọn 1"), elective2:getIndex("Môn tự chọn 2"),
+      sport:getIndex("Thể dục tự chọn"), program:getIndex("Chương trình nhà trường"),
+      avbn:getIndex("Đăng ký AVBN"), mos:getIndex("Đăng ký MOS")
+    };
+    const val = (row,idx) => idx >= 0 ? String(row[idx]||"").trim() : "";
+
+    return matrix.slice(1)
+      .filter(row => row.some(v => String(v||"").trim()))
+      .map((row,i) => {
+        const lessons = slots.map(s => {
+          const subject = val(row,s.subjectIdx), code = val(row,s.codeIdx);
+          if(!subject || norm(subject)==="trong" || !code) return null;
+          return {
+            period:s.period,dayNum:s.dayNum,day:`Thứ ${s.dayNum}`,session:s.session,
+            subject,code,teacher:val(row,s.teacherIdx),room:val(row,s.roomIdx)
+          };
+        }).filter(Boolean);
+
+        return {
+          id:val(row,ci.id)||`HS${String(i+1).padStart(4,"0")}`,
+          name:val(row,ci.name), originalClass:val(row,ci.originalClass),
+          elective1:val(row,ci.elective1), elective2:val(row,ci.elective2),
+          sport:val(row,ci.sport), program:val(row,ci.program),
+          avbn:val(row,ci.avbn), mos:val(row,ci.mos), lessons
+        };
+      })
+      .filter(s => s.name);
   }
 
-  document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => setMode(btn.dataset.mode)));
-  els.searchInput.addEventListener("input", renderSuggestions);
-  els.searchInput.addEventListener("focus", renderSuggestions);
-  els.clearBtn.addEventListener("click", () => {
-    els.searchInput.value = "";
-    els.clearBtn.classList.add("hidden");
-    els.suggestions.classList.add("hidden");
-    els.result.innerHTML = "";
-    state.selected = null;
-    els.searchInput.focus();
-  });
-  els.refreshBtn.addEventListener("click", loadData);
+  function buildIndexes(){
+    teacherMap = new Map(); classMap = new Map();
+    const rooms = new Set();
 
-  document.addEventListener("click", e => {
-    if (!e.target.closest(".search-panel")) els.suggestions.classList.add("hidden");
+    STUDENTS.forEach(s => {
+      s.search = norm(`${s.name} ${s.originalClass}`);
+      s.lessons.forEach(l => {
+        if(l.room) rooms.add(l.room);
+        if(l.teacher){
+          const k=norm(l.teacher);
+          if(!teacherMap.has(k)) teacherMap.set(k,{name:l.teacher,items:[]});
+          teacherMap.get(k).items.push({...l,student:s});
+        }
+        const ck=norm(l.code);
+        if(!classMap.has(ck)) classMap.set(ck,{code:l.code,items:[]});
+        classMap.get(ck).items.push({...l,student:s});
+      });
+    });
+
+    teachers=[...teacherMap.entries()].sort((a,b)=>a[1].name.localeCompare(b[1].name,"vi"));
+    classes=[...classMap.entries()].sort((a,b)=>a[1].code.localeCompare(b[1].code,"vi"));
+    window.__ROOM_COUNT = rooms.size;
+  }
+
+  function populateControls(){
+    teacherSelect.innerHTML = `<option value="">— Chọn giáo viên —</option>`;
+    classSelect.innerHTML = `<option value="">— Chọn mã lớp —</option>`;
+    teachers.forEach(([k,v]) => teacherSelect.insertAdjacentHTML("beforeend",`<option value="${esc(k)}">${esc(v.name)}</option>`));
+    classes.forEach(([k,v]) => classSelect.insertAdjacentHTML("beforeend",`<option value="${esc(k)}">${esc(v.code)}</option>`));
+  }
+
+  function updateStats(){
+    qs("#studentCount").textContent=STUDENTS.length.toLocaleString("vi-VN");
+    qs("#teacherCount").textContent=teachers.length.toLocaleString("vi-VN");
+    qs("#classCount").textContent=classes.length.toLocaleString("vi-VN");
+    qs("#roomCount").textContent=(window.__ROOM_COUNT||0).toLocaleString("vi-VN");
+  }
+
+  function resetOther(except){
+    if(except!=="teacher") teacherSelect.value="";
+    if(except!=="class") classSelect.value="";
+    if(except!=="student"){ search.value=""; clearBtn.style.display="none"; suggestions.classList.add("hidden"); }
+  }
+
+  search.addEventListener("input", () => {
+    clearBtn.style.display=search.value ? "block":"none";
+    const q=norm(search.value);
+    if(!q){ suggestions.classList.add("hidden"); return; }
+    const list=STUDENTS.filter(s=>s.search.includes(q)).slice(0,12);
+    suggestions.innerHTML=list.length ? list.map(s=>`<div class="suggestion" data-id="${esc(s.id)}">
+      <div><div class="s-title">${esc(s.name)}</div><div class="s-sub">Lớp gốc: ${esc(s.originalClass)}</div></div>
+      <span class="badge">Học sinh</span></div>`).join("") :
+      `<div class="suggestion"><div><div class="s-title">Không tìm thấy</div><div class="s-sub">Thử nhập một phần tên hoặc lớp.</div></div></div>`;
+    suggestions.classList.remove("hidden");
   });
 
-  els.searchInput.addEventListener("keydown", e => {
-    const options = [...els.suggestions.querySelectorAll(".suggestion[data-key]")];
-    if (!options.length || els.suggestions.classList.contains("hidden")) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      state.activeSuggestion = Math.min(state.activeSuggestion + 1, options.length - 1);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      state.activeSuggestion = Math.max(state.activeSuggestion - 1, 0);
-    } else if (e.key === "Enter" && state.activeSuggestion >= 0) {
-      e.preventDefault();
-      selectEntity(options[state.activeSuggestion].dataset.key);
-      return;
-    } else if (e.key === "Escape") {
-      els.suggestions.classList.add("hidden");
-      return;
-    } else {
-      return;
-    }
-    options.forEach((el,i) => el.classList.toggle("active", i === state.activeSuggestion));
-    options[state.activeSuggestion]?.scrollIntoView({ block: "nearest" });
+  suggestions.addEventListener("click", e => {
+    const el=e.target.closest("[data-id]"); if(!el)return;
+    const s=STUDENTS.find(x=>x.id===el.dataset.id); if(!s)return;
+    search.value=s.name; suggestions.classList.add("hidden"); clearBtn.style.display="block"; resetOther("student"); renderStudent(s);
   });
 
-  loadData();
+  clearBtn.addEventListener("click",()=>{search.value="";clearBtn.style.display="none";suggestions.classList.add("hidden");search.focus()});
+  document.addEventListener("click",e=>{if(!e.target.closest(".student-field")) suggestions.classList.add("hidden")});
+
+  teacherSelect.addEventListener("change",()=>{
+    if(!teacherSelect.value)return;
+    resetOther("teacher"); renderTeacher(teacherMap.get(teacherSelect.value));
+  });
+
+  classSelect.addEventListener("change",()=>{
+    if(!classSelect.value)return;
+    resetOther("class"); renderClass(classMap.get(classSelect.value));
+  });
+
+  refreshBtn.addEventListener("click",()=>{
+    search.value="";teacherSelect.value="";classSelect.value="";
+    suggestions.classList.add("hidden");clearBtn.style.display="none";
+    loadGoogleSheet();
+  });
+
+  function lessonHtml(l,ca){
+    if(!l) return `<div class="lesson-cell" data-ca="Ca ${ca}"><span class="dash">—</span></div>`;
+    return `<div class="lesson-cell" data-ca="Ca ${ca}">
+      <div class="lesson-name">${esc(l.subject)}</div>
+      <span class="lesson-code">${esc(l.code)}</span>
+      <div class="lesson-meta">${l.teacher?`GV: ${esc(l.teacher)}<br>`:""}${l.room?`Phòng: ${esc(l.room)}`:""}</div>
+    </div>`;
+  }
+
+  function renderStudent(s){
+    currentStudent=s;
+    const by=new Map(s.lessons.map(l=>[`${l.dayNum}-${l.session}`,l]));
+    const chips=[
+      ["TC1",s.elective1],["TC2",s.elective2],["Thể dục",s.sport],["CTNT",s.program],["AVBN",s.avbn],["MOS",s.mos]
+    ].filter(x=>x[1]);
+
+    content.innerHTML=`<div id="studentExport" class="export-surface">
+      <section class="card">
+        <div class="card-head">
+          <div><div class="section-label">Học sinh</div><h2 class="card-title">${esc(s.name)}</h2><p class="card-sub">Lớp gốc: <strong>${esc(s.originalClass)}</strong></p></div>
+          <div class="action-row no-print">
+            <button class="btn" data-action="printStudent">In TKB</button>
+            <button class="btn teal" data-action="png">Xuất PNG</button>
+            <button class="btn primary" data-action="pdf">Xuất PDF</button>
+          </div>
+        </div>
+        <div class="profile"><div class="chips">${chips.map(x=>`<span class="chip"><b>${esc(x[0])}:</b> ${esc(x[1])}</span>`).join("")}</div></div>
+        <div class="timetable">
+          <div class="grid">
+            <div class="grid-head">Buổi</div><div class="grid-head">Ca 1</div><div class="grid-head">Ca 2</div>
+            ${[2,3,4,5].map(d=>`<div class="day-cell">Thứ ${d}</div>${lessonHtml(by.get(`${d}-1`),1)}${lessonHtml(by.get(`${d}-2`),2)}`).join("")}
+          </div>
+        </div>
+      </section></div>`;
+
+    currentExportEl=qs("#studentExport");
+    bindActions();
+  }
+
+  function uniqueSessions(items){
+    const m=new Map();
+    items.forEach(x=>{
+      const k=`${x.dayNum}|${x.session}|${norm(x.code)}|${norm(x.subject)}|${norm(x.room)}`;
+      if(!m.has(k))m.set(k,{...x,students:new Map()});
+      m.get(k).students.set(x.student.id,x.student);
+    });
+    return [...m.values()].sort((a,b)=>a.dayNum-b.dayNum||a.session-b.session||a.code.localeCompare(b.code,"vi"));
+  }
+
+  function renderTeacher(t){
+    currentStudent=null; currentExportEl=null;
+    const sessions=uniqueSessions(t.items);
+    content.innerHTML=`<section class="card">
+      <div class="card-head"><div><div class="section-label">Giáo viên</div><h2 class="card-title">${esc(t.name)}</h2><p class="card-sub">${sessions.length} lớp/ca trong thời khóa biểu</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Thứ</th><th>Ca</th><th>Môn</th><th>Mã lớp</th><th>Phòng</th><th>Sĩ số</th></tr></thead><tbody>
+        ${sessions.map(x=>`<tr><td>${esc(x.day)}</td><td>Ca ${x.session}</td><td>${esc(x.subject)}</td><td><b>${esc(x.code)}</b></td><td>${esc(x.room||"—")}</td><td>${x.students.size}</td></tr>`).join("")}
+      </tbody></table></div>
+    </section>`;
+  }
+
+  function groupClassItems(c){
+    const m=new Map();
+    c.items.forEach(x=>{
+      const k=`${x.dayNum}|${x.session}|${norm(x.subject)}|${norm(x.teacher)}|${norm(x.room)}`;
+      if(!m.has(k))m.set(k,{...x,students:new Map()});
+      m.get(k).students.set(x.student.id,x.student);
+    });
+    return [...m.values()].sort((a,b)=>a.dayNum-b.dayNum||a.session-b.session||a.subject.localeCompare(b.subject,"vi"));
+  }
+
+  function renderClass(c){
+    currentStudent=null; currentExportEl=null;
+    const groups=groupClassItems(c);
+    const totalUnique=new Map(); c.items.forEach(x=>totalUnique.set(x.student.id,x.student));
+
+    content.innerHTML=`<section class="card">
+      <div class="card-head">
+        <div><div class="section-label">Mã lớp</div><h2 class="card-title">${esc(c.code)}</h2><p class="card-sub">${totalUnique.size} học sinh duy nhất • ${groups.length} nhóm/ca</p></div>
+        <div class="action-row no-print">
+          <button class="btn" data-action="csvClass">Xuất CSV</button>
+          <button class="btn primary" data-action="printClass">In danh sách</button>
+        </div>
+      </div>
+      ${groups.map((g,idx)=>{
+        const roster=[...g.students.values()].sort((a,b)=>a.originalClass.localeCompare(b.originalClass,"vi")||a.name.localeCompare(b.name,"vi"));
+        return `<div class="class-group" data-group="${idx}">
+          <div class="group-title">${esc(g.subject)} • ${esc(g.day)} • Ca ${g.session}${g.teacher?` • ${esc(g.teacher)}`:""}${g.room?` • ${esc(g.room)}`:""} • ${roster.length} HS</div>
+          <div class="roster">${roster.map(s=>`<div class="person"><div class="person-name">${esc(s.name)}</div><div class="person-class">${esc(s.originalClass)}</div></div>`).join("")}</div>
+        </div>`;
+      }).join("")}
+    </section>`;
+
+    bindActions(c,groups);
+  }
+
+  function bindActions(classObj=null,classGroups=null){
+    content.querySelectorAll("[data-action]").forEach(btn=>btn.addEventListener("click",async()=>{
+      const action=btn.dataset.action;
+      if(action==="printStudent") return window.print();
+      if(action==="png") return exportPng(btn);
+      if(action==="pdf") return exportPdf(btn);
+      if(action==="printClass") return printClass(classObj,classGroups);
+      if(action==="csvClass") return exportClassCsv(classObj,classGroups);
+    }));
+  }
+
+  async function capture(){
+    if(!currentExportEl) throw new Error("Không có nội dung để xuất.");
+    if(!window.html2canvas) throw new Error("Chưa tải được thư viện xuất ảnh. Hãy kiểm tra kết nối Internet.");
+    return await html2canvas(currentExportEl,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+  }
+
+  async function exportPng(btn){
+    try{
+      btn.disabled=true; toast("Đang tạo ảnh…");
+      const canvas=await capture(); const a=document.createElement("a");
+      a.download=`TKB_${slug(currentStudent?.name||"hoc-sinh")}.png`; a.href=canvas.toDataURL("image/png"); a.click();
+    }catch(e){alert(e.message)}finally{btn.disabled=false}
+  }
+
+  async function exportPdf(btn){
+    try{
+      btn.disabled=true; toast("Đang tạo PDF…");
+      if(!window.jspdf) throw new Error("Chưa tải được thư viện PDF. Hãy kiểm tra kết nối Internet.");
+      const canvas=await capture(), img=canvas.toDataURL("image/jpeg",.96);
+      const {jsPDF}=window.jspdf;
+      const pdf=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
+      const pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight(), margin=8;
+      const ratio=Math.min((pw-margin*2)/canvas.width,(ph-margin*2)/canvas.height);
+      const w=canvas.width*ratio,h=canvas.height*ratio;
+      pdf.addImage(img,"JPEG",(pw-w)/2,(ph-h)/2,w,h);
+      pdf.save(`TKB_${slug(currentStudent?.name||"hoc-sinh")}.pdf`);
+    }catch(e){alert(e.message)}finally{btn.disabled=false}
+  }
+
+  function printClass(c,groups){
+    if(!c||!groups)return;
+    const w=window.open("","_blank","width=980,height=800");
+    if(!w){alert("Trình duyệt đang chặn cửa sổ in. Hãy cho phép popup rồi thử lại.");return}
+
+    const body=groups.map(g=>{
+      const roster=[...g.students.values()].sort((a,b)=>a.originalClass.localeCompare(b.originalClass,"vi")||a.name.localeCompare(b.name,"vi"));
+      return `<section class="group"><h2>${esc(c.code)} — ${esc(g.subject)}</h2>
+        <div class="meta">${esc(g.day)} • Ca ${g.session} • GV: ${esc(g.teacher||"—")} • Phòng: ${esc(g.room||"—")} • Sĩ số: ${roster.length}</div>
+        <table><thead><tr><th>STT</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody>
+        ${roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}</td><td>${esc(s.originalClass)}</td></tr>`).join("")}
+        </tbody></table></section>`;
+    }).join("");
+
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Danh sách ${esc(c.code)}</title><style>
+      @page{size:A4;margin:13mm}body{font-family:Arial,sans-serif;color:#111;margin:0}h1{text-align:center;font-size:18px;margin:0 0 16px}
+      h2{font-size:15px;margin:0}.meta{font-size:11px;margin:5px 0 10px;color:#444}table{width:100%;border-collapse:collapse;font-size:12px}
+      th,td{border:1px solid #777;padding:6px 7px;text-align:left}th{background:#eee}.group{page-break-after:always}.group:last-child{page-break-after:auto}
+    </style></head><body><h1>DANH SÁCH HỌC SINH THEO MÃ LỚP</h1>${body}<script>window.onload=()=>{window.print()}<\/script></body></html>`);
+    w.document.close();
+  }
+
+  function exportClassCsv(c,groups){
+    if(!c||!groups)return;
+    const rows=[["Mã lớp","Môn","Thứ","Ca","Giáo viên","Phòng","STT","Họ và tên","Lớp gốc"]];
+    groups.forEach(g=>{
+      const roster=[...g.students.values()].sort((a,b)=>a.originalClass.localeCompare(b.originalClass,"vi")||a.name.localeCompare(b.name,"vi"));
+      roster.forEach((s,i)=>rows.push([c.code,g.subject,g.day,`Ca ${g.session}`,g.teacher,g.room,i+1,s.name,s.originalClass]));
+    });
+    const csv="\ufeff"+rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\r\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download=`Danh_sach_${slug(c.code)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+
+  loadGoogleSheet();
 })();
-
 </script>
 </body>
 </html>
