@@ -25,7 +25,7 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
 .live-wrap{display:flex;align-items:center;gap:8px}.live-chip{display:flex;align-items:center;gap:8px;min-height:36px;padding:8px 11px;border:1px solid #dbeee7;background:rgba(238,250,246,.9);border-radius:12px;color:#26735f;font-size:11.5px;font-weight:750;white-space:nowrap}.live-dot{width:7px;height:7px;border-radius:50%;background:#17a67e;box-shadow:0 0 0 4px rgba(23,166,126,.1)}.live-chip.wait{border-color:#e3e7f4;background:#f6f7fb;color:#758097}.live-chip.wait .live-dot{background:#9aa5b6;box-shadow:none}.live-chip.warn{border-color:#f1dfbf;background:#fff9ef;color:#9a681d}.live-chip.warn .live-dot{background:#d3922e;box-shadow:none}
 .icon-btn{width:36px;height:36px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#516079;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 10px rgba(34,49,78,.04);transition:.18s}.icon-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}.icon-btn:disabled{opacity:.55;cursor:default;transform:none}.icon-btn svg{width:16px;height:16px}.spin svg{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .control{display:grid;grid-template-columns:auto minmax(280px,1fr) auto;gap:12px;align-items:center;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;margin-bottom:12px;backdrop-filter:blur(14px)}
-.segmented{display:flex;gap:4px;background:#f2f4f8;border:1px solid #e9edf4;border-radius:13px;padding:4px}.seg{border:0;background:transparent;color:#6c7890;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}.seg.active{background:#fff;color:#25334f;box-shadow:0 3px 11px rgba(38,52,82,.08)}
+.segmented{display:flex;gap:4px;background:#f2f4f8;border:1px solid #e9edf4;border-radius:13px;padding:4px;overflow-x:auto;scrollbar-width:none}.segmented::-webkit-scrollbar{display:none}.seg{border:0;background:transparent;color:#6c7890;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}.seg.active{background:#fff;color:#25334f;box-shadow:0 3px 11px rgba(38,52,82,.08)}
 .search-wrap{position:relative}.searchbox{display:flex;align-items:center;gap:9px;height:42px;padding:0 12px;border:1px solid #dfe5ef;background:#fff;border-radius:13px;transition:.16s}.searchbox:focus-within{border-color:#a9b6fb;box-shadow:0 0 0 4px rgba(89,111,244,.09)}.searchbox svg{width:17px;height:17px;color:#8b96a8;flex:none}.searchbox input{min-width:0;width:100%;border:0;outline:0;color:var(--text);background:transparent;font-size:13.5px}.searchbox input::placeholder{color:#a2acba}
 .suggestions{position:absolute;z-index:40;top:calc(100% + 7px);left:0;right:0;display:none;max-height:330px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 22px 48px rgba(34,49,78,.16);padding:5px}.suggestions.open{display:block}.option{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px;border-radius:11px;cursor:pointer}.option:hover,.option.active{background:#f5f7fc}.option-main{min-width:0}.option b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.option small{display:block;margin-top:2px;color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.option-tag{flex:none;border-radius:999px;background:#eef1ff;color:#5569c9;padding:4px 7px;font-size:9.5px;font-weight:850}.empty-option{padding:16px;color:#8b96a8;font-size:12px;text-align:center}
 .export-wrap{position:relative}.export-btn{height:42px;border:0;border-radius:13px;background:linear-gradient(145deg,#596ff4,#755fea);color:#fff;padding:0 15px;display:flex;align-items:center;gap:8px;font-weight:800;font-size:12.5px;cursor:pointer;box-shadow:0 8px 20px rgba(89,111,244,.19)}.export-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}.export-btn svg{width:15px;height:15px}.export-menu{position:absolute;right:0;top:calc(100% + 7px);z-index:35;width:232px;padding:5px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:0 20px 44px rgba(34,49,78,.15);display:none}.export-menu.open{display:block}.menu-item{width:100%;display:flex;gap:10px;align-items:flex-start;border:0;background:transparent;padding:10px;border-radius:10px;text-align:left;color:#344057;cursor:pointer}.menu-item:hover{background:#f5f7fb}.menu-icon{width:30px;height:30px;border-radius:9px;background:#f0f3ff;color:#586ee7;display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}.menu-item b{display:block;font-size:12px}.menu-item small{display:block;color:#8390a2;font-size:10px;line-height:1.35;margin-top:2px}
@@ -44,7 +44,7 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
 .lesson.home-lesson .classcode{background:#fff8ed;color:#9b641d}
 .roster{display:none;margin-top:12px}.roster.show{display:block}.roster-card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-sm);overflow:hidden}.roster-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line)}.roster-head h3{margin:0;font-size:13px}.roster-head span{font-size:10.5px;color:#7e899b}.table-wrap{overflow:auto}.roster table{width:100%;border-collapse:collapse;min-width:620px}.roster th,.roster td{padding:9px 13px;border-bottom:1px solid #eef1f5;text-align:left;font-size:11.5px}.roster th{background:#fafbfc;color:#6f7b8f;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em}.roster tr:last-child td{border-bottom:0}.roster td:nth-child(1),.roster th:nth-child(1){width:58px;text-align:center}.roster td:nth-child(2),.roster th:nth-child(2){width:105px}.roster td:nth-child(4),.roster th:nth-child(4){width:90px}
 .footer{display:flex;justify-content:space-between;gap:12px;margin:13px 3px 0;color:#9aa4b3;font-size:9.5px}
-@media(max-width:900px){.app{padding:14px}.control{grid-template-columns:1fr auto}.segmented{grid-column:1/-1;width:100%}.seg{flex:1}.search-wrap{min-width:0}.stats{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start}.brand p{display:none}.live-chip{max-width:58vw;overflow:hidden;text-overflow:ellipsis}.view-head{align-items:flex-start}.section-right{display:none}}
+@media(max-width:900px){.app{padding:14px}.control{grid-template-columns:1fr auto}.segmented{grid-column:1/-1;width:100%}.seg{flex:0 0 auto}.search-wrap{min-width:0}.stats{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start}.brand p{display:none}.live-chip{max-width:58vw;overflow:hidden;text-overflow:ellipsis}.view-head{align-items:flex-start}.section-right{display:none}}
 @media(max-width:560px){.app{padding:11px}.logo{width:40px;height:40px;border-radius:13px}.brand h1{font-size:17px}.live-wrap{gap:5px}.live-chip{padding:7px 9px;font-size:10px;max-width:51vw}.control{padding:9px;border-radius:16px;gap:8px}.seg{padding:8px 7px;font-size:10.5px}.export-btn{padding:0 11px}.export-btn .export-label{display:none}.stats{gap:7px}.stat{padding:11px 12px}.stat-value{font-size:20px}.view-title h2{font-size:18px}.mode-badge{display:none}.schedule-shell{border-radius:15px}.footer{display:none}}
 @media print{body{background:#fff}.topbar,.control,.action-line,.section-bar,.footer{display:none!important}.app{padding:0}.schedule-shell{box-shadow:none;border-radius:0}}
 </style>
@@ -59,7 +59,7 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="brand"><div class="logo">TKB</div><div><h1>Thời khóa biểu lớp 10</h1><p>Tra cứu theo học sinh, giáo viên và mã lớp</p></div></div>
+    <div class="brand"><div class="logo">TKB</div><div><h1>Thời khóa biểu lớp 10</h1><p>Tra cứu hợp nhất từ hai nguồn dữ liệu trực tiếp</p></div></div>
     <div class="live-wrap">
       <div class="live-chip wait" id="liveChip"><span class="live-dot"></span><span id="liveText">Đang cập nhật dữ liệu…</span></div>
       <button class="icon-btn" id="syncBtn" title="Cập nhật ngay" aria-label="Cập nhật ngay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0 2 5.3"/><path d="M20 4v7h-7"/></svg></button>
@@ -70,7 +70,9 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
     <div class="segmented" role="tablist" aria-label="Chế độ xem">
       <button class="seg active" data-mode="student">Học sinh</button>
       <button class="seg" data-mode="teacher">Giáo viên</button>
-      <button class="seg" data-mode="class">Mã lớp</button>
+      <button class="seg" data-mode="class">Lớp / mã</button>
+      <button class="seg" data-mode="room">Phòng</button>
+      <button class="seg" data-mode="homeClass">Lớp gốc</button>
     </div>
     <div class="search-wrap">
       <div class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" autocomplete="off" placeholder="Tìm tên hoặc mã học sinh…" aria-label="Tìm kiếm"></div>
@@ -122,53 +124,157 @@ function blankMatrix(periods=PERIODS){const m={};for(const d of DAYS)for(const p
 function parseRows(rows){
   if(!rows||rows.length<2)throw new Error('Dữ liệu chưa sẵn sàng');
   const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
-  const students=[],teachers=new Set(),codes=new Set(),subjects=new Set();
+  const students=[],teachers=new Set(),codes=new Set(),subjects=new Set(),rooms=new Set();
   for(const r0 of rows.slice(1)){
-    const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');const id=clean(r[ix['Student_ID']]),name=clean(r[ix['Họ và tên']]);if(!id&&!name)continue;
+    const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');
+    const id=clean(r[ix['Student_ID']]),name=clean(r[ix['Họ và tên']]);if(!id&&!name)continue;
     const s={id,name,homeClass:clean(r[ix['Lớp gốc']]),schedule:[]};
-    for(const d of DAYS)for(const p of PERIODS){const pre=`Sáng T${d} - Tiết ${p} - `,subject=clean(r[ix[pre+'Môn học']]),code=clean(r[ix[pre+'Mã lớp']]),teacher=clean(r[ix[pre+'Giáo viên']]),room=clean(r[ix[pre+'Phòng']]);if(subject||code||teacher||room){s.schedule.push({day:d,period:p,subject,code,teacher,room});if(teacher)teachers.add(teacher);if(code)codes.add(code);if(subject)subjects.add(subject)}}
+    for(const d of DAYS)for(const p of PERIODS){
+      const pre=`Sáng T${d} - Tiết ${p} - `,
+        subject=clean(r[ix[pre+'Môn học']]),code=clean(r[ix[pre+'Mã lớp']]),
+        teacher=clean(r[ix[pre+'Giáo viên']]),room=clean(r[ix[pre+'Phòng']]);
+      if(subject||code||teacher||room){
+        s.schedule.push({day:d,period:p,session:'S',subject,code,teacher,room,source:'elective'});
+        if(teacher)teachers.add(teacher);if(code)codes.add(code);if(subject)subjects.add(subject);if(room)rooms.add(room)
+      }
+    }
     students.push(s)
   }
-  const byId=new Map(students.map(s=>[s.id,s])),teacherSlots=new Map(),classSlots=new Map(),classStudents=new Map();
-  for(const s of students)for(const l of s.schedule){
-    if(l.teacher){if(!teacherSlots.has(l.teacher))teacherSlots.set(l.teacher,new Map());const sm=teacherSlots.get(l.teacher),k=key(l.day,l.period);if(!sm.has(k))sm.set(k,new Map());const gk=[l.subject,l.code,l.room].join('|');if(!sm.get(k).has(gk))sm.get(k).set(gk,{...l,studentIds:new Set()});sm.get(k).get(gk).studentIds.add(s.id)}
-    if(l.code){if(!classSlots.has(l.code))classSlots.set(l.code,new Map());const sm=classSlots.get(l.code),k=key(l.day,l.period),gk=[l.subject,l.teacher,l.room].join('|');if(!sm.has(k))sm.set(k,new Map());if(!sm.get(k).has(gk))sm.get(k).set(gk,{...l,studentIds:new Set()});sm.get(k).get(gk).studentIds.add(s.id);if(!classStudents.has(l.code))classStudents.set(l.code,new Set());classStudents.get(l.code).add(s.id)}
+
+  const byId=new Map(students.map(s=>[s.id,s])),
+    teacherSlots=new Map(),classSlots=new Map(),roomSlots=new Map(),
+    classStudents=new Map(),homeClassStudents=new Map();
+
+  for(const s of students){
+    if(s.homeClass){
+      if(!homeClassStudents.has(s.homeClass))homeClassStudents.set(s.homeClass,new Set());
+      homeClassStudents.get(s.homeClass).add(s.id)
+    }
+    for(const l of s.schedule){
+      if(l.teacher){
+        if(!teacherSlots.has(l.teacher))teacherSlots.set(l.teacher,new Map());
+        const sm=teacherSlots.get(l.teacher),k=key(l.day,l.period);
+        if(!sm.has(k))sm.set(k,new Map());
+        const gk=[l.subject,l.code,l.room].join('|');
+        if(!sm.get(k).has(gk))sm.get(k).set(gk,{...l,studentIds:new Set()});
+        sm.get(k).get(gk).studentIds.add(s.id)
+      }
+      if(l.code){
+        if(!classSlots.has(l.code))classSlots.set(l.code,new Map());
+        const sm=classSlots.get(l.code),k=key(l.day,l.period),gk=[l.subject,l.teacher,l.room].join('|');
+        if(!sm.has(k))sm.set(k,new Map());
+        if(!sm.get(k).has(gk))sm.get(k).set(gk,{...l,studentIds:new Set()});
+        sm.get(k).get(gk).studentIds.add(s.id);
+        if(!classStudents.has(l.code))classStudents.set(l.code,new Set());
+        classStudents.get(l.code).add(s.id)
+      }
+      if(l.room){
+        if(!roomSlots.has(l.room))roomSlots.set(l.room,new Map());
+        const sm=roomSlots.get(l.room),k=key(l.day,l.period),gk=[l.subject,l.code,l.teacher].join('|');
+        if(!sm.has(k))sm.set(k,new Map());
+        if(!sm.get(k).has(gk))sm.get(k).set(gk,{...l,studentIds:new Set()});
+        sm.get(k).get(gk).studentIds.add(s.id)
+      }
+    }
   }
-  return{students,teachers:[...teachers].sort((a,b)=>a.localeCompare(b,'vi')),codes:[...codes].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),subjects:[...subjects],byId,teacherSlots,classSlots,classStudents}
+
+  return{
+    students,teachers:[...teachers].sort((a,b)=>a.localeCompare(b,'vi')),
+    codes:[...codes].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),
+    rooms:[...rooms].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),
+    subjects:[...subjects],byId,teacherSlots,classSlots,roomSlots,classStudents,homeClassStudents
+  }
 }
 function parseHomeRows(rows){
-  if(!rows||rows.length<2)return{byClass:new Map(),count:0};
+  if(!rows||rows.length<2)return{byClass:new Map(),byTeacher:new Map(),byRoom:new Map(),teachers:[],rooms:[],classes:[],lessons:[],count:0};
   const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
   const required=['Day','Hour','Students Sets','Subject','Teachers','Room','Comments'];
   if(!required.every(h=>h in ix))throw new Error('Cấu trúc lịch lớp gốc chưa hợp lệ');
-  const byClass=new Map();let count=0;
+
+  const byClass=new Map(),byTeacher=new Map(),byRoom=new Map(),
+    teachers=new Set(),rooms=new Set(),classesSet=new Set(),lessons=[];
+  let count=0;
+
   for(const r0 of rows.slice(1)){
     const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');
-    const dayCode=clean(r[ix['Day']]).toUpperCase(),session=dayCode.slice(0,1),day=parseInt(dayCode.slice(1),10),period=parseInt(clean(r[ix['Hour']]),10);
+    const dayCode=clean(r[ix['Day']]).toUpperCase(),session=dayCode.slice(0,1),
+      day=parseInt(dayCode.slice(1),10),period=parseInt(clean(r[ix['Hour']]),10);
     if(!['S','C'].includes(session)||!DAYS.includes(day)||!HOME_PERIODS.includes(period))continue;
-    const sets=clean(r[ix['Students Sets']]),subject=clean(r[ix['Subject']]),teacher=clean(r[ix['Teachers']]),room=clean(r[ix['Room']]),comments=clean(r[ix['Comments']]);
+
+    const sets=clean(r[ix['Students Sets']]),subject=clean(r[ix['Subject']]),
+      teacher=clean(r[ix['Teachers']]),room=clean(r[ix['Room']]),comments=clean(r[ix['Comments']]);
     if(!sets||(!subject&&!teacher&&!room))continue;
-    const classes=sets.split(/[,;\n]+/).map(clean).filter(Boolean);
-    for(const homeClass of classes){
+
+    const classNames=sets.split(/[,;\n]+/).map(clean).filter(Boolean);
+    const base={day,period,session,subject,teacher,room,comments,source:'home',classNames};
+
+    for(const homeClass of classNames){
+      const l={...base,code:homeClass,homeClass};
+      lessons.push(l);count++;classesSet.add(homeClass);
       if(!byClass.has(homeClass))byClass.set(homeClass,[]);
-      byClass.get(homeClass).push({day,period,session,subject,teacher,room,comments,code:homeClass,homeClass,source:'home'});
-      count++;
+      byClass.get(homeClass).push(l);
+
+      if(teacher){
+        teachers.add(teacher);
+        if(!byTeacher.has(teacher))byTeacher.set(teacher,[]);
+        byTeacher.get(teacher).push(l)
+      }
+      if(room){
+        rooms.add(room);
+        if(!byRoom.has(room))byRoom.set(room,[]);
+        byRoom.get(room).push(l)
+      }
     }
   }
-  return{byClass,count}
+
+  return{
+    byClass,byTeacher,byRoom,lessons,count,
+    teachers:[...teachers].sort((a,b)=>a.localeCompare(b,'vi')),
+    rooms:[...rooms].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),
+    classes:[...classesSet].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}))
+  }
+}
+function homeSectionsFromLessons(lessons,titlePrefix='Lịch lớp gốc'){
+  if(!lessons?.length)return[];
+  const groups={S:[],C:[]};for(const l of lessons)groups[l.session].push(l);
+  return ['S','C'].filter(s=>groups[s].length).map(session=>{
+    const m=blankMatrix(HOME_PERIODS);
+    for(const l of groups[session])m[key(l.day,l.period)].push({lesson:l});
+    const label=session==='S'?'Buổi sáng':'Buổi chiều';
+    return{session,label,title:`${titlePrefix} · ${label}`,m,lessons:groups[session],periods:HOME_PERIODS}
+  })
 }
 function homeSectionsForClass(homeClass){
   if(!state.homeData||!homeClass)return[];
-  const lessons=state.homeData.byClass.get(homeClass)||[];
-  const groups={S:[],C:[]};for(const l of lessons)groups[l.session].push(l);
-  return ['S','C'].filter(s=>groups[s].length).map(session=>{
-    const m=blankMatrix(HOME_PERIODS);for(const l of groups[session])m[key(l.day,l.period)].push({lesson:l});
-    return{session,label:session==='S'?'Buổi sáng':'Buổi chiều',m,lessons:groups[session],periods:HOME_PERIODS}
-  });
+  return homeSectionsFromLessons(state.homeData.byClass.get(homeClass)||[],`Lịch lớp gốc · ${homeClass}`)
+}
+function studentIdsForHomeClasses(classes){
+  const ids=new Set();
+  if(!state.data)return ids;
+  for(const c of classes||[])for(const id of state.data.homeClassStudents.get(c)||[])ids.add(id);
+  return ids
+}
+function rosterFromIds(ids){
+  return [...ids].map(id=>state.data.byId.get(id)).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'vi'))
+}
+function aggregateElectiveForStudents(ids){
+  const m=blankMatrix(),codes=new Set(),teachers=new Set(),rooms=new Set(),subjects=new Set(),days=new Set();
+  let events=0;
+  for(const id of ids){
+    const s=state.data.byId.get(id);if(!s)continue;
+    for(const l of s.schedule){
+      const k=key(l.day,l.period);
+      let item=m[k].find(x=>x._gk===[l.subject,l.code,l.teacher,l.room].join('|'));
+      if(!item){item={lesson:{...l},count:0,_ids:new Set(),_gk:[l.subject,l.code,l.teacher,l.room].join('|')};m[k].push(item);events++}
+      if(!item._ids.has(id)){item._ids.add(id);item.count++}
+      if(l.code)codes.add(l.code);if(l.teacher)teachers.add(l.teacher);if(l.room)rooms.add(l.room);if(l.subject)subjects.add(l.subject);days.add(l.day)
+    }
+  }
+  return{m,codes,teachers,rooms,subjects,days,events}
 }
 function applyRows(rows,homeRows,updatedAt,version,homeVersion){
   state.data=parseRows(rows);
-  state.homeData=homeRows?parseHomeRows(homeRows):{byClass:new Map(),count:0};
+  state.homeData=homeRows?parseHomeRows(homeRows):{byClass:new Map(),byTeacher:new Map(),byRoom:new Map(),teachers:[],rooms:[],classes:[],lessons:[],count:0};
   state.source=homeRows?'live':'partial';
   state.lastSync=updatedAt?new Date(updatedAt):new Date();
   state.version=version??state.version;state.homeVersion=homeVersion??state.homeVersion;
@@ -176,7 +282,15 @@ function applyRows(rows,homeRows,updatedAt,version,homeVersion){
   if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();
   renderSuggestionsIfOpen()
 }
-function selectionExists(sel){if(!state.data)return false;if(state.mode==='student')return state.data.byId.has(sel);if(state.mode==='teacher')return state.data.teacherSlots.has(sel);return state.data.classSlots.has(sel)}
+function selectionExists(sel){
+  if(!state.data)return false;
+  if(state.mode==='student')return state.data.byId.has(sel);
+  if(state.mode==='teacher')return state.data.teacherSlots.has(sel)||state.homeData?.byTeacher?.has(sel);
+  if(state.mode==='class')return state.data.classSlots.has(sel)||state.homeData?.byClass?.has(sel);
+  if(state.mode==='room')return state.data.roomSlots.has(sel)||state.homeData?.byRoom?.has(sel);
+  if(state.mode==='homeClass')return state.data.homeClassStudents.has(sel)||state.homeData?.byClass?.has(sel);
+  return false
+}
 function updateLive(syncing=false){
   els.liveChip.classList.remove('wait','warn');
   if(syncing){els.liveChip.classList.add('wait');els.liveText.textContent='Đang cập nhật dữ liệu trực tiếp…';els.syncBtn.classList.add('spin');els.syncBtn.disabled=true;return}
@@ -194,11 +308,56 @@ function updateLive(syncing=false){
     els.footerTime.textContent='';
   }
 }
-function options(){if(!state.data)return[];if(state.mode==='student')return state.data.students.map(s=>({key:s.id,title:s.name,sub:`${s.id} · ${s.homeClass}`,tag:s.homeClass}));if(state.mode==='teacher')return state.data.teachers.map(t=>{const sm=state.data.teacherSlots.get(t),codes=new Set();for(const groups of sm.values())for(const g of groups.values())if(g.code)codes.add(g.code);return{key:t,title:t,sub:`${codes.size} mã lớp`,tag:'GV'}});return state.data.codes.map(c=>{const sm=state.data.classSlots.get(c);let first=null;for(const groups of sm.values()){first=[...groups.values()][0];if(first)break}return{key:c,title:c,sub:[first?.subject,first?.teacher].filter(Boolean).join(' · '),tag:'Lớp'}})}
+function options(){
+  if(!state.data)return[];
+  const d=state.data,h=state.homeData;
+
+  if(state.mode==='student')
+    return d.students.map(s=>({key:s.id,title:s.name,sub:`${s.id} · ${s.homeClass}`,tag:s.homeClass}));
+
+  if(state.mode==='teacher'){
+    const names=uniq([...d.teachers,...(h?.teachers||[])]).sort((a,b)=>a.localeCompare(b,'vi'));
+    return names.map(t=>{
+      let elective=0;const sm=d.teacherSlots.get(t);
+      if(sm)for(const groups of sm.values())elective+=groups.size;
+      const home=(h?.byTeacher?.get(t)||[]).length;
+      return{key:t,title:t,sub:`${elective+home} tiết · ${home?'2 nguồn':'trái buổi'}`,tag:'GV'}
+    })
+  }
+
+  if(state.mode==='class'){
+    const names=uniq([...d.codes,...(h?.classes||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
+    return names.map(c=>{
+      const isCode=d.classSlots.has(c),isHome=h?.byClass?.has(c);
+      return{key:c,title:c,sub:isCode&&isHome?'Có ở cả hai nguồn':isCode?'Mã lớp trái buổi':'Lớp trong TKB lớp gốc',tag:isHome&&!isCode?'Lớp':'Mã'}
+    })
+  }
+
+  if(state.mode==='room'){
+    const names=uniq([...d.rooms,...(h?.rooms||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
+    return names.map(r=>{
+      let elective=0;const sm=d.roomSlots.get(r);if(sm)for(const groups of sm.values())elective+=groups.size;
+      const home=(h?.byRoom?.get(r)||[]).length;
+      return{key:r,title:r,sub:`${elective+home} tiết sử dụng`,tag:'Phòng'}
+    })
+  }
+
+  const names=uniq([...d.homeClassStudents.keys(),...(h?.classes||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
+  return names.map(c=>{
+    const n=d.homeClassStudents.get(c)?.size||0,periods=h?.byClass.get(c)?.length||0;
+    return{key:c,title:c,sub:`${n} học sinh · ${periods} tiết lớp gốc`,tag:'Lớp gốc'}
+  })
+}
 function renderSuggestionsIfOpen(){if(els.suggestions.classList.contains('open'))renderSuggestions()}
 function renderSuggestions(){const q=norm(els.search.value),all=options();let arr=q?all.filter(o=>norm(o.title+' '+o.sub+' '+o.key).includes(q)):all;arr=arr.slice(0,40);state.activeOption=-1;els.suggestions.innerHTML=arr.length?arr.map(o=>`<div class="option" data-key="${esc(o.key)}"><div class="option-main"><b>${esc(o.title)}</b><small>${esc(o.sub)}</small></div><span class="option-tag">${esc(o.tag)}</span></div>`).join(''):`<div class="empty-option">Không có kết quả phù hợp</div>`;els.suggestions.classList.add('open');$$('.option[data-key]').forEach(o=>o.addEventListener('mousedown',e=>{e.preventDefault();select(o.dataset.key)}))}
 function closeSuggestions(){els.suggestions.classList.remove('open')}
-function placeholder(){return state.mode==='student'?'Tìm tên hoặc mã học sinh…':state.mode==='teacher'?'Tìm tên giáo viên…':'Tìm mã lớp…'}
+function placeholder(){
+  if(state.mode==='student')return'Tìm tên hoặc mã học sinh…';
+  if(state.mode==='teacher')return'Tìm tên giáo viên…';
+  if(state.mode==='class')return'Tìm lớp hoặc mã lớp…';
+  if(state.mode==='room')return'Tìm phòng học…';
+  return'Tìm lớp gốc…'
+}
 function setMode(mode){state.mode=mode;state.selection=null;els.search.value='';els.search.placeholder=placeholder();$$('.seg').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));clearView();closeSuggestions();setTimeout(()=>els.search.focus(),0)}
 function select(k){state.selection=k;const o=options().find(x=>x.key===k);els.search.value=o?.title||k;closeSuggestions();renderView();els.exportBtn.disabled=false}
 function clearSelection(){state.selection=null;els.search.value='';clearView()}
@@ -209,52 +368,153 @@ function clearView(){
   renderGrid(blankMatrix())
 }
 function currentView(){
-  const m=blankMatrix(),d=state.data,sel=state.selection;if(!d||!sel)return null;
+  const m=blankMatrix(),d=state.data,h=state.homeData,sel=state.selection;if(!d||!sel)return null;
+
   if(state.mode==='student'){
-    const s=d.byId.get(sel);for(const l of s.schedule)m[key(l.day,l.period)].push({lesson:l});
+    const s=d.byId.get(sel);if(!s)return null;
+    for(const l of s.schedule)m[key(l.day,l.period)].push({lesson:l});
     const homeSections=homeSectionsForClass(s.homeClass),homeLessons=homeSections.flatMap(x=>x.lessons);
     const allDays=uniq([...s.schedule.map(x=>x.day),...homeLessons.map(x=>x.day)]);
-    const total=s.schedule.length+homeLessons.length;
+    const teachers=uniq([...s.schedule.map(x=>x.teacher),...homeLessons.map(x=>x.teacher)].filter(Boolean));
     return{
       title:s.name,sub:`${s.id} · Lớp gốc ${s.homeClass}`,badge:'Học sinh',m,homeSections,homeClass:s.homeClass,roster:[],
       stats:[
-        ['Tổng tiết',total,'trái buổi + lớp gốc'],
+        ['Tổng tiết',s.schedule.length+homeLessons.length,'cả hai nguồn'],
         ['Trái buổi',s.schedule.length,'tiết đăng ký / tự chọn'],
-        ['Lớp gốc',homeLessons.length,`${s.homeClass} · tiết chính khóa`],
-        ['Ngày có lịch',allDays.length,'trong Thứ 2–6']
+        ['Lớp gốc',homeLessons.length,`${s.homeClass} · chính khóa`],
+        ['Giáo viên',teachers.length,`${allDays.length} ngày có lịch`]
       ]
     }
   }
+
   if(state.mode==='teacher'){
-    const sm=d.teacherSlots.get(sel);let events=0;const codes=new Set(),ids=new Set(),days=new Set();for(const [k,groups] of sm){for(const g of groups.values()){events++;if(g.code)codes.add(g.code);g.studentIds.forEach(x=>ids.add(x));days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})}}
-    const roster=[...ids].map(id=>d.byId.get(id)).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'vi'));
-    return{title:sel,sub:'Lịch giảng dạy',badge:'Giáo viên',m,roster,stats:[['Tiết giảng',events,'lượt lớp theo tiết'],['Ngày dạy',days.size,'trong 5 ngày'],['Mã lớp',codes.size,'lớp phụ trách'],['Học sinh',ids.size,'học sinh liên quan']]}
+    let electiveEvents=0;const codes=new Set(),ids=new Set(),days=new Set(),rooms=new Set();
+    const sm=d.teacherSlots.get(sel);
+    if(sm)for(const [k,groups] of sm)for(const g of groups.values()){
+      electiveEvents++;if(g.code)codes.add(g.code);if(g.room)rooms.add(g.room);
+      g.studentIds.forEach(x=>ids.add(x));days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})
+    }
+
+    const homeLessons=h?.byTeacher?.get(sel)||[],homeClasses=new Set();
+    for(const l of homeLessons){homeClasses.add(l.homeClass);if(l.room)rooms.add(l.room);days.add(l.day)}
+    studentIdsForHomeClasses(homeClasses).forEach(x=>ids.add(x));
+    const homeSections=homeSectionsFromLessons(homeLessons,'Lịch từ lớp gốc');
+
+    return{
+      title:sel,sub:'Lịch giảng dạy hợp nhất từ hai nguồn',badge:'Giáo viên',m,homeSections,roster:rosterFromIds(ids),
+      stats:[
+        ['Tổng tiết',electiveEvents+homeLessons.length,'cả hai nguồn'],
+        ['Trái buổi',electiveEvents,`${codes.size} mã lớp`],
+        ['Lớp gốc',homeLessons.length,`${homeClasses.size} lớp`],
+        ['Học sinh',ids.size,`${rooms.size} phòng liên quan`]
+      ]
+    }
   }
-  const sm=d.classSlots.get(sel);let events=0;const ids=new Set(),teachers=new Set(),days=new Set(),subjects=new Set();for(const [k,groups] of sm)for(const g of groups.values()){events++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);if(g.subject)subjects.add(g.subject);days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})}
-  const roster=[...ids].map(id=>d.byId.get(id)).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'vi')),first=[...sm.values()].flatMap(g=>[...g.values()])[0];
-  return{title:`Mã lớp ${sel}`,sub:[...subjects].join(', ')||first?.subject||'',badge:'Mã lớp',m,roster,stats:[['Tiết học',events,'lượt học trong tuần'],['Sĩ số',ids.size,'học sinh'],['Ngày học',days.size,'trong 5 ngày'],['Giáo viên',teachers.size,'giáo viên phụ trách']]}
+
+  if(state.mode==='class'){
+    let electiveEvents=0;const ids=new Set(),teachers=new Set(),days=new Set(),subjects=new Set(),rooms=new Set();
+    const sm=d.classSlots.get(sel);
+    if(sm)for(const [k,groups] of sm)for(const g of groups.values()){
+      electiveEvents++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);
+      if(g.subject)subjects.add(g.subject);if(g.room)rooms.add(g.room);days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})
+    }
+
+    const homeLessons=h?.byClass?.get(sel)||[];
+    for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);if(l.subject)subjects.add(l.subject);if(l.room)rooms.add(l.room);days.add(l.day)}
+    if(homeLessons.length)for(const id of d.homeClassStudents.get(sel)||[])ids.add(id);
+    const homeSections=homeSectionsFromLessons(homeLessons,`Lịch lớp gốc · ${sel}`);
+
+    return{
+      title:`Lớp ${sel}`,sub:[...subjects].join(', ')||'Thông tin lớp từ hai nguồn',badge:'Lớp / mã lớp',m,homeSections,homeClass:homeLessons.length?sel:null,roster:rosterFromIds(ids),
+      stats:[
+        ['Tổng tiết',electiveEvents+homeLessons.length,'cả hai nguồn'],
+        ['Học sinh',ids.size,'học sinh liên quan'],
+        ['Giáo viên',teachers.size,`${rooms.size} phòng`],
+        ['Ngày học',days.size,'trong Thứ 2–6']
+      ]
+    }
+  }
+
+  if(state.mode==='room'){
+    let electiveEvents=0;const ids=new Set(),teachers=new Set(),classes=new Set(),days=new Set();
+    const sm=d.roomSlots.get(sel);
+    if(sm)for(const [k,groups] of sm)for(const g of groups.values()){
+      electiveEvents++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);if(g.code)classes.add(g.code);
+      days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})
+    }
+
+    const homeLessons=h?.byRoom?.get(sel)||[],homeClasses=new Set();
+    for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);homeClasses.add(l.homeClass);classes.add(l.homeClass);days.add(l.day)}
+    studentIdsForHomeClasses(homeClasses).forEach(x=>ids.add(x));
+    const homeSections=homeSectionsFromLessons(homeLessons,`Lịch sử dụng phòng · ${sel}`);
+
+    return{
+      title:sel,sub:'Lịch sử dụng phòng từ cả hai nguồn',badge:'Phòng',m,homeSections,roster:rosterFromIds(ids),
+      stats:[
+        ['Tổng tiết',electiveEvents+homeLessons.length,'lượt sử dụng'],
+        ['Lớp',classes.size,'lớp / mã lớp'],
+        ['Giáo viên',teachers.size,'giáo viên sử dụng'],
+        ['Học sinh',ids.size,`${days.size} ngày có lịch`]
+      ]
+    }
+  }
+
+  // Lớp gốc: official home schedule + all elective schedules of students in the class.
+  const ids=new Set(d.homeClassStudents.get(sel)||[]);
+  const elective=aggregateElectiveForStudents(ids);
+  for(const k of Object.keys(elective.m))m[k]=elective.m[k];
+
+  const homeLessons=h?.byClass?.get(sel)||[],homeSections=homeSectionsFromLessons(homeLessons,`Lịch chính khóa · ${sel}`);
+  const teachers=new Set(elective.teachers),rooms=new Set(elective.rooms),days=new Set(elective.days);
+  for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);if(l.room)rooms.add(l.room);days.add(l.day)}
+
+  return{
+    title:`Lớp gốc ${sel}`,sub:'Lịch chính khóa + lịch trái buổi của học sinh trong lớp',badge:'Lớp gốc',
+    m,homeSections,homeClass:sel,roster:rosterFromIds(ids),
+    stats:[
+      ['Sĩ số',ids.size,'học sinh trong dữ liệu'],
+      ['Chính khóa',homeLessons.length,'tiết lớp gốc'],
+      ['Mã trái buổi',elective.codes.size,'lớp học khác nhau'],
+      ['Giáo viên',teachers.size,`${rooms.size} phòng liên quan`]
+    ]
+  }
 }
 function lessonHtml(x){const l=x.lesson,t=tone(l.subject||l.code),home=l.source==='home';return`<div class="lesson ${home?'home-lesson':''}" data-tone="${t}"><div class="subject">${esc(l.subject||'Chưa có môn')}</div>${l.code?`<span class="classcode">${home?'Lớp ':''}${esc(l.code)}</span>`:''}<div class="meta">${l.teacher?`<div class="meta-row"><span>GV</span><span>${esc(l.teacher)}</span></div>`:''}${l.room?`<div class="meta-row"><span>Phòng</span><span>${esc(l.room)}</span></div>`:''}${l.comments?`<div class="meta-row"><span>Ghi chú</span><span>${esc(l.comments)}</span></div>`:''}</div>${x.count?`<span class="count-badge">${x.count} học sinh</span>`:''}</div>`}
 function gridHtml(m,periods=PERIODS){let html='<div class="ghead corner">Tiết</div>'+DAYS.map(d=>`<div class="ghead">Thứ ${d}</div>`).join('');for(const p of periods){html+=`<div class="period">Tiết ${p}</div>`;for(const d of DAYS){const a=m[key(d,p)]||[];html+=`<div class="slot ${a.length?'':'blank'}">${a.map(lessonHtml).join('')||'<div class="empty"></div>'}</div>`}}return html}
 function renderGrid(m){els.grid.innerHTML=gridHtml(m,PERIODS)}
 function renderHomeSchedule(v){
-  if(state.mode!=='student'||!v.homeSections?.length){els.homeArea.classList.remove('show');els.homeArea.innerHTML='';return}
+  if(!v.homeSections?.length){els.homeArea.classList.remove('show');els.homeArea.innerHTML='';return}
   els.homeArea.innerHTML=v.homeSections.map(sec=>{
     const occupied=sec.periods.reduce((n,p)=>n+DAYS.filter(d=>(sec.m[key(d,p)]||[]).length).length,0);
-    return`<div class="home-block"><div class="section-bar"><div><h3>Lịch lớp gốc · ${esc(v.homeClass)} · ${esc(sec.label)}</h3><p>${sec.session==='C'?'C = Chiều':'S = Sáng'} · hàng là tiết · cột là thứ</p></div><div class="section-right">${occupied}/25 ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`
+    return`<div class="home-block"><div class="section-bar"><div><h3>${esc(sec.title||`Lịch bổ sung · ${sec.label}`)}</h3><p>${sec.session==='C'?'C = Chiều':'S = Sáng'} · hàng là tiết · cột là thứ</p></div><div class="section-right">${occupied}/25 ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`
   }).join('');
   els.homeArea.classList.add('show')
 }
 function renderStats(v){els.stats.innerHTML=v.stats.map(([label,value,note])=>`<div class="stat"><div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div><div class="stat-note">${esc(note)}</div></div>`).join('');els.stats.classList.add('show')}
-function renderRoster(v){if(!v.roster.length){els.roster.classList.remove('show');return}els.rosterTitle.textContent=state.mode==='class'?`Danh sách học sinh ${v.title}`:`Học sinh liên quan`;els.rosterMeta.textContent=`${v.roster.length} học sinh`;els.rosterBody.innerHTML=v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('');els.roster.classList.add('show')}
+function renderRoster(v){
+  if(!v.roster.length){els.roster.classList.remove('show');return}
+  els.rosterTitle.textContent=state.mode==='homeClass'?`Danh sách học sinh ${v.title}`:state.mode==='class'?`Danh sách học sinh ${v.title}`:state.mode==='room'?`Học sinh có lịch tại ${v.title}`:'Học sinh liên quan';
+  els.rosterMeta.textContent=`${v.roster.length} học sinh`;
+  els.rosterBody.innerHTML=v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('');
+  els.roster.classList.add('show')
+}
 function renderView(){
   const v=currentView();if(!v)return clearView();
   els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=v.badge;els.viewHead.classList.add('show');
-  if(state.mode==='student'){els.primaryGridTitle.textContent='Lịch trái buổi';els.primaryGridSub.textContent='Lịch đăng ký / tự chọn · hàng là tiết · cột là thứ'}
-  else{els.primaryGridTitle.textContent='Thời khóa biểu';els.primaryGridSub.textContent='Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp'}
+
+  const primaryTitles={
+    student:['Lịch trái buổi','Lịch đăng ký / tự chọn của học sinh'],
+    teacher:['Lịch trái buổi','Các tiết của giáo viên trong nguồn trái buổi'],
+    class:['Lịch trái buổi / mã lớp','Các tiết trùng với lớp hoặc mã lớp đã chọn'],
+    room:['Lịch trái buổi theo phòng','Các tiết sử dụng phòng trong nguồn trái buổi'],
+    homeClass:['Lịch trái buổi của học sinh trong lớp','Tổng hợp các nhóm trái buổi của học sinh thuộc lớp gốc']
+  };
+  const t=primaryTitles[state.mode]||['Thời khóa biểu','Hàng là tiết · cột là thứ'];
+  els.primaryGridTitle.textContent=t[0];els.primaryGridSub.textContent=t[1];
+
   renderStats(v);renderGrid(v.m);renderHomeSchedule(v);renderRoster(v);
   const occupied=PERIODS.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);
-  els.gridNote.textContent=state.mode==='student'?`Trái buổi · ${occupied}/20 ô có lịch`:`${occupied}/20 ô có lịch`;
+  els.gridNote.textContent=`${occupied}/20 ô có lịch`;
   els.exportBtn.disabled=false
 }
 function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===','){row.push(cell);cell=''}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell=''}else cell+=c}}if(cell.length||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}return rows}
@@ -333,7 +593,7 @@ function exportExcel(){
   let ws=XLSX.utils.aoa_to_sheet([['THỜI KHÓA BIỂU'],['Đối tượng',v.title],['Thông tin',v.sub],['Cập nhật đến',fmt(state.lastSync)]]);
   ws['!cols']=[{wch:18},{wch:54}];XLSX.utils.book_append_sheet(wb,ws,'Tong quan');
   let grid=matrixRows(v.m,PERIODS);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,state.mode==='student'?'Trai buoi':'Grid TKB');
-  for(const sec of v.homeSections||[]){grid=matrixRows(sec.m,sec.periods);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,`Lop goc ${sec.session}`)}
+  for(const sec of v.homeSections||[]){grid=matrixRows(sec.m,sec.periods);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,sec.session==='S'?'Nguon 2 Sang':'Nguon 2 Chieu')}
   ws=XLSX.utils.aoa_to_sheet([['Buổi','Thứ','Tiết','Môn học','Lớp / Mã lớp','Giáo viên','Phòng','Ghi chú','Số HS'],...detailRows(v)]);
   ws['!cols']=[{wch:14},{wch:10},{wch:8},{wch:20},{wch:18},{wch:28},{wch:18},{wch:24},{wch:9}];XLSX.utils.book_append_sheet(wb,ws,'Chi tiet');
   if(v.roster.length){ws=XLSX.utils.aoa_to_sheet([['STT','Mã HS','Họ và tên','Lớp gốc'],...v.roster.map((s,i)=>[i+1,s.id,s.name,s.homeClass])]);ws['!cols']=[{wch:7},{wch:12},{wch:34},{wch:11}];XLSX.utils.book_append_sheet(wb,ws,'Danh sach HS')}
@@ -346,8 +606,8 @@ function printGridTable(title,m,periods){
 }
 function printableHtml(v){
   const fileTitle=pdfSuggestedName(v);
-  const primaryTitle=state.mode==='student'?'Lịch trái buổi':'Thời khóa biểu';
-  const schedules=printGridTable(primaryTitle,v.m,PERIODS)+(v.homeSections||[]).map(sec=>printGridTable(`Lịch lớp gốc ${v.homeClass} · ${sec.label}`,sec.m,sec.periods)).join('');
+  const primaryTitle=state.mode==='student'?'Lịch trái buổi':state.mode==='teacher'?'Lịch trái buổi · Giáo viên':state.mode==='room'?'Lịch trái buổi · Phòng':state.mode==='homeClass'?'Lịch trái buổi của học sinh lớp gốc':'Lịch trái buổi / mã lớp';
+  const schedules=printGridTable(primaryTitle,v.m,PERIODS)+(v.homeSections||[]).map(sec=>printGridTable(sec.title||`Lịch bổ sung · ${sec.label}`,sec.m,sec.periods)).join('');
   const roster=v.roster.length?`<section class="roster-section"><h2>Danh sách học sinh <span>(${v.roster.length})</span></h2><table class="r"><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody>${v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td>${esc(s.name)}</td><td>${esc(s.homeClass)}</td></tr>`).join('')}</tbody></table></section>`:'';
   return`<!doctype html><html><head><meta charset="utf-8"><title>${esc(fileTitle)}</title><style>@page{size:A4 portrait;margin:8mm 7mm 9mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{width:100%;margin:0;padding:0}body{font-family:Arial,"Segoe UI",sans-serif;color:#172033;font-size:8pt;line-height:1.28}.print-head{display:flex;align-items:flex-end;justify-content:space-between;gap:6mm;margin:0 0 4mm}.print-head h1{font-size:15pt;line-height:1.1;margin:0 0 1mm}.print-head p{margin:0;color:#667085;font-size:8.5pt}.updated{white-space:nowrap;color:#7b8493;font-size:7.2pt;padding-bottom:.5mm}.print-section{break-inside:avoid;margin-bottom:6mm}.print-section+.print-section{break-before:page}h2{font-size:11pt;margin:0 0 2.2mm;color:#1f2937}h2 span{font-weight:500;color:#667085}table{width:100%;border-collapse:collapse}table.t{table-layout:fixed;border:1px solid #cfd6df}th,td{border:1px solid #cfd6df;vertical-align:top}table.t th,table.t td{padding:1.8mm 1.45mm}table.t thead th{background:#f1f4f8;text-align:center;font-size:7.6pt;font-weight:700}table.t th:first-child{width:11mm;text-align:center;vertical-align:middle;background:#f7f8fa}.l+.l{border-top:1px dashed #d8dde5;margin-top:1.2mm;padding-top:1.2mm}.l b{display:block;font-size:7.4pt;line-height:1.18}.l span{display:inline-block;margin:.6mm 0;padding:.4mm 1mm;background:#eef2ff;border-radius:2.6mm;font-size:6.2pt;font-weight:700;color:#465bb4}.l small{display:block;color:#606b7c;font-size:6.2pt;line-height:1.22;overflow-wrap:anywhere}.roster-section{break-before:page}.r{table-layout:auto;font-size:7.8pt}.r th,.r td{padding:1.8mm 2mm;border:1px solid #d6dbe3}.r thead th{background:#f3f5f8;font-size:7.3pt}.r th:nth-child(1),.r td:nth-child(1){width:12mm;text-align:center}.r th:nth-child(2),.r td:nth-child(2){width:25mm}.r th:nth-child(4),.r td:nth-child(4){width:22mm}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}.note{margin-top:2.5mm;color:#7e8795;font-size:6.8pt;text-align:right}</style></head><body><div class="print-head"><div><h1>${esc(v.title)}</h1><p>${esc(v.sub)}</p></div><div class="updated">Cập nhật ${fmt(state.lastSync)}</div></div>${schedules}${roster}<div class="note">Khổ A4 dọc</div><script>window.onload=()=>{document.title=${JSON.stringify(fileTitle)};window.focus();setTimeout(()=>window.print(),220)}<\/script></body></html>`
 }
@@ -365,9 +625,9 @@ function exportPng(){
   const v=ensureView();if(!v)return;const c=document.createElement('canvas');c.width=1080;c.height=2400;const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,1080,2400);g.addColorStop(0,'#f8faff');g.addColorStop(1,'#eef2fb');ctx.fillStyle=g;ctx.fillRect(0,0,1080,2400);
   ctx.fillStyle='#18233a';ctx.font='800 46px Arial';wrap(ctx,v.title,55,82,970,54,2);ctx.fillStyle='#6f7c91';ctx.font='22px Arial';wrap(ctx,v.sub,55,190,970,30,2);
   ctx.fillStyle='#fff';roundRect(ctx,42,285,996,1940,30);
-  if(state.mode==='student'&&v.homeSections?.length){
+  if(v.homeSections?.length){
     drawCanvasGrid(ctx,v.m,PERIODS,62,365,956,690,'Lịch trái buổi');
-    let y=1160;for(const sec of v.homeSections.slice(0,1)){drawCanvasGrid(ctx,sec.m,sec.periods,62,y,956,850,`Lịch lớp gốc · ${v.homeClass} · ${sec.label}`)}
+    let y=1160;for(const sec of v.homeSections.slice(0,1)){drawCanvasGrid(ctx,sec.m,sec.periods,62,y,956,850,sec.title||`Lịch bổ sung · ${sec.label}`)}
   }else drawCanvasGrid(ctx,v.m,PERIODS,62,380,956,1450,'Thời khóa biểu');
   ctx.textAlign='left';ctx.fillStyle='#778398';ctx.font='16px Arial';ctx.fillText(`Cập nhật ${fmt(state.lastSync)}`,55,2300);
   const a=document.createElement('a');a.download=`${safeName(v.title)}_mobile.png`;a.href=c.toDataURL('image/png');a.click();action('Đã xuất ảnh PNG')
