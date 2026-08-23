@@ -386,6 +386,22 @@ body{
 }
 </style>
 
+
+<style id="premium-fix-v6">
+.topbar{position:relative;z-index:3100}
+.control{position:relative;z-index:3000;overflow:visible!important;isolation:isolate}
+.search-wrap{position:relative;z-index:3300;overflow:visible!important}
+.searchbox{position:relative;z-index:3301}
+.suggestions{z-index:99999!important;transform:translateZ(0);overflow-y:auto!important;overscroll-behavior:contain}
+.schedule-shell,.home-schedule-area,.view-head,.roster,.stats-zone,.section-bar{position:relative;z-index:1}
+.schedule-grid .ghead,.schedule-grid .period{z-index:2}
+.welcome-strip{display:none;position:relative;z-index:2;align-items:center;justify-content:space-between;gap:18px;margin:13px 1px 15px;padding:16px 19px;border-radius:20px;background:radial-gradient(circle at 90% 10%,rgba(255,255,255,.34),transparent 30%),linear-gradient(135deg,#202d58 0%,#394988 48%,#6657b4 100%);border:1px solid rgba(255,255,255,.16);box-shadow:0 18px 46px rgba(41,52,101,.20);color:#fff;overflow:hidden}
+.welcome-strip.show{display:flex}
+.welcome-strip:before{content:"NK";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:68px;font-weight:950;letter-spacing:-.08em;color:rgba(255,255,255,.055);pointer-events:none}
+.welcome-copy{position:relative;z-index:1;min-width:0}.welcome-eyebrow{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#cfd6ff;margin-bottom:6px}.welcome-message{font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:700;line-height:1.24;letter-spacing:-.015em;color:#fff}.welcome-message strong{color:#fff1b8;font-weight:800}.welcome-meta{position:relative;z-index:1;flex:none;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.15);font-size:9.5px;font-weight:850;color:#eef1ff}
+@media(max-width:720px){.control{z-index:5000}.search-wrap{z-index:5200}.suggestions{z-index:99999!important;max-height:62vh!important}.welcome-strip{margin:10px 0 12px;padding:13px 14px;border-radius:17px;gap:10px}.welcome-message{font-size:16px;line-height:1.28}.welcome-meta{display:none}.welcome-strip:before{font-size:48px;right:12px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -418,11 +434,16 @@ body{
       <div class="export-menu" id="exportMenu">
         <button class="menu-item" id="excelBtn"><span class="menu-icon">XLS</span><span><b>Excel tổng hợp</b><small>Grid, chi tiết và danh sách học sinh</small></span></button>
         <button class="menu-item" id="pdfBtn"><span class="menu-icon">PDF</span><span><b>PDF A4 đầy đủ</b><small>Mỗi buổi phủ trọn trang A4, không cắt nội dung</small></span></button>
-        <button class="menu-item" id="pngBtn"><span class="menu-icon">PNG</span><span><b>PNG đầy đủ</b><small>Ảnh dài tự co giãn, không bỏ bớt tiết học</small></span></button>
+        <button class="menu-item" id="pngBtn"><span class="menu-icon">PNG</span><span><b>PNG Môn + Phòng</b><small>Chỉ giữ môn học và phòng, chữ lớn dễ xem</small></span></button>
       </div>
     </div>
   </section>
   <div class="action-line" id="actionLine"></div>
+
+  <section class="welcome-strip" id="welcomeStrip" aria-live="polite">
+    <div class="welcome-copy"><div class="welcome-eyebrow">Chào mừng trở về</div><div class="welcome-message" id="welcomeMessage"></div></div>
+    <div class="welcome-meta" id="welcomeMeta">Nguyễn Khuyến</div>
+  </section>
 
   <section class="view-head" id="viewHead">
     <div class="view-title"><h2 id="viewTitle"></h2><p id="viewSub"></p></div>
@@ -439,7 +460,7 @@ body{
     <div class="section-bar stats-heading"><div><h3>Tổng quan</h3><p>Thống kê của đối tượng đang xem</p></div></div>
     <section class="stats" id="stats"></section>
   </section>
-  <footer class="footer"><span>Thời khóa biểu · 3 nguồn trực tiếp · Sáng / Chiều</span><span id="footerTime"></span></footer>
+  <footer class="footer"><span>Thời khóa biểu · dữ liệu trực tiếp · Sáng / Chiều · GDTC đúng tiết</span><span id="footerTime"></span></footer>
 </div>
 <script>
 
@@ -451,14 +472,14 @@ const ELECTIVE10_SHEET_GID='0';
 // Nguồn lớp gốc: lịch chính khóa S/C.
 const HOME_SHEET_ID='132pTSUjCeHhahXr7O2m4K_Bmcj_AxCAjfawPwzyoOG8';
 const HOME_SHEET_GID='0';
-// Nguồn 11: lịch trái buổi lớp 11, có cả Sáng và Chiều theo tiêu đề cột.
+// Nguồn 11: lịch lớp 11; GDTC dùng thêm cột LỊCH THỂ DỤC để phân đúng Sáng/Chiều và tiết.
 const ELECTIVE11_SHEET_ID='1AZxauVY7l5FvF7SA3jOf3jzuROICEw6as_IB6oOfdvw';
 const ELECTIVE11_SHEET_GID='0';
 const LIVE_POLL_MS=15000;
 // =============================================
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const state={mode:'student',detailMode:'full',data:null,homeData:null,selection:null,source:'loading',lastSync:null,version10:null,version11:null,homeVersion:null,activeOption:-1};
-const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
+const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
 function clean(v){return v==null?'':String(v).trim()}
 function norm(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
 function esc(v){return clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -493,6 +514,31 @@ const SUBJECT_HINTS=[
 function subjectPalette(subject){const n=norm(subject);for(const [re,i] of SUBJECT_HINTS)if(re.test(n))return SUBJECT_PALETTES[i];let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return SUBJECT_PALETTES[h%SUBJECT_PALETTES.length]}
 function subjectVars(subject){const p=subjectPalette(subject);return`--subject-accent:${p.accent};--subject-soft:${p.soft};--subject-border:${p.border};--subject-ink:${p.ink};--subject-pill:${p.pill}`}
 
+
+function sameLesson(a,b){
+  return a.session===b.session&&a.day===b.day&&a.period===b.period&&
+    norm(a.subject)===norm(b.subject)&&norm(a.code)===norm(b.code)&&norm(a.teacher)===norm(b.teacher)
+}
+function pushLessonUnique(schedule,lesson){
+  if(!schedule.some(x=>sameLesson(x,lesson)))schedule.push(lesson)
+}
+function parseGdtcSlots(value){
+  const out=[],raw=clean(value).toUpperCase();if(!raw)return out;
+  // Ví dụ: T2-C2-2~3 = Chiều Thứ 2, tiết 2–3
+  //         T4-S2-3~4 = Sáng Thứ 4, tiết 3–4
+  for(const part0 of raw.split(/[,;\n]+/)){
+    const part=part0.trim();
+    const m=part.match(/^T([2-6])\s*-\s*([SC])\d*\s*-\s*(\d+)(?:\s*~\s*(\d+))?$/i);
+    if(!m)continue;
+    const day=parseInt(m[1],10),session=m[2].toUpperCase(),start=parseInt(m[3],10),end=parseInt(m[4]||m[3],10);
+    const lo=Math.min(start,end),hi=Math.max(start,end);
+    for(let period=lo;period<=hi;period++){
+      if(DAYS.includes(day)&&HOME_PERIODS.includes(period))out.push({session,day,period})
+    }
+  }
+  return out
+}
+
 function parseElectiveRows(rows,sourceKey,sourceLabel){
   if(!rows||rows.length<2)return[];
   const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
@@ -507,25 +553,66 @@ function parseElectiveRows(rows,sourceKey,sourceLabel){
     if(!m)return;
     const session=norm(m[1]).startsWith('sang')?'S':'C',day=parseInt(m[2],10),period=parseInt(m[3],10),field=m[4];
     if(!DAYS.includes(day)||!HOME_PERIODS.includes(period))return;
-    const sk=slotKey(session,day,period);if(!slots.has(sk))slots.set(sk,{session,day,period});slots.get(sk)[field]=i;
+    const sk=slotKey(session,day,period);
+    if(!slots.has(sk))slots.set(sk,{session,day,period});
+    slots.get(sk)[field]=i
   });
+
+  // Các cột GDTC đặc thù của nguồn lớp 11.
+  const gdtcSubjectHead=['MonGDTC','Môn GDTC'].find(h=>h in ix);
+  const gdtcClassHead=['LỚP GDTC','Lớp GDTC'].find(h=>h in ix);
+  const gdtcTeacherHead=['GIÁO VIÊN','Giáo viên GDTC'].find(h=>h in ix);
+  const gdtcTimeHead=['LỊCH THỂ DỤC','Lịch thể dục'].find(h=>h in ix);
 
   const students=[];
   rows.slice(1).forEach((r0,rowIndex)=>{
     const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');
-    const name=clean(r[ix[nameHead]]),homeClass=clean(r[ix[classHead]]);if(!name&&!homeClass)return;
+    const name=clean(r[ix[nameHead]]),homeClass=clean(r[ix[classHead]]);
+    if(!name&&!homeClass)return;
+
     const rawId=idHead?clean(r[ix[idHead]]):'';
     const id=rawId||`${sourceKey}:${homeClass}:${norm(name)}:${rowIndex+2}`;
     const schedule=[];
+
+    // 1) Đọc các cột thời khóa biểu chi tiết Sáng/Chiều.
     for(const def of slots.values()){
-      const subject=clean(r[def['Môn học']]),code=clean(r[def['Mã lớp']]),teacher=smartCase(r[def['Giáo viên']]),room=clean(r[def['Phòng']]);
-      if(subject||code||teacher||room)schedule.push({day:def.day,period:def.period,session:def.session,subject,code,teacher,room,source:'elective',sourceKey,sourceLabel});
+      const subject=clean(r[def['Môn học']]),code=clean(r[def['Mã lớp']]),
+        teacher=smartCase(r[def['Giáo viên']]),room=clean(r[def['Phòng']]);
+      if(subject||code||teacher||room){
+        pushLessonUnique(schedule,{
+          day:def.day,period:def.period,session:def.session,
+          subject,code,teacher,room,
+          source:'elective',sourceKey,sourceLabel
+        })
+      }
     }
-    students.push({id,displayId:rawId,name,homeClass,schedule,sourceKey,sourceLabel,grade:(homeClass.match(/^\d+/)||[''])[0]});
+
+    // 2) Nguồn lớp 11: dùng LỊCH THỂ DỤC để đảm bảo GDTC nằm đúng buổi/đúng tiết.
+    // Nếu cột lịch chi tiết đã có cùng tiết GDTC thì pushLessonUnique sẽ không nhân đôi.
+    if(sourceKey==='g11'&&gdtcTimeHead){
+      const subject=gdtcSubjectHead?clean(r[ix[gdtcSubjectHead]]):'GDTC';
+      const code=gdtcClassHead?clean(r[ix[gdtcClassHead]]):'';
+      const teacher=gdtcTeacherHead?smartCase(r[ix[gdtcTeacherHead]]):'';
+      const encoded=clean(r[ix[gdtcTimeHead]]);
+      if(encoded&&(subject||code||teacher)){
+        for(const pos of parseGdtcSlots(encoded)){
+          pushLessonUnique(schedule,{
+            day:pos.day,period:pos.period,session:pos.session,
+            subject:subject||'GDTC',code,teacher,room:'',
+            source:'elective',sourceKey,sourceLabel,
+            sourceDetail:'GDTC'
+          })
+        }
+      }
+    }
+
+    students.push({
+      id,displayId:rawId,name,homeClass,schedule,sourceKey,sourceLabel,
+      grade:(homeClass.match(/^\d+/)||[''])[0]
+    })
   });
   return students
 }
-
 function buildElectiveData(students){
   const byId=new Map(),teacherSlots=new Map(),classSlots=new Map(),roomSlots=new Map(),classStudents=new Map(),homeClassStudents=new Map();
   const teacherNames=new Map(),codes=new Set(),rooms=new Set(),subjects=new Set();
@@ -680,12 +767,19 @@ function placeholder(){
   if(state.mode==='room')return'Tìm phòng học…';
   return'Tìm lớp gốc…'
 }
+function updateWelcome(v){
+  if(state.mode==='student'&&state.selection&&v){
+    els.welcomeMessage.innerHTML=`Nguyễn Khuyến là nhà của <strong>${esc(v.title)}</strong>`;
+    els.welcomeMeta.textContent=v.homeClass?`Lớp ${v.homeClass}`:'Nguyễn Khuyến';
+    els.welcomeStrip.classList.add('show')
+  }else{els.welcomeStrip.classList.remove('show');els.welcomeMessage.textContent='';els.welcomeMeta.textContent='Nguyễn Khuyến'}
+}
 function setMode(mode){state.mode=mode;state.selection=null;els.search.value='';els.search.placeholder=placeholder();updateSearchClear();$$('.seg').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));clearView();closeSuggestions();setTimeout(()=>els.search.focus(),0)}
 function setDetailMode(mode){state.detailMode=mode==='simple'?'simple':'full';document.body.classList.toggle('simple-view',state.detailMode==='simple');$$('.detail-btn').forEach(b=>b.classList.toggle('active',b.dataset.detail===state.detailMode));if(state.selection)renderView()}
 function select(k){state.selection=k;const o=options().find(x=>x.key===k);els.search.value=o?.title||k;updateSearchClear();closeSuggestions();renderView();els.exportBtn.disabled=false}
 function clearSelection(){state.selection=null;els.search.value='';updateSearchClear();clearView();setTimeout(()=>els.search.focus(),0)}
 function clearView(){
-  els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';els.statsZone?.classList.remove('show');els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.homeArea.classList.remove('show');els.homeArea.innerHTML='';els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent='Lịch hợp nhất theo đúng buổi';renderGrid(blankMatrix(),HOME_PERIODS)
+  els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';els.statsZone?.classList.remove('show');els.welcomeStrip?.classList.remove('show');els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.homeArea.classList.remove('show');els.homeArea.innerHTML='';els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent='Lịch hợp nhất theo đúng buổi';renderGrid(blankMatrix(),HOME_PERIODS)
 }
 function addGroupedSlots(sm,morning,afternoon,collect){
   let events=0;if(!sm)return events;for(const groups of sm.values())for(const g of groups.values()){events++;addLessonToMatrices(morning,afternoon,g,{lesson:g,count:g.studentIds?.size||0});collect?.(g)}return events
@@ -750,7 +844,7 @@ function renderRoster(v){
   if(!v.roster.length){els.roster.classList.remove('show');return}els.rosterTitle.textContent=state.mode==='homeClass'?`Danh sách học sinh ${v.title}`:state.mode==='class'?`Danh sách học sinh ${v.title}`:state.mode==='room'?`Học sinh có lịch tại ${v.title}`:'Học sinh liên quan';els.rosterMeta.textContent=`${v.roster.length} học sinh`;els.rosterBody.innerHTML=v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.displayId||'—')}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('');els.roster.classList.add('show')
 }
 function renderView(){
-  const v=currentView();if(!v)return clearView();els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=`${v.badge} · ${state.detailMode==='simple'?'Đơn giản':'Đầy đủ'}`;els.viewHead.classList.add('show');els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent=state.detailMode==='simple'?(state.mode==='teacher'?'Chỉ hiển thị lớp và phòng':'Hiển thị tối giản theo chế độ đang chọn'):'Môn học được phân màu · đầy đủ lớp, giáo viên và phòng';const periods=v.primaryPeriods||HOME_PERIODS;renderGrid(v.m,periods);renderHomeSchedule(v);renderRoster(v);renderStats(v);const occupied=periods.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);els.gridNote.textContent=`${occupied}/${periods.length*DAYS.length} ô có lịch`;els.exportBtn.disabled=false
+  const v=currentView();if(!v)return clearView();els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=`${v.badge} · ${state.detailMode==='simple'?'Đơn giản':'Đầy đủ'}`;els.viewHead.classList.add('show');updateWelcome(v);els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent=state.detailMode==='simple'?(state.mode==='teacher'?'Chỉ hiển thị lớp và phòng':'Hiển thị tối giản theo chế độ đang chọn'):'Môn học được phân màu · đầy đủ lớp, giáo viên và phòng';const periods=v.primaryPeriods||HOME_PERIODS;renderGrid(v.m,periods);renderHomeSchedule(v);renderRoster(v);renderStats(v);const occupied=periods.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);els.gridNote.textContent=`${occupied}/${periods.length*DAYS.length} ô có lịch`;els.exportBtn.disabled=false
 }
 function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===','){row.push(cell);cell=''}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell=''}else cell+=c}}if(cell.length||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}return rows}
 function gvizRows(payload,requiredHeader){
@@ -930,132 +1024,38 @@ function wrapLines(ctx,text,maxW,maxLines=99){
 }
 function drawLines(ctx,lines,x,y,lineH){lines.forEach((line,i)=>ctx.fillText(line,x,y+i*lineH));return lines.length*lineH}
 function canvasSessionMetrics(m,periods,scale=1){
-  const itemH=168*scale,rowPad=26*scale,headH=72*scale,titleH=72*scale;
-  const rows=periods.map(p=>{
-    let maxItems=1;
-    for(const d of DAYS)maxItems=Math.max(maxItems,(m[key(d,p)]||[]).length||1);
-    return Math.max(150*scale,rowPad+maxItems*itemH)
-  });
+  const itemH=126*scale,rowPad=22*scale,headH=68*scale,titleH=70*scale;
+  const rows=periods.map(p=>{let maxItems=1;for(const d of DAYS)maxItems=Math.max(maxItems,(m[key(d,p)]||[]).length||1);return Math.max(128*scale,rowPad+maxItems*itemH)});
   return{itemH,rowPad,headH,titleH,rows,total:titleH+headH+rows.reduce((a,b)=>a+b,0)}
 }
 function drawPosterSession(ctx,m,periods,x,y,w,title,scale=1){
-  const mt=canvasSessionMetrics(m,periods,scale),labelW=92*scale,colW=(w-labelW)/DAYS.length;
-  ctx.textAlign='left';ctx.fillStyle='#17243a';ctx.font=`900 ${32*scale}px Arial`;
-  ctx.fillText(title,x,y+36*scale);
-  ctx.fillStyle='#77849a';ctx.font=`700 ${16*scale}px Arial`;
-  ctx.fillText('Thứ 2 — Thứ 6 · đầy đủ môn, lớp, giáo viên và phòng',x,y+62*scale);
-
-  let gy=y+mt.titleH;
-  ctx.fillStyle='#f1f4fa';roundRect(ctx,x,gy,w,mt.headH,18*scale);
-  ctx.textAlign='center';ctx.fillStyle='#55647a';ctx.font=`900 ${18*scale}px Arial`;
-  ctx.fillText('TIẾT',x+labelW/2,gy+44*scale);
-  DAYS.forEach((d,i)=>ctx.fillText(`THỨ ${d}`,x+labelW+i*colW+colW/2,gy+44*scale));
-  gy+=mt.headH;
-
+  const mt=canvasSessionMetrics(m,periods,scale),labelW=88*scale,colW=(w-labelW)/DAYS.length;
+  ctx.textAlign='left';ctx.fillStyle='#17243a';ctx.font=`900 ${34*scale}px Arial`;ctx.fillText(title,x,y+38*scale);
+  ctx.fillStyle='#7a879a';ctx.font=`700 ${15*scale}px Arial`;ctx.fillText('Môn học · Phòng',x,y+62*scale);
+  let gy=y+mt.titleH;ctx.fillStyle='#edf1f8';roundRect(ctx,x,gy,w,mt.headH,18*scale);ctx.textAlign='center';ctx.fillStyle='#526178';ctx.font=`900 ${18*scale}px Arial`;ctx.fillText('TIẾT',x+labelW/2,gy+43*scale);DAYS.forEach((d,i)=>ctx.fillText(`THỨ ${d}`,x+labelW+i*colW+colW/2,gy+43*scale));gy+=mt.headH;
   for(let pi=0;pi<periods.length;pi++){
-    const p=periods[pi],rh=mt.rows[pi];
-    ctx.fillStyle=pi%2?'#fbfcfe':'#ffffff';roundRect(ctx,x,gy,w,rh,0);
-    ctx.textAlign='center';ctx.fillStyle='#59677c';ctx.font=`900 ${18*scale}px Arial`;
-    ctx.fillText(`T${p}`,x+labelW/2,gy+38*scale);
-
+    const p=periods[pi],rh=mt.rows[pi];ctx.fillStyle=pi%2?'#fbfcfe':'#fff';roundRect(ctx,x,gy,w,rh,0);ctx.textAlign='center';ctx.fillStyle='#58667a';ctx.font=`900 ${19*scale}px Arial`;ctx.fillText(`T${p}`,x+labelW/2,gy+40*scale);
     for(let di=0;di<DAYS.length;di++){
-      const d=DAYS[di],cx=x+labelW+di*colW+8*scale,list=m[key(d,p)]||[];
-      let cy=gy+12*scale;
-      if(!list.length){
-        ctx.textAlign='center';ctx.fillStyle='#c1c8d2';ctx.font=`600 ${17*scale}px Arial`;
-        ctx.fillText('—',cx+(colW-16*scale)/2,gy+rh/2);
-        continue
-      }
-
+      const d=DAYS[di],cx=x+labelW+di*colW+7*scale,list=m[key(d,p)]||[];let cy=gy+11*scale;
+      if(!list.length){ctx.textAlign='center';ctx.fillStyle='#c0c7d1';ctx.font=`600 ${17*scale}px Arial`;ctx.fillText('—',cx+(colW-14*scale)/2,gy+rh/2);continue}
       for(const it of list){
-        const l=it.lesson,boxW=colW-16*scale,boxH=mt.itemH-10*scale;
-        const pal=subjectPalette(l.subject||l.code);ctx.fillStyle=pal.soft;roundRect(ctx,cx,cy,boxW,boxH,15*scale);
-
-        const tx=cx+14*scale,maxText=boxW-28*scale;
-        ctx.textAlign='left';ctx.fillStyle=pal.ink;ctx.font=`900 ${24*scale}px Arial`;
-        const subjectLines=wrapLines(ctx,l.subject||'Chưa có môn',maxText,2);
-        let ty=cy+31*scale;ty+=drawLines(ctx,subjectLines,tx,ty,28*scale);
-
-        if(l.code){
-          ctx.font=`900 ${18*scale}px Arial`;
-          const label=(l.source==='home'?'LỚP ':'MÃ LỚP · ')+l.code;
-          const pillW=Math.min(maxText,ctx.measureText(label).width+24*scale);
-          ctx.fillStyle=pal.pill;roundRect(ctx,tx,ty+2*scale,pillW,29*scale,8*scale);
-          ctx.fillStyle=pal.ink;ctx.fillText(label,tx+10*scale,ty+22*scale);
-          ty+=38*scale;
-        }
-
-        ctx.font=`700 ${15*scale}px Arial`;ctx.fillStyle='#5f6e83';
-        if(l.teacher){const lines=wrapLines(ctx,'GV · '+l.teacher,maxText,1);ty+=drawLines(ctx,lines,tx,ty+15*scale,18*scale)}
-        if(l.room){const lines=wrapLines(ctx,'PHÒNG · '+l.room,maxText,1);ty+=drawLines(ctx,lines,tx,ty+15*scale,18*scale)}
-        if(l.comments){const lines=wrapLines(ctx,'GHI CHÚ · '+l.comments,maxText,1);ty+=drawLines(ctx,lines,tx,ty+15*scale,18*scale)}
-        if(it.count){
-          ctx.font=`800 ${14*scale}px Arial`;ctx.fillStyle='#78859a';
-          ctx.fillText(`${it.count} học sinh`,tx,cy+boxH-13*scale)
-        }
-        cy+=mt.itemH;
+        const l=it.lesson,pal=subjectPalette(l.subject||l.code),boxW=colW-14*scale,boxH=mt.itemH-9*scale;ctx.fillStyle=pal.soft;roundRect(ctx,cx,cy,boxW,boxH,15*scale);ctx.fillStyle=pal.accent;ctx.fillRect(cx,cy,5*scale,boxH);
+        const tx=cx+15*scale,maxText=boxW-30*scale;ctx.textAlign='left';ctx.fillStyle=pal.ink;ctx.font=`900 ${25*scale}px Arial`;const subjectLines=wrapLines(ctx,l.subject||'Chưa có môn',maxText,2);let ty=cy+31*scale;ty+=drawLines(ctx,subjectLines,tx,ty,28*scale);
+        const room=clean(l.room)||'Chưa có phòng';ctx.fillStyle='#67758a';ctx.font=`850 ${16*scale}px Arial`;const roomLines=wrapLines(ctx,'PHÒNG · '+room,maxText,2);drawLines(ctx,roomLines,tx,Math.max(ty+13*scale,cy+boxH-35*scale),19*scale);cy+=mt.itemH;
       }
     }
-
-    ctx.strokeStyle='#e2e7f0';ctx.lineWidth=1*scale;
-    ctx.beginPath();ctx.moveTo(x,gy+rh);ctx.lineTo(x+w,gy+rh);ctx.stroke();
-    gy+=rh;
+    ctx.strokeStyle='#e3e8f0';ctx.lineWidth=1*scale;ctx.beginPath();ctx.moveTo(x,gy+rh);ctx.lineTo(x+w,gy+rh);ctx.stroke();gy+=rh;
   }
   return mt.total
 }
 function exportPng(){
-  const v=ensureView();if(!v)return;
-  const periods=v.primaryPeriods||HOME_PERIODS,afternoon=v.homeSections?.[0]||null;
-  const baseW=1440,side=54,contentW=baseW-side*2;
-  const morningMetric=canvasSessionMetrics(v.m,periods,1);
-  const afternoonMetric=afternoon?canvasSessionMetrics(afternoon.m,afternoon.periods,1):null;
-  let planned=360+morningMetric.total+(afternoonMetric?80+afternoonMetric.total:0)+150;
-
-  // Keep within common browser canvas limits while preserving every lesson.
-  let scale=1;
-  if(planned>28000)scale=Math.max(.58,28000/planned);
-  const m1=canvasSessionMetrics(v.m,periods,scale);
-  const m2=afternoon?canvasSessionMetrics(afternoon.m,afternoon.periods,scale):null;
-  const canvasH=Math.ceil(360*scale+m1.total+(m2?80*scale+m2.total:0)+160*scale);
-
-  const c=document.createElement('canvas');c.width=Math.round(baseW*scale);c.height=canvasH;
-  const ctx=c.getContext('2d');
-  const W=c.width,S=side*scale,CW=contentW*scale;
-
-  const g=ctx.createLinearGradient(0,0,0,c.height);g.addColorStop(0,'#f4f7ff');g.addColorStop(1,'#eef3f9');
-  ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);
-
-  ctx.fillStyle='#ffffff';roundRect(ctx,24*scale,24*scale,W-48*scale,c.height-48*scale,28*scale);
-
-  ctx.textAlign='left';ctx.fillStyle='#17243a';ctx.font=`900 ${48*scale}px Arial`;
-  const titleLines=wrapLines(ctx,v.title,CW,2);let ty=92*scale;
-  ty+=drawLines(ctx,titleLines,S,ty,54*scale);
-  ctx.fillStyle='#748196';ctx.font=`700 ${22*scale}px Arial`;
-  const subLines=wrapLines(ctx,v.sub,CW,2);ty+=18*scale+drawLines(ctx,subLines,S,ty+18*scale,30*scale);
-
-  // Summary chips
-  const chipY=ty+34*scale,chipGap=12*scale,chipW=(CW-chipGap*3)/4,chipH=82*scale;
-  (v.stats||[]).slice(0,4).forEach(([label,value,note],i)=>{
-    const x=S+i*(chipW+chipGap);ctx.fillStyle='#f6f8fc';roundRect(ctx,x,chipY,chipW,chipH,14*scale);
-    ctx.fillStyle='#7a879a';ctx.font=`800 ${13*scale}px Arial`;ctx.fillText(clean(label).toUpperCase(),x+13*scale,chipY+23*scale);
-    ctx.fillStyle='#1b2940';ctx.font=`900 ${27*scale}px Arial`;ctx.fillText(String(value),x+13*scale,chipY+55*scale);
-  });
-
-  let y=chipY+chipH+48*scale;
-  y+=drawPosterSession(ctx,v.m,periods,S,y,CW,'BUỔI SÁNG',scale);
-  if(afternoon){
-    y+=62*scale;
-    y+=drawPosterSession(ctx,afternoon.m,afternoon.periods,S,y,CW,'BUỔI CHIỀU',scale);
-  }
-
-  ctx.fillStyle='#8894a6';ctx.font=`700 ${15*scale}px Arial`;ctx.textAlign='left';
-  ctx.fillText(`Cập nhật ${fmt(state.lastSync)} · PNG đầy đủ nội dung thời khóa biểu`,S,c.height-72*scale);
-
-  const a=document.createElement('a');
-  a.download=`${safeName(v.title)}_TKB_day_du.png`;
-  a.href=c.toDataURL('image/png');
-  a.click();
-  action('Đã xuất PNG đầy đủ nội dung')
+  const v=ensureView();if(!v)return;const periods=v.primaryPeriods||HOME_PERIODS,afternoon=v.homeSections?.[0]||null,baseW=1440,side=54,contentW=baseW-side*2;
+  const mm=canvasSessionMetrics(v.m,periods,1),am=afternoon?canvasSessionMetrics(afternoon.m,afternoon.periods,1):null;let planned=270+mm.total+(am?70+am.total:0)+120,scale=1;if(planned>28000)scale=Math.max(.60,28000/planned);
+  const m1=canvasSessionMetrics(v.m,periods,scale),m2=afternoon?canvasSessionMetrics(afternoon.m,afternoon.periods,scale):null,canvasH=Math.ceil(270*scale+m1.total+(m2?70*scale+m2.total:0)+125*scale);
+  const c=document.createElement('canvas');c.width=Math.round(baseW*scale);c.height=canvasH;const ctx=c.getContext('2d'),W=c.width,S=side*scale,CW=contentW*scale;const g=ctx.createLinearGradient(0,0,0,c.height);g.addColorStop(0,'#f3f6ff');g.addColorStop(1,'#eef3f8');ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#fff';roundRect(ctx,24*scale,24*scale,W-48*scale,c.height-48*scale,30*scale);
+  ctx.textAlign='left';ctx.fillStyle='#17243a';ctx.font=`900 ${46*scale}px Arial`;const titleLines=wrapLines(ctx,v.title,CW,2);let ty=84*scale;ty+=drawLines(ctx,titleLines,S,ty,51*scale);ctx.fillStyle='#768298';ctx.font=`750 ${18*scale}px Arial`;ctx.fillText('THỜI KHÓA BIỂU · MÔN HỌC & PHÒNG',S,ty+24*scale);
+  let y=ty+62*scale;y+=drawPosterSession(ctx,v.m,periods,S,y,CW,'BUỔI SÁNG',scale);if(afternoon){y+=55*scale;y+=drawPosterSession(ctx,afternoon.m,afternoon.periods,S,y,CW,'BUỔI CHIỀU',scale)}ctx.fillStyle='#8a96a7';ctx.font=`700 ${14*scale}px Arial`;ctx.fillText(`Cập nhật ${fmt(state.lastSync)}`,S,c.height-67*scale);
+  const a=document.createElement('a');a.download=`${safeName(v.title)}_Mon_Phong.png`;a.href=c.toDataURL('image/png');a.click();action('Đã xuất PNG Môn + Phòng')
 }
 $$('.seg').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 $$('.detail-btn').forEach(b=>b.addEventListener('click',()=>setDetailMode(b.dataset.detail)));
