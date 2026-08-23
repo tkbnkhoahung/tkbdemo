@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f9fd">
-<title>Thời khóa biểu lớp 10 · Lịch trái buổi + lớp gốc</title>
+<title>Thời khóa biểu lớp 10 · Sáng + Chiều</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -101,13 +101,13 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
   <section class="home-schedule-area" id="homeScheduleArea"></section>
 
   <section class="roster" id="roster"><div class="roster-card"><div class="roster-head"><h3 id="rosterTitle">Danh sách học sinh</h3><span id="rosterMeta"></span></div><div class="table-wrap"><table><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody id="rosterBody"></tbody></table></div></div></section>
-  <footer class="footer"><span>Thời khóa biểu lớp 10 · dữ liệu trực tiếp</span><span id="footerTime"></span></footer>
+  <footer class="footer"><span>Thời khóa biểu lớp 10 · Sáng / Chiều · dữ liệu trực tiếp</span><span id="footerTime"></span></footer>
 </div>
 <script>
 const DAYS=[2,3,4,5,6],PERIODS=[1,2,3,4],HOME_PERIODS=[1,2,3,4,5];
 // ===== CẤU HÌNH 2 NGUỒN PUBLIC-READ =====
 // Không có dữ liệu học sinh / TKB nào được nhúng sẵn vào HTML.
-// Nguồn 1: lịch trái buổi.
+// Nguồn 1: toàn bộ lịch buổi sáng.
 const ELECTIVE_SHEET_ID='19OOBVAKV0J47hh-MuJIyHGlgfjcrJ5gHWR_nrPSsgtg';
 const ELECTIVE_SHEET_GID='0';
 // Nguồn 2: lịch lớp gốc.
@@ -234,6 +234,17 @@ function parseHomeRows(rows){
     classes:[...classesSet].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}))
   }
 }
+function addMorningHomeLessons(m,lessons){
+  for(const l of lessons||[])if(l.session==='S')m[key(l.day,l.period)].push({lesson:l});
+  return m
+}
+function afternoonSectionsFromLessons(lessons,title='Buổi chiều'){
+  const afternoon=(lessons||[]).filter(l=>l.session==='C');
+  if(!afternoon.length)return[];
+  const m=blankMatrix(HOME_PERIODS);
+  for(const l of afternoon)m[key(l.day,l.period)].push({lesson:l});
+  return[{session:'C',label:'Buổi chiều',title,m,lessons:afternoon,periods:HOME_PERIODS}]
+}
 function homeSectionsFromLessons(lessons,titlePrefix='Lịch lớp gốc'){
   if(!lessons?.length)return[];
   const groups={S:[],C:[]};for(const l of lessons)groups[l.session].push(l);
@@ -321,7 +332,7 @@ function options(){
       let elective=0;const sm=d.teacherSlots.get(t);
       if(sm)for(const groups of sm.values())elective+=groups.size;
       const home=(h?.byTeacher?.get(t)||[]).length;
-      return{key:t,title:t,sub:`${elective+home} tiết · ${home?'2 nguồn':'trái buổi'}`,tag:'GV'}
+      return{key:t,title:t,sub:`${elective+home} tiết · ${home?'2 nguồn':'buổi sáng'}`,tag:'GV'}
     })
   }
 
@@ -329,7 +340,7 @@ function options(){
     const names=uniq([...d.codes,...(h?.classes||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
     return names.map(c=>{
       const isCode=d.classSlots.has(c),isHome=h?.byClass?.has(c);
-      return{key:c,title:c,sub:isCode&&isHome?'Có ở cả hai nguồn':isCode?'Mã lớp trái buổi':'Lớp trong TKB lớp gốc',tag:isHome&&!isCode?'Lớp':'Mã'}
+      return{key:c,title:c,sub:isCode&&isHome?'Có ở cả hai nguồn':isCode?'Mã lớp buổi sáng':'Lớp trong TKB lớp gốc',tag:isHome&&!isCode?'Lớp':'Mã'}
     })
   }
 
@@ -364,129 +375,180 @@ function clearSelection(){state.selection=null;els.search.value='';clearView()}
 function clearView(){
   els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';
   els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.homeArea.classList.remove('show');els.homeArea.innerHTML='';
-  els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Thời khóa biểu';els.primaryGridSub.textContent='Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp';
+  els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent='Lịch sáng hợp nhất từ hai nguồn';
   renderGrid(blankMatrix())
 }
 function currentView(){
-  const m=blankMatrix(),d=state.data,h=state.homeData,sel=state.selection;if(!d||!sel)return null;
+  // Nguồn 1 luôn là BUỔI SÁNG. Nguồn 2: S = sáng, C = chiều.
+  const m=blankMatrix(HOME_PERIODS),d=state.data,h=state.homeData,sel=state.selection;if(!d||!sel)return null;
 
   if(state.mode==='student'){
     const s=d.byId.get(sel);if(!s)return null;
+
+    // Nguồn 1 -> sáng.
     for(const l of s.schedule)m[key(l.day,l.period)].push({lesson:l});
-    const homeSections=homeSectionsForClass(s.homeClass),homeLessons=homeSections.flatMap(x=>x.lessons);
+
+    // Nguồn 2 -> S gộp vào sáng, C tách thành chiều.
+    const homeLessons=h?.byClass?.get(s.homeClass)||[];
+    addMorningHomeLessons(m,homeLessons);
+    const homeSections=afternoonSectionsFromLessons(homeLessons,'Buổi chiều');
+
+    const morningHome=homeLessons.filter(x=>x.session==='S').length;
+    const afternoon=homeLessons.filter(x=>x.session==='C').length;
     const allDays=uniq([...s.schedule.map(x=>x.day),...homeLessons.map(x=>x.day)]);
     const teachers=uniq([...s.schedule.map(x=>x.teacher),...homeLessons.map(x=>x.teacher)].filter(Boolean));
+
     return{
-      title:s.name,sub:`${s.id} · Lớp gốc ${s.homeClass}`,badge:'Học sinh',m,homeSections,homeClass:s.homeClass,roster:[],
+      title:s.name,sub:`${s.id} · Lớp gốc ${s.homeClass}`,badge:'Học sinh',
+      m,primaryPeriods:HOME_PERIODS,homeSections,homeClass:s.homeClass,roster:[],
       stats:[
         ['Tổng tiết',s.schedule.length+homeLessons.length,'cả hai nguồn'],
-        ['Trái buổi',s.schedule.length,'tiết đăng ký / tự chọn'],
-        ['Lớp gốc',homeLessons.length,`${s.homeClass} · chính khóa`],
+        ['Buổi sáng',s.schedule.length+morningHome,'đã gộp cả hai nguồn'],
+        ['Buổi chiều',afternoon,`${s.homeClass} · nguồn lớp gốc`],
         ['Giáo viên',teachers.length,`${allDays.length} ngày có lịch`]
       ]
     }
   }
 
   if(state.mode==='teacher'){
-    let electiveEvents=0;const codes=new Set(),ids=new Set(),days=new Set(),rooms=new Set();
+    let source1Events=0;const codes=new Set(),ids=new Set(),days=new Set(),rooms=new Set();
     const sm=d.teacherSlots.get(sel);
+
+    // Toàn bộ nguồn 1 là buổi sáng.
     if(sm)for(const [k,groups] of sm)for(const g of groups.values()){
-      electiveEvents++;if(g.code)codes.add(g.code);if(g.room)rooms.add(g.room);
+      source1Events++;if(g.code)codes.add(g.code);if(g.room)rooms.add(g.room);
       g.studentIds.forEach(x=>ids.add(x));days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})
     }
 
     const homeLessons=h?.byTeacher?.get(sel)||[],homeClasses=new Set();
-    for(const l of homeLessons){homeClasses.add(l.homeClass);if(l.room)rooms.add(l.room);days.add(l.day)}
+    for(const l of homeLessons){
+      homeClasses.add(l.homeClass);if(l.room)rooms.add(l.room);days.add(l.day)
+    }
     studentIdsForHomeClasses(homeClasses).forEach(x=>ids.add(x));
-    const homeSections=homeSectionsFromLessons(homeLessons,'Lịch từ lớp gốc');
+
+    // Gộp các tiết S của nguồn 2 vào đúng ma trận sáng.
+    addMorningHomeLessons(m,homeLessons);
+    const homeSections=afternoonSectionsFromLessons(homeLessons,'Buổi chiều');
+
+    const morningHome=homeLessons.filter(x=>x.session==='S').length;
+    const afternoon=homeLessons.filter(x=>x.session==='C').length;
 
     return{
-      title:sel,sub:'Lịch giảng dạy hợp nhất từ hai nguồn',badge:'Giáo viên',m,homeSections,roster:rosterFromIds(ids),
+      title:sel,sub:'Lịch giảng dạy hợp nhất theo buổi',badge:'Giáo viên',
+      m,primaryPeriods:HOME_PERIODS,homeSections,roster:rosterFromIds(ids),
       stats:[
-        ['Tổng tiết',electiveEvents+homeLessons.length,'cả hai nguồn'],
-        ['Trái buổi',electiveEvents,`${codes.size} mã lớp`],
-        ['Lớp gốc',homeLessons.length,`${homeClasses.size} lớp`],
+        ['Tổng tiết',source1Events+homeLessons.length,'cả hai nguồn'],
+        ['Buổi sáng',source1Events+morningHome,'đã gộp cả hai nguồn'],
+        ['Buổi chiều',afternoon,`${homeClasses.size} lớp liên quan`],
         ['Học sinh',ids.size,`${rooms.size} phòng liên quan`]
       ]
     }
   }
 
   if(state.mode==='class'){
-    let electiveEvents=0;const ids=new Set(),teachers=new Set(),days=new Set(),subjects=new Set(),rooms=new Set();
+    let source1Events=0;const ids=new Set(),teachers=new Set(),days=new Set(),subjects=new Set(),rooms=new Set();
     const sm=d.classSlots.get(sel);
+
     if(sm)for(const [k,groups] of sm)for(const g of groups.values()){
-      electiveEvents++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);
-      if(g.subject)subjects.add(g.subject);if(g.room)rooms.add(g.room);days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})
+      source1Events++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);
+      if(g.subject)subjects.add(g.subject);if(g.room)rooms.add(g.room);days.add(g.day);
+      m[k].push({lesson:g,count:g.studentIds.size})
     }
 
     const homeLessons=h?.byClass?.get(sel)||[];
-    for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);if(l.subject)subjects.add(l.subject);if(l.room)rooms.add(l.room);days.add(l.day)}
+    for(const l of homeLessons){
+      if(l.teacher)teachers.add(l.teacher);if(l.subject)subjects.add(l.subject);
+      if(l.room)rooms.add(l.room);days.add(l.day)
+    }
     if(homeLessons.length)for(const id of d.homeClassStudents.get(sel)||[])ids.add(id);
-    const homeSections=homeSectionsFromLessons(homeLessons,`Lịch lớp gốc · ${sel}`);
+
+    addMorningHomeLessons(m,homeLessons);
+    const homeSections=afternoonSectionsFromLessons(homeLessons,'Buổi chiều');
+    const morningHome=homeLessons.filter(x=>x.session==='S').length;
+    const afternoon=homeLessons.filter(x=>x.session==='C').length;
 
     return{
-      title:`Lớp ${sel}`,sub:[...subjects].join(', ')||'Thông tin lớp từ hai nguồn',badge:'Lớp / mã lớp',m,homeSections,homeClass:homeLessons.length?sel:null,roster:rosterFromIds(ids),
+      title:`Lớp ${sel}`,sub:[...subjects].join(', ')||'Thông tin lớp từ hai nguồn',badge:'Lớp / mã lớp',
+      m,primaryPeriods:HOME_PERIODS,homeSections,homeClass:homeLessons.length?sel:null,roster:rosterFromIds(ids),
       stats:[
-        ['Tổng tiết',electiveEvents+homeLessons.length,'cả hai nguồn'],
-        ['Học sinh',ids.size,'học sinh liên quan'],
-        ['Giáo viên',teachers.size,`${rooms.size} phòng`],
-        ['Ngày học',days.size,'trong Thứ 2–6']
+        ['Tổng tiết',source1Events+homeLessons.length,'cả hai nguồn'],
+        ['Buổi sáng',source1Events+morningHome,'đã gộp cả hai nguồn'],
+        ['Buổi chiều',afternoon,'nguồn lớp gốc'],
+        ['Giáo viên',teachers.size,`${rooms.size} phòng · ${days.size} ngày`]
       ]
     }
   }
 
   if(state.mode==='room'){
-    let electiveEvents=0;const ids=new Set(),teachers=new Set(),classes=new Set(),days=new Set();
+    let source1Events=0;const ids=new Set(),teachers=new Set(),classes=new Set(),days=new Set();
     const sm=d.roomSlots.get(sel);
+
     if(sm)for(const [k,groups] of sm)for(const g of groups.values()){
-      electiveEvents++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);if(g.code)classes.add(g.code);
-      days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})
+      source1Events++;g.studentIds.forEach(x=>ids.add(x));if(g.teacher)teachers.add(g.teacher);
+      if(g.code)classes.add(g.code);days.add(g.day);
+      m[k].push({lesson:g,count:g.studentIds.size})
     }
 
     const homeLessons=h?.byRoom?.get(sel)||[],homeClasses=new Set();
-    for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);homeClasses.add(l.homeClass);classes.add(l.homeClass);days.add(l.day)}
+    for(const l of homeLessons){
+      if(l.teacher)teachers.add(l.teacher);homeClasses.add(l.homeClass);
+      classes.add(l.homeClass);days.add(l.day)
+    }
     studentIdsForHomeClasses(homeClasses).forEach(x=>ids.add(x));
-    const homeSections=homeSectionsFromLessons(homeLessons,`Lịch sử dụng phòng · ${sel}`);
+
+    addMorningHomeLessons(m,homeLessons);
+    const homeSections=afternoonSectionsFromLessons(homeLessons,'Buổi chiều');
+    const morningHome=homeLessons.filter(x=>x.session==='S').length;
+    const afternoon=homeLessons.filter(x=>x.session==='C').length;
 
     return{
-      title:sel,sub:'Lịch sử dụng phòng từ cả hai nguồn',badge:'Phòng',m,homeSections,roster:rosterFromIds(ids),
+      title:sel,sub:'Lịch sử dụng phòng hợp nhất theo buổi',badge:'Phòng',
+      m,primaryPeriods:HOME_PERIODS,homeSections,roster:rosterFromIds(ids),
       stats:[
-        ['Tổng tiết',electiveEvents+homeLessons.length,'lượt sử dụng'],
-        ['Lớp',classes.size,'lớp / mã lớp'],
-        ['Giáo viên',teachers.size,'giáo viên sử dụng'],
-        ['Học sinh',ids.size,`${days.size} ngày có lịch`]
+        ['Tổng tiết',source1Events+homeLessons.length,'lượt sử dụng'],
+        ['Buổi sáng',source1Events+morningHome,'đã gộp cả hai nguồn'],
+        ['Buổi chiều',afternoon,`${classes.size} lớp liên quan`],
+        ['Giáo viên',teachers.size,`${days.size} ngày có lịch`]
       ]
     }
   }
 
-  // Lớp gốc: official home schedule + all elective schedules of students in the class.
+  // Lớp gốc: lịch buổi sáng từ nguồn 1 của các HS + các dòng S của nguồn 2.
   const ids=new Set(d.homeClassStudents.get(sel)||[]);
-  const elective=aggregateElectiveForStudents(ids);
-  for(const k of Object.keys(elective.m))m[k]=elective.m[k];
+  const source1=aggregateElectiveForStudents(ids);
+  for(const k of Object.keys(source1.m))m[k]=source1.m[k];
 
-  const homeLessons=h?.byClass?.get(sel)||[],homeSections=homeSectionsFromLessons(homeLessons,`Lịch chính khóa · ${sel}`);
-  const teachers=new Set(elective.teachers),rooms=new Set(elective.rooms),days=new Set(elective.days);
-  for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);if(l.room)rooms.add(l.room);days.add(l.day)}
+  const homeLessons=h?.byClass?.get(sel)||[];
+  addMorningHomeLessons(m,homeLessons);
+  const homeSections=afternoonSectionsFromLessons(homeLessons,'Buổi chiều');
+
+  const teachers=new Set(source1.teachers),rooms=new Set(source1.rooms),days=new Set(source1.days);
+  for(const l of homeLessons){
+    if(l.teacher)teachers.add(l.teacher);if(l.room)rooms.add(l.room);days.add(l.day)
+  }
+
+  const morningHome=homeLessons.filter(x=>x.session==='S').length;
+  const afternoon=homeLessons.filter(x=>x.session==='C').length;
 
   return{
-    title:`Lớp gốc ${sel}`,sub:'Lịch chính khóa + lịch trái buổi của học sinh trong lớp',badge:'Lớp gốc',
-    m,homeSections,homeClass:sel,roster:rosterFromIds(ids),
+    title:`Lớp gốc ${sel}`,sub:'Thời khóa biểu hợp nhất theo Buổi sáng / Buổi chiều',badge:'Lớp gốc',
+    m,primaryPeriods:HOME_PERIODS,homeSections,homeClass:sel,roster:rosterFromIds(ids),
     stats:[
       ['Sĩ số',ids.size,'học sinh trong dữ liệu'],
-      ['Chính khóa',homeLessons.length,'tiết lớp gốc'],
-      ['Mã trái buổi',elective.codes.size,'lớp học khác nhau'],
+      ['Buổi sáng',source1.events+morningHome,'đã gộp cả hai nguồn'],
+      ['Buổi chiều',afternoon,'tiết lớp gốc'],
       ['Giáo viên',teachers.size,`${rooms.size} phòng liên quan`]
     ]
   }
 }
 function lessonHtml(x){const l=x.lesson,t=tone(l.subject||l.code),home=l.source==='home';return`<div class="lesson ${home?'home-lesson':''}" data-tone="${t}"><div class="subject">${esc(l.subject||'Chưa có môn')}</div>${l.code?`<span class="classcode">${home?'Lớp ':''}${esc(l.code)}</span>`:''}<div class="meta">${l.teacher?`<div class="meta-row"><span>GV</span><span>${esc(l.teacher)}</span></div>`:''}${l.room?`<div class="meta-row"><span>Phòng</span><span>${esc(l.room)}</span></div>`:''}${l.comments?`<div class="meta-row"><span>Ghi chú</span><span>${esc(l.comments)}</span></div>`:''}</div>${x.count?`<span class="count-badge">${x.count} học sinh</span>`:''}</div>`}
 function gridHtml(m,periods=PERIODS){let html='<div class="ghead corner">Tiết</div>'+DAYS.map(d=>`<div class="ghead">Thứ ${d}</div>`).join('');for(const p of periods){html+=`<div class="period">Tiết ${p}</div>`;for(const d of DAYS){const a=m[key(d,p)]||[];html+=`<div class="slot ${a.length?'':'blank'}">${a.map(lessonHtml).join('')||'<div class="empty"></div>'}</div>`}}return html}
-function renderGrid(m){els.grid.innerHTML=gridHtml(m,PERIODS)}
+function renderGrid(m,periods=PERIODS){els.grid.innerHTML=gridHtml(m,periods)}
 function renderHomeSchedule(v){
   if(!v.homeSections?.length){els.homeArea.classList.remove('show');els.homeArea.innerHTML='';return}
   els.homeArea.innerHTML=v.homeSections.map(sec=>{
     const occupied=sec.periods.reduce((n,p)=>n+DAYS.filter(d=>(sec.m[key(d,p)]||[]).length).length,0);
-    return`<div class="home-block"><div class="section-bar"><div><h3>${esc(sec.title||`Lịch bổ sung · ${sec.label}`)}</h3><p>${sec.session==='C'?'C = Chiều':'S = Sáng'} · hàng là tiết · cột là thứ</p></div><div class="section-right">${occupied}/25 ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`
+    return`<div class="home-block"><div class="section-bar"><div><h3>Buổi chiều</h3><p>C2–C6 · hàng là tiết · cột là thứ</p></div><div class="section-right">${occupied}/${sec.periods.length*DAYS.length} ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`
   }).join('');
   els.homeArea.classList.add('show')
 }
@@ -502,19 +564,14 @@ function renderView(){
   const v=currentView();if(!v)return clearView();
   els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=v.badge;els.viewHead.classList.add('show');
 
-  const primaryTitles={
-    student:['Lịch trái buổi','Lịch đăng ký / tự chọn của học sinh'],
-    teacher:['Lịch trái buổi','Các tiết của giáo viên trong nguồn trái buổi'],
-    class:['Lịch trái buổi / mã lớp','Các tiết trùng với lớp hoặc mã lớp đã chọn'],
-    room:['Lịch trái buổi theo phòng','Các tiết sử dụng phòng trong nguồn trái buổi'],
-    homeClass:['Lịch trái buổi của học sinh trong lớp','Tổng hợp các nhóm trái buổi của học sinh thuộc lớp gốc']
-  };
-  const t=primaryTitles[state.mode]||['Thời khóa biểu','Hàng là tiết · cột là thứ'];
-  els.primaryGridTitle.textContent=t[0];els.primaryGridSub.textContent=t[1];
+  els.primaryGridTitle.textContent='Buổi sáng';
+  els.primaryGridSub.textContent='Đã gộp lịch từ Google Sheet đầu tiên và các tiết Sáng (S2–S6) của nguồn lớp gốc';
 
-  renderStats(v);renderGrid(v.m);renderHomeSchedule(v);renderRoster(v);
-  const occupied=PERIODS.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);
-  els.gridNote.textContent=`${occupied}/20 ô có lịch`;
+  const periods=v.primaryPeriods||HOME_PERIODS;
+  renderStats(v);renderGrid(v.m,periods);renderHomeSchedule(v);renderRoster(v);
+
+  const occupied=periods.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);
+  els.gridNote.textContent=`${occupied}/${periods.length*DAYS.length} ô có lịch`;
   els.exportBtn.disabled=false
 }
 function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===','){row.push(cell);cell=''}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell=''}else cell+=c}}if(cell.length||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}return rows}
@@ -560,7 +617,7 @@ async function syncLive({silent=false,onlyIfChanged=false}={}){
       loadDirectSheet(ELECTIVE_SHEET_ID,ELECTIVE_SHEET_GID,'Student_ID'),
       loadDirectSheet(HOME_SHEET_ID,HOME_SHEET_GID,'Activity Id')
     ]);
-    if(electiveResult.status!=='fulfilled')throw electiveResult.reason||new Error('Không đọc được lịch trái buổi');
+    if(electiveResult.status!=='fulfilled')throw electiveResult.reason||new Error('Không đọc được lịch buổi sáng');
     const rows=electiveResult.value,homeRows=homeResult.status==='fulfilled'?homeResult.value:null;
     const version=rowsFingerprint(rows),homeVersion=homeRows?rowsFingerprint(homeRows):null;
     const checkedAt=new Date();
@@ -570,7 +627,7 @@ async function syncLive({silent=false,onlyIfChanged=false}={}){
     }else{
       state.source=homeRows?'live':'partial';state.lastSync=checkedAt;updateLive(false);
     }
-    if(!silent)action(homeRows?'Đã cập nhật đầy đủ dữ liệu':'Đã cập nhật lịch trái buổi');
+    if(!silent)action(homeRows?'Đã cập nhật đầy đủ dữ liệu':'Đã cập nhật lịch buổi sáng');
   }catch(e){
     if(!state.data){state.source='error';els.search.disabled=true;clearView()}
     updateLive(false);if(!silent)action('Không kết nối được dữ liệu trực tiếp');
@@ -582,8 +639,13 @@ async function checkLiveVersion(){
 }
 function safeName(s){return clean(s).replace(/[\\/:*?"<>|]/g,'_').slice(0,80)}function ensureView(){return state.selection?currentView():null}
 function detailRows(v){
-  const out=[];for(const p of PERIODS)for(const d of DAYS)for(const x of v.m[key(d,p)]||[]){const l=x.lesson;out.push(['Trái buổi',`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,l.comments||'',x.count||''])}
-  for(const sec of v.homeSections||[])for(const p of sec.periods)for(const d of DAYS)for(const x of sec.m[key(d,p)]||[]){const l=x.lesson;out.push([sec.label,`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,l.comments||'',''])}
+  const out=[],periods=v.primaryPeriods||HOME_PERIODS;
+  for(const p of periods)for(const d of DAYS)for(const x of v.m[key(d,p)]||[]){
+    const l=x.lesson;out.push(['Buổi sáng',`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,l.comments||'',x.count||''])
+  }
+  for(const sec of v.homeSections||[])for(const p of sec.periods)for(const d of DAYS)for(const x of sec.m[key(d,p)]||[]){
+    const l=x.lesson;out.push(['Buổi chiều',`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,l.comments||'',''])
+  }
   return out
 }
 function matrixRows(m,periods){const grid=[['Tiết',...DAYS.map(d=>`Thứ ${d}`)]];for(const p of periods)grid.push([`Tiết ${p}`,...DAYS.map(d=>(m[key(d,p)]||[]).map(x=>{const l=x.lesson;return[l.subject,l.code,l.teacher,l.room].filter(Boolean).join(' · ')}).join('\n'))]);return grid}
@@ -592,11 +654,28 @@ function exportExcel(){
   const wb=XLSX.utils.book_new();
   let ws=XLSX.utils.aoa_to_sheet([['THỜI KHÓA BIỂU'],['Đối tượng',v.title],['Thông tin',v.sub],['Cập nhật đến',fmt(state.lastSync)]]);
   ws['!cols']=[{wch:18},{wch:54}];XLSX.utils.book_append_sheet(wb,ws,'Tong quan');
-  let grid=matrixRows(v.m,PERIODS);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,state.mode==='student'?'Trai buoi':'Grid TKB');
-  for(const sec of v.homeSections||[]){grid=matrixRows(sec.m,sec.periods);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,sec.session==='S'?'Nguon 2 Sang':'Nguon 2 Chieu')}
+
+  const periods=v.primaryPeriods||HOME_PERIODS;
+  let grid=matrixRows(v.m,periods);
+  ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));
+  XLSX.utils.book_append_sheet(wb,ws,'Buoi sang');
+
+  const afternoon=v.homeSections?.[0];
+  if(afternoon){
+    grid=matrixRows(afternoon.m,afternoon.periods);
+    ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));
+    XLSX.utils.book_append_sheet(wb,ws,'Buoi chieu')
+  }
+
   ws=XLSX.utils.aoa_to_sheet([['Buổi','Thứ','Tiết','Môn học','Lớp / Mã lớp','Giáo viên','Phòng','Ghi chú','Số HS'],...detailRows(v)]);
-  ws['!cols']=[{wch:14},{wch:10},{wch:8},{wch:20},{wch:18},{wch:28},{wch:18},{wch:24},{wch:9}];XLSX.utils.book_append_sheet(wb,ws,'Chi tiet');
-  if(v.roster.length){ws=XLSX.utils.aoa_to_sheet([['STT','Mã HS','Họ và tên','Lớp gốc'],...v.roster.map((s,i)=>[i+1,s.id,s.name,s.homeClass])]);ws['!cols']=[{wch:7},{wch:12},{wch:34},{wch:11}];XLSX.utils.book_append_sheet(wb,ws,'Danh sach HS')}
+  ws['!cols']=[{wch:14},{wch:10},{wch:8},{wch:20},{wch:18},{wch:28},{wch:18},{wch:24},{wch:9}];
+  XLSX.utils.book_append_sheet(wb,ws,'Chi tiet');
+
+  if(v.roster.length){
+    ws=XLSX.utils.aoa_to_sheet([['STT','Mã HS','Họ và tên','Lớp gốc'],...v.roster.map((s,i)=>[i+1,s.id,s.name,s.homeClass])]);
+    ws['!cols']=[{wch:7},{wch:12},{wch:34},{wch:11}];
+    XLSX.utils.book_append_sheet(wb,ws,'Danh sach HS')
+  }
   XLSX.writeFile(wb,`${safeName(v.title)}_TKB.xlsx`);action('Đã xuất Excel')
 }
 function pdfSuggestedName(v){return`TKB - ${safeName(v.title)}`}
@@ -606,8 +685,8 @@ function printGridTable(title,m,periods){
 }
 function printableHtml(v){
   const fileTitle=pdfSuggestedName(v);
-  const primaryTitle=state.mode==='student'?'Lịch trái buổi':state.mode==='teacher'?'Lịch trái buổi · Giáo viên':state.mode==='room'?'Lịch trái buổi · Phòng':state.mode==='homeClass'?'Lịch trái buổi của học sinh lớp gốc':'Lịch trái buổi / mã lớp';
-  const schedules=printGridTable(primaryTitle,v.m,PERIODS)+(v.homeSections||[]).map(sec=>printGridTable(sec.title||`Lịch bổ sung · ${sec.label}`,sec.m,sec.periods)).join('');
+  const periods=v.primaryPeriods||HOME_PERIODS;
+  const schedules=printGridTable('Buổi sáng',v.m,periods)+(v.homeSections||[]).map(sec=>printGridTable('Buổi chiều',sec.m,sec.periods)).join('');
   const roster=v.roster.length?`<section class="roster-section"><h2>Danh sách học sinh <span>(${v.roster.length})</span></h2><table class="r"><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody>${v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td>${esc(s.name)}</td><td>${esc(s.homeClass)}</td></tr>`).join('')}</tbody></table></section>`:'';
   return`<!doctype html><html><head><meta charset="utf-8"><title>${esc(fileTitle)}</title><style>@page{size:A4 portrait;margin:8mm 7mm 9mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{width:100%;margin:0;padding:0}body{font-family:Arial,"Segoe UI",sans-serif;color:#172033;font-size:8pt;line-height:1.28}.print-head{display:flex;align-items:flex-end;justify-content:space-between;gap:6mm;margin:0 0 4mm}.print-head h1{font-size:15pt;line-height:1.1;margin:0 0 1mm}.print-head p{margin:0;color:#667085;font-size:8.5pt}.updated{white-space:nowrap;color:#7b8493;font-size:7.2pt;padding-bottom:.5mm}.print-section{break-inside:avoid;margin-bottom:6mm}.print-section+.print-section{break-before:page}h2{font-size:11pt;margin:0 0 2.2mm;color:#1f2937}h2 span{font-weight:500;color:#667085}table{width:100%;border-collapse:collapse}table.t{table-layout:fixed;border:1px solid #cfd6df}th,td{border:1px solid #cfd6df;vertical-align:top}table.t th,table.t td{padding:1.8mm 1.45mm}table.t thead th{background:#f1f4f8;text-align:center;font-size:7.6pt;font-weight:700}table.t th:first-child{width:11mm;text-align:center;vertical-align:middle;background:#f7f8fa}.l+.l{border-top:1px dashed #d8dde5;margin-top:1.2mm;padding-top:1.2mm}.l b{display:block;font-size:7.4pt;line-height:1.18}.l span{display:inline-block;margin:.6mm 0;padding:.4mm 1mm;background:#eef2ff;border-radius:2.6mm;font-size:6.2pt;font-weight:700;color:#465bb4}.l small{display:block;color:#606b7c;font-size:6.2pt;line-height:1.22;overflow-wrap:anywhere}.roster-section{break-before:page}.r{table-layout:auto;font-size:7.8pt}.r th,.r td{padding:1.8mm 2mm;border:1px solid #d6dbe3}.r thead th{background:#f3f5f8;font-size:7.3pt}.r th:nth-child(1),.r td:nth-child(1){width:12mm;text-align:center}.r th:nth-child(2),.r td:nth-child(2){width:25mm}.r th:nth-child(4),.r td:nth-child(4){width:22mm}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}.note{margin-top:2.5mm;color:#7e8795;font-size:6.8pt;text-align:right}</style></head><body><div class="print-head"><div><h1>${esc(v.title)}</h1><p>${esc(v.sub)}</p></div><div class="updated">Cập nhật ${fmt(state.lastSync)}</div></div>${schedules}${roster}<div class="note">Khổ A4 dọc</div><script>window.onload=()=>{document.title=${JSON.stringify(fileTitle)};window.focus();setTimeout(()=>window.print(),220)}<\/script></body></html>`
 }
@@ -622,15 +701,28 @@ function drawCanvasGrid(ctx,m,periods,x0,y0,w,h,title){
   }
 }
 function exportPng(){
-  const v=ensureView();if(!v)return;const c=document.createElement('canvas');c.width=1080;c.height=2400;const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,1080,2400);g.addColorStop(0,'#f8faff');g.addColorStop(1,'#eef2fb');ctx.fillStyle=g;ctx.fillRect(0,0,1080,2400);
-  ctx.fillStyle='#18233a';ctx.font='800 46px Arial';wrap(ctx,v.title,55,82,970,54,2);ctx.fillStyle='#6f7c91';ctx.font='22px Arial';wrap(ctx,v.sub,55,190,970,30,2);
+  const v=ensureView();if(!v)return;
+  const c=document.createElement('canvas');c.width=1080;c.height=2400;
+  const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,1080,2400);
+  g.addColorStop(0,'#f8faff');g.addColorStop(1,'#eef2fb');ctx.fillStyle=g;ctx.fillRect(0,0,1080,2400);
+
+  ctx.fillStyle='#18233a';ctx.font='800 46px Arial';wrap(ctx,v.title,55,82,970,54,2);
+  ctx.fillStyle='#6f7c91';ctx.font='22px Arial';wrap(ctx,v.sub,55,190,970,30,2);
   ctx.fillStyle='#fff';roundRect(ctx,42,285,996,1940,30);
+
+  const periods=v.primaryPeriods||HOME_PERIODS;
   if(v.homeSections?.length){
-    drawCanvasGrid(ctx,v.m,PERIODS,62,365,956,690,'Lịch trái buổi');
-    let y=1160;for(const sec of v.homeSections.slice(0,1)){drawCanvasGrid(ctx,sec.m,sec.periods,62,y,956,850,sec.title||`Lịch bổ sung · ${sec.label}`)}
-  }else drawCanvasGrid(ctx,v.m,PERIODS,62,380,956,1450,'Thời khóa biểu');
-  ctx.textAlign='left';ctx.fillStyle='#778398';ctx.font='16px Arial';ctx.fillText(`Cập nhật ${fmt(state.lastSync)}`,55,2300);
-  const a=document.createElement('a');a.download=`${safeName(v.title)}_mobile.png`;a.href=c.toDataURL('image/png');a.click();action('Đã xuất ảnh PNG')
+    drawCanvasGrid(ctx,v.m,periods,62,365,956,820,'Buổi sáng');
+    const sec=v.homeSections[0];
+    drawCanvasGrid(ctx,sec.m,sec.periods,62,1320,956,760,'Buổi chiều');
+  }else{
+    drawCanvasGrid(ctx,v.m,periods,62,420,956,1450,'Buổi sáng');
+  }
+
+  ctx.textAlign='left';ctx.fillStyle='#778398';ctx.font='16px Arial';
+  ctx.fillText(`Cập nhật ${fmt(state.lastSync)}`,55,2300);
+  const a=document.createElement('a');a.download=`${safeName(v.title)}_mobile.png`;
+  a.href=c.toDataURL('image/png');a.click();action('Đã xuất ảnh PNG')
 }
 $$('.seg').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));els.search.addEventListener('focus',renderSuggestions);els.search.addEventListener('input',renderSuggestions);els.search.addEventListener('keydown',e=>{const opts=$$('.option[data-key]');if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!opts.length)return;state.activeOption=(state.activeOption+(e.key==='ArrowDown'?1:-1)+opts.length)%opts.length;opts.forEach((o,i)=>o.classList.toggle('active',i===state.activeOption));opts[state.activeOption]?.scrollIntoView({block:'nearest'})}else if(e.key==='Enter'){e.preventDefault();const o=opts[state.activeOption]||opts[0];if(o)select(o.dataset.key)}else if(e.key==='Escape')closeSuggestions()});document.addEventListener('mousedown',e=>{if(!e.target.closest('.search-wrap'))closeSuggestions();if(!e.target.closest('.export-wrap'))els.exportMenu.classList.remove('open')});els.exportBtn.addEventListener('click',e=>{e.stopPropagation();if(!els.exportBtn.disabled)els.exportMenu.classList.toggle('open')});$('#excelBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportExcel()};$('#pdfBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPdf()};$('#pngBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPng()};els.syncBtn.onclick=()=>syncLive();
 els.search.disabled=true;clearView();updateLive(true);syncLive({silent:true}).finally(()=>updateLive(false));setInterval(checkLiveVersion,LIVE_POLL_MS);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkLiveVersion()});window.addEventListener('focus',checkLiveVersion);
