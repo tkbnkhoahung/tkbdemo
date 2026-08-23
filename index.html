@@ -402,6 +402,17 @@ body{
 @media(max-width:720px){.control{z-index:5000}.search-wrap{z-index:5200}.suggestions{z-index:99999!important;max-height:62vh!important}.welcome-strip{margin:10px 0 12px;padding:13px 14px;border-radius:17px;gap:10px}.welcome-message{font-size:16px;line-height:1.28}.welcome-meta{display:none}.welcome-strip:before{font-size:48px;right:12px}}
 </style>
 
+
+<style id="uppercase-data-v8">
+.option-main b,.option-main small,.option-tag,
+.view-title h2,.view-title p,.mode-badge,
+.lesson .subject,.lesson .classcode,.lesson .meta-value,
+.simple-main,.simple-room,
+.roster tbody td,.welcome-message strong,.welcome-meta{
+  text-transform:uppercase
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -422,7 +433,7 @@ body{
       <button class="seg" data-mode="homeClass">Lớp gốc</button>
     </div>
     <div class="search-wrap">
-      <div class="searchbox" role="combobox" aria-haspopup="listbox" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" autocomplete="off" placeholder="Tìm tên hoặc mã học sinh…" aria-label="Tìm kiếm"><button class="search-clear" id="searchClear" type="button" title="Xóa lựa chọn" aria-label="Xóa lựa chọn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 6 12 12M18 6 6 18"/></svg></button><span class="search-hint">⌘ K</span></div>
+      <div class="searchbox" role="combobox" aria-haspopup="listbox" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" autocomplete="off" placeholder="Tìm tên học sinh…" aria-label="Tìm kiếm"><button class="search-clear" id="searchClear" type="button" title="Xóa lựa chọn" aria-label="Xóa lựa chọn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 6 12 12M18 6 6 18"/></svg></button><span class="search-hint">⌘ K</span></div>
       <div class="suggestions" id="suggestions"></div>
     </div>
     <div class="detail-switch" id="detailSwitch" aria-label="Mức độ hiển thị">
@@ -454,7 +465,7 @@ body{
 
   <section class="home-schedule-area" id="homeScheduleArea"></section>
 
-  <section class="roster" id="roster"><div class="roster-card"><div class="roster-head"><h3 id="rosterTitle">Danh sách học sinh</h3><span id="rosterMeta"></span></div><div class="table-wrap"><table><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody id="rosterBody"></tbody></table></div></div></section>
+  <section class="roster" id="roster"><div class="roster-card"><div class="roster-head"><h3 id="rosterTitle">Danh sách học sinh</h3><span id="rosterMeta"></span></div><div class="table-wrap"><table><thead><tr><th>STT</th><th>HỌ VÀ TÊN</th><th>LỚP GỐC</th></tr></thead><tbody id="rosterBody"></tbody></table></div></div></section>
 
   <section class="stats-zone" id="statsZone">
     <div class="section-bar stats-heading"><div><h3>Tổng quan</h3><p>Thống kê của đối tượng đang xem</p></div></div>
@@ -465,7 +476,7 @@ body{
 <script>
 
 const DAYS=[2,3,4,5,6],PERIODS=[1,2,3,4,5],HOME_PERIODS=PERIODS;
-// ===== 3 NGUỒN GOOGLE SHEET PUBLIC-READ =====
+// ===== 4 NGUỒN GOOGLE SHEET PUBLIC-READ =====
 // Nguồn 10: lịch học sinh lớp 10 (buổi sáng).
 const ELECTIVE10_SHEET_ID='19OOBVAKV0J47hh-MuJIyHGlgfjcrJ5gHWR_nrPSsgtg';
 const ELECTIVE10_SHEET_GID='0';
@@ -475,12 +486,16 @@ const HOME_SHEET_GID='0';
 // Nguồn 11: lịch lớp 11; GDTC dùng thêm cột LỊCH THỂ DỤC để phân đúng Sáng/Chiều và tiết.
 const ELECTIVE11_SHEET_ID='1AZxauVY7l5FvF7SA3jOf3jzuROICEw6as_IB6oOfdvw';
 const ELECTIVE11_SHEET_GID='0';
+// Nguồn 12: TN1/TN2 chiều Thứ 2 + GDTC chiều Thứ 3/4 theo mapping trong Sheet.
+const ELECTIVE12_SHEET_ID='1LxkeTQ2e1oPmQWwqPlXm1aziaNhz74IeH7ks8WSJaiA';
+const ELECTIVE12_SHEET_GID='0';
 const LIVE_POLL_MS=15000;
 // =============================================
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const state={mode:'student',detailMode:'full',data:null,homeData:null,selection:null,source:'loading',lastSync:null,version10:null,version11:null,homeVersion:null,activeOption:-1};
+const state={mode:'student',detailMode:'full',data:null,homeData:null,selection:null,source:'loading',lastSync:null,version10:null,version11:null,version12:null,homeVersion:null,activeOption:-1};
 const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
 function clean(v){return v==null?'':String(v).trim()}
+function upperData(v){return clean(v).toLocaleUpperCase('vi-VN')}
 function norm(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
 function esc(v){return clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function key(d,p){return d+'-'+p}
@@ -567,7 +582,7 @@ function parseElectiveRows(rows,sourceKey,sourceLabel){
   const students=[];
   rows.slice(1).forEach((r0,rowIndex)=>{
     const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');
-    const name=clean(r[ix[nameHead]]),homeClass=clean(r[ix[classHead]]);
+    const name=upperData(r[ix[nameHead]]),homeClass=upperData(r[ix[classHead]]);
     if(!name&&!homeClass)return;
 
     const rawId=idHead?clean(r[ix[idHead]]):'';
@@ -576,8 +591,8 @@ function parseElectiveRows(rows,sourceKey,sourceLabel){
 
     // 1) Đọc các cột thời khóa biểu chi tiết Sáng/Chiều.
     for(const def of slots.values()){
-      const subject=clean(r[def['Môn học']]),code=clean(r[def['Mã lớp']]),
-        teacher=smartCase(r[def['Giáo viên']]),room=clean(r[def['Phòng']]);
+      const subject=upperData(r[def['Môn học']]),code=upperData(r[def['Mã lớp']]),
+        teacher=upperData(r[def['Giáo viên']]),room=upperData(r[def['Phòng']]);
       if(subject||code||teacher||room){
         pushLessonUnique(schedule,{
           day:def.day,period:def.period,session:def.session,
@@ -590,9 +605,9 @@ function parseElectiveRows(rows,sourceKey,sourceLabel){
     // 2) Nguồn lớp 11: dùng LỊCH THỂ DỤC để đảm bảo GDTC nằm đúng buổi/đúng tiết.
     // Nếu cột lịch chi tiết đã có cùng tiết GDTC thì pushLessonUnique sẽ không nhân đôi.
     if(sourceKey==='g11'&&gdtcTimeHead){
-      const subject=gdtcSubjectHead?clean(r[ix[gdtcSubjectHead]]):'GDTC';
-      const code=gdtcClassHead?clean(r[ix[gdtcClassHead]]):'';
-      const teacher=gdtcTeacherHead?smartCase(r[ix[gdtcTeacherHead]]):'';
+      const subject=gdtcSubjectHead?upperData(r[ix[gdtcSubjectHead]]):'GDTC';
+      const code=gdtcClassHead?upperData(r[ix[gdtcClassHead]]):'';
+      const teacher=gdtcTeacherHead?upperData(r[ix[gdtcTeacherHead]]):'';
       const encoded=clean(r[ix[gdtcTimeHead]]);
       if(encoded&&(subject||code||teacher)){
         for(const pos of parseGdtcSlots(encoded)){
@@ -613,6 +628,113 @@ function parseElectiveRows(rows,sourceKey,sourceLabel){
   });
   return students
 }
+
+function parseGrade12GridCell(value){
+  const raw=clean(value).toUpperCase();
+  const m=raw.match(/^T([2-6])\s*-\s*([SC])\d*\s*-\s*(\d+)$/i);
+  if(!m)return null;
+  const day=parseInt(m[1],10),session=m[2].toUpperCase(),period=parseInt(m[3],10);
+  if(!DAYS.includes(day)||!HOME_PERIODS.includes(period))return null;
+  return{day,session,period}
+}
+function parseGrade12PeFallback(r,ix){
+  const out=[];
+  const dayRaw=clean(r[ix['THỨ_MAPPING']]),periodRaw=clean(r[ix['TIẾT_MAPPING']]);
+  const dm=dayRaw.match(/([2-6])/),periods=[...periodRaw.matchAll(/([1-5])/g)].map(m=>parseInt(m[1],10));
+  if(!dm||!periods.length)return out;
+  const day=parseInt(dm[1],10);
+  // Theo cấu trúc dữ liệu lớp 12, GDTC là buổi CHIỀU Thứ 3/4.
+  if(![3,4].includes(day))return out;
+  for(const period of periods)if(HOME_PERIODS.includes(period))out.push({day,session:'C',period});
+  return out
+}
+function parseGrade12Rows(rows){
+  if(!rows||rows.length<2)return[];
+  const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
+  const required=['HoTen','Lop'];
+  if(!required.every(h=>h in ix))throw new Error('Cấu trúc dữ liệu lớp 12 chưa hợp lệ');
+
+  const students=[];
+  rows.slice(1).forEach((r0,rowIndex)=>{
+    const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');
+    const name=upperData(r[ix['Họ tên']]||r[ix['HoTen']]);
+    const homeClass=upperData(r[ix['Lớp gốc']]||r[ix['Lop']]);
+    if(!name&&!homeClass)return;
+
+    const id=`g12:${homeClass}:${norm(name)}:${rowIndex+2}`;
+    const schedule=[];
+
+    // A. TN1/TN2: luôn nằm CHIỀU THỨ 2, nhưng thứ tự môn lấy từ các cột đã mapping.
+    const tn2Subject=upperData(r[ix['Môn Tiết 2 chiều thứ 2']]);
+    const tn2Code=upperData(r[ix['Mã lớp Tiết 2 chiều thứ 2']]);
+    const tn2Teacher=upperData(r[ix['Giáo viên Tiết 2 chiều thứ 2']]);
+    if(tn2Subject||tn2Code||tn2Teacher){
+      pushLessonUnique(schedule,{
+        day:2,period:2,session:'C',
+        subject:tn2Subject,code:tn2Code,teacher:tn2Teacher,room:'',
+        source:'elective',sourceKey:'g12',sourceLabel:'LỚP 12',sourceDetail:'TN'
+      })
+    }
+
+    const tn3Subject=upperData(r[ix['Môn Tiết 3 chiều thứ 2']]);
+    const tn3Code=upperData(r[ix['Mã lớp Tiết 3 chiều thứ 2']]);
+    const tn3Teacher=upperData(r[ix['Giáo viên Tiết 3 chiều thứ 2']]);
+    if(tn3Subject||tn3Code||tn3Teacher){
+      pushLessonUnique(schedule,{
+        day:2,period:3,session:'C',
+        subject:tn3Subject,code:tn3Code,teacher:tn3Teacher,room:'',
+        source:'elective',sourceKey:'g12',sourceLabel:'LỚP 12',sourceDetail:'TN'
+      })
+    }
+
+    // Fallback nếu Sheet chưa có cột mapping chi tiết nhưng vẫn có Môn TN1/TN2.
+    if(!tn2Subject&&!tn2Code&&!tn2Teacher){
+      const fallback=upperData(r[ix['Môn TN1']]);
+      if(fallback)pushLessonUnique(schedule,{
+        day:2,period:2,session:'C',subject:fallback,code:'',teacher:'',room:'',
+        source:'elective',sourceKey:'g12',sourceLabel:'LỚP 12',sourceDetail:'TN'
+      })
+    }
+    if(!tn3Subject&&!tn3Code&&!tn3Teacher){
+      const fallback=upperData(r[ix['Môn TN2']]);
+      if(fallback)pushLessonUnique(schedule,{
+        day:2,period:3,session:'C',subject:fallback,code:'',teacher:'',room:'',
+        source:'elective',sourceKey:'g12',sourceLabel:'LỚP 12',sourceDetail:'TN'
+      })
+    }
+
+    // B. GDTC: MonGDTC + Phân lớp + GV, vị trí lấy từ Ô_LƯỚI_1 / Ô_LƯỚI_2.
+    // Ví dụ T3-C2-2 = Chiều Thứ 3 tiết 2; T4-C2-3 = Chiều Thứ 4 tiết 3.
+    const peSubject=upperData(r[ix['MonGDTC']])||'GDTC';
+    const peCode=upperData(r[ix['Phân lớp']]);
+    const peTeacher=upperData(r[ix['GV']]);
+    let peSlots=[];
+    for(const h of ['Ô_LƯỚI_1','Ô_LƯỚI_2']){
+      if(!(h in ix))continue;
+      const pos=parseGrade12GridCell(r[ix[h]]);
+      if(pos)peSlots.push(pos)
+    }
+    if(!peSlots.length&&('THỨ_MAPPING' in ix)&&('TIẾT_MAPPING' in ix)){
+      peSlots=parseGrade12PeFallback(r,ix)
+    }
+    for(const pos of peSlots){
+      // Chỉ nhận đúng quy tắc lớp 12: GDTC buổi chiều Thứ 3 hoặc Thứ 4.
+      if(pos.session!=='C'||![3,4].includes(pos.day))continue;
+      pushLessonUnique(schedule,{
+        day:pos.day,period:pos.period,session:'C',
+        subject:peSubject,code:peCode,teacher:peTeacher,room:'',
+        source:'elective',sourceKey:'g12',sourceLabel:'LỚP 12',sourceDetail:'GDTC'
+      })
+    }
+
+    students.push({
+      id,displayId:'',name,homeClass,schedule,
+      sourceKey:'g12',sourceLabel:'LỚP 12',grade:'12'
+    })
+  });
+  return students
+}
+
 function buildElectiveData(students){
   const byId=new Map(),teacherSlots=new Map(),classSlots=new Map(),roomSlots=new Map(),classStudents=new Map(),homeClassStudents=new Map();
   const teacherNames=new Map(),codes=new Set(),rooms=new Set(),subjects=new Set();
@@ -642,7 +764,7 @@ function buildElectiveData(students){
   const cleanStudents=[...byId.values()].sort((a,b)=>a.name.localeCompare(b.name,'vi'));
   return{students:cleanStudents,byId,teacherSlots,classSlots,roomSlots,classStudents,homeClassStudents,teacherNames,codes:[...codes].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),rooms:[...rooms].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),subjects:[...subjects]}
 }
-function parseRows(rows10,rows11){return buildElectiveData([...parseElectiveRows(rows10,'g10','Lớp 10'),...parseElectiveRows(rows11,'g11','Lớp 11')])}
+function parseRows(rows10,rows11,rows12){return buildElectiveData([...parseElectiveRows(rows10,'g10','LỚP 10'),...parseElectiveRows(rows11,'g11','LỚP 11'),...parseGrade12Rows(rows12)])}
 function parseHomeRows(rows){
   if(!rows||rows.length<2)return{byClass:new Map(),byTeacher:new Map(),byRoom:new Map(),teachers:[],rooms:[],classes:[],lessons:[],count:0};
   const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
@@ -659,11 +781,11 @@ function parseHomeRows(rows){
       day=parseInt(dayCode.slice(1),10),period=parseInt(clean(r[ix['Hour']]),10);
     if(!['S','C'].includes(session)||!DAYS.includes(day)||!HOME_PERIODS.includes(period))continue;
 
-    const sets=clean(r[ix['Students Sets']]),subject=clean(r[ix['Subject']]),
-      teacher=smartCase(r[ix['Teachers']]),room=clean(r[ix['Room']]),comments=clean(r[ix['Comments']]);
+    const sets=upperData(r[ix['Students Sets']]),subject=upperData(r[ix['Subject']]),
+      teacher=upperData(r[ix['Teachers']]),room=upperData(r[ix['Room']]),comments=upperData(r[ix['Comments']]);
     if(!sets||(!subject&&!teacher&&!room))continue;
 
-    const classNames=sets.split(/[,;\n]+/).map(clean).filter(Boolean);
+    const classNames=sets.split(/[,;\n]+/).map(upperData).filter(Boolean);
     const base={day,period,session,subject,teacher,room,comments,source:'home',classNames};
 
     for(const homeClass of classNames){
@@ -709,11 +831,12 @@ function aggregateElectiveForStudents(ids){
   return{morning,afternoon,codes,teachers,rooms,subjects,days,events}
 }
 function teacherDisplay(key){return state.data?.teacherNames?.get(key)||state.homeData?.teachers?.find(t=>t.key===key)?.name||key}
-function applyRows(rows10,rows11,homeRows,updatedAt,version10,version11,homeVersion){
-  state.data=parseRows(rows10||[],rows11||[]);
+function applyRows(rows10,rows11,rows12,homeRows,updatedAt,version10,version11,version12,homeVersion){
+  state.data=parseRows(rows10||[],rows11||[],rows12||[]);
   state.homeData=homeRows?parseHomeRows(homeRows):{byClass:new Map(),byTeacher:new Map(),byRoom:new Map(),teachers:[],rooms:[],classes:[],lessons:[],count:0};
-  const sourceCount=(rows10?1:0)+(rows11?1:0)+(homeRows?1:0);state.source=sourceCount===3?'live':'partial';
-  state.lastSync=updatedAt?new Date(updatedAt):new Date();state.version10=version10??state.version10;state.version11=version11??state.version11;state.homeVersion=homeVersion??state.homeVersion;
+  const sourceCount=(rows10?1:0)+(rows11?1:0)+(rows12?1:0)+(homeRows?1:0);state.source=sourceCount===4?'live':'partial';
+  state.lastSync=updatedAt?new Date(updatedAt):new Date();
+  state.version10=version10??state.version10;state.version11=version11??state.version11;state.version12=version12??state.version12;state.homeVersion=homeVersion??state.homeVersion;
   els.search.disabled=false;updateLive();if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();renderSuggestionsIfOpen()
 }
 function selectionExists(sel){
@@ -722,35 +845,50 @@ function selectionExists(sel){
   if(state.mode==='teacher')return state.data.teacherSlots.has(sel)||state.homeData?.byTeacher?.has(sel);
   if(state.mode==='class')return state.data.classSlots.has(sel)||state.homeData?.byClass?.has(sel);
   if(state.mode==='room')return state.data.roomSlots.has(sel)||state.homeData?.byRoom?.has(sel);
-  if(state.mode==='homeClass')return state.data.homeClassStudents.has(sel)||state.homeData?.byClass?.has(sel);return false
+  if(state.mode==='homeClass')return !!state.homeData?.byClass?.has(sel);return false
 }
 function updateLive(syncing=false){
-  els.liveChip.classList.remove('wait','warn');if(syncing){els.liveChip.classList.add('wait');els.liveText.textContent='Đang đồng bộ 3 nguồn…';els.syncBtn.classList.add('spin');els.syncBtn.disabled=true;return}
+  els.liveChip.classList.remove('wait','warn');if(syncing){els.liveChip.classList.add('wait');els.liveText.textContent='Đang đồng bộ 4 nguồn…';els.syncBtn.classList.add('spin');els.syncBtn.disabled=true;return}
   els.syncBtn.classList.remove('spin');els.syncBtn.disabled=false;
-  if(state.source==='live'&&state.lastSync){els.liveText.textContent=`3 nguồn trực tiếp · ${fmt(state.lastSync)}`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
+  if(state.source==='live'&&state.lastSync){els.liveText.textContent=`4 nguồn trực tiếp · ${fmt(state.lastSync)}`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
   else if(state.source==='partial'&&state.lastSync){els.liveChip.classList.add('warn');els.liveText.textContent=`Đã cập nhật · một nguồn chưa sẵn sàng`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
   else{els.liveChip.classList.add('warn');els.liveText.textContent='Chưa kết nối dữ liệu trực tiếp';els.footerTime.textContent=''}
 }
 function options(){
   if(!state.data)return[];const d=state.data,h=state.homeData;
-  if(state.mode==='student')return d.students.map(s=>({key:s.id,title:s.name,sub:s.displayId?`${s.displayId} · ${s.homeClass}`:`${s.homeClass} · ${s.sourceLabel}`,tag:s.grade?`Lớp ${s.grade}`:s.sourceLabel}));
+  if(state.mode==='student')return d.students.map(s=>({key:s.id,title:s.name,sub:`${s.homeClass} · ${s.sourceLabel}`,tag:s.grade?`LỚP ${s.grade}`:s.sourceLabel}));
   if(state.mode==='teacher'){
     const map=new Map();for(const [k,n] of d.teacherNames)map.set(k,n);for(const t of h?.teachers||[])if(!map.has(t.key))map.set(t.key,t.name);
     return [...map.entries()].sort((a,b)=>a[1].localeCompare(b[1],'vi')).map(([k,name])=>{let elective=0;const sm=d.teacherSlots.get(k);if(sm)for(const groups of sm.values())elective+=groups.size;const home=(h?.byTeacher?.get(k)||[]).length;return{key:k,title:name,sub:`${elective+home} tiết trong dữ liệu`,tag:'GV'}})
   }
   if(state.mode==='class'){
-    const names=uniq([...d.codes,...(h?.classes||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));return names.map(c=>({key:c,title:c,sub:d.classSlots.has(c)&&h?.byClass?.has(c)?'Có ở nhiều nguồn':d.classSlots.has(c)?'Lớp / mã trái buổi':'Lớp chính khóa',tag:h?.byClass?.has(c)?'Lớp':'Mã'}))
+    // Mọi giá trị xuất hiện trong trường MÃ LỚP / PHÂN LỚP đều là mã lớp hợp lệ,
+    // không áp quy tắc hình dạng. Ví dụ: HOA08, 12-BR2, 11-CL5, C_STEM...
+    const names=uniq([...d.codes,...(h?.classes||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
+    return names.map(c=>{
+      const isCode=d.classSlots.has(c),isHome=!!h?.byClass?.has(c);
+      return{
+        key:c,title:c,
+        sub:isCode&&isHome?'MÃ LỚP · CÓ TRONG NHIỀU NGUỒN':isCode?'MÃ LỚP':'LỚP TRONG LỊCH CHÍNH KHÓA',
+        tag:isCode?'MÃ LỚP':'LỚP'
+      }
+    })
   }
   if(state.mode==='room'){
     const names=uniq([...d.rooms,...(h?.rooms||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));return names.map(r=>{let elective=0;const sm=d.roomSlots.get(r);if(sm)for(const groups of sm.values())elective+=groups.size;const home=(h?.byRoom?.get(r)||[]).length;return{key:r,title:r,sub:`${elective+home} tiết sử dụng`,tag:'Phòng'}})
   }
-  const names=uniq([...d.homeClassStudents.keys(),...(h?.classes||[])]).sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));return names.map(c=>({key:c,title:c,sub:`${d.homeClassStudents.get(c)?.size||0} học sinh · ${(h?.byClass?.get(c)||[]).length} tiết chính khóa`,tag:'Lớp gốc'}))
+  // Tab LỚP GỐC chỉ lấy danh sách lớp từ nguồn thời khóa biểu chính khóa.
+  const names=[...(h?.classes||[])].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
+  return names.map(c=>{
+    const lessons=h?.byClass?.get(c)||[],days=new Set(lessons.map(x=>x.day));
+    return{key:c,title:c,sub:`${lessons.length} TIẾT · ${days.size} NGÀY HỌC`,tag:'LỚP GỐC'}
+  })
 }
 function renderSuggestionsIfOpen(){if(els.suggestions.classList.contains('open'))renderSuggestions()}
 function updateSearchClear(){els.searchClear?.classList.toggle('show',!!clean(els.search.value))}
 function renderSuggestions(){
   const q=norm(els.search.value),all=options();
-  let arr=q?all.filter(o=>norm(o.title+' '+o.sub+' '+o.key).includes(q)):all;
+  let arr=q?all.filter(o=>norm(state.mode==='student'?(o.title+' '+o.sub):(o.title+' '+o.sub+' '+o.key)).includes(q)):all;
   const total=arr.length;arr=arr.slice(0,60);state.activeOption=-1;
   const modeName={student:'Học sinh',teacher:'Giáo viên',class:'Lớp / mã',room:'Phòng',homeClass:'Lớp gốc'}[state.mode]||'Kết quả';
   els.suggestions.innerHTML=
@@ -761,9 +899,9 @@ function renderSuggestions(){
 }
 function closeSuggestions(){els.suggestions.classList.remove('open');els.searchBox?.setAttribute('aria-expanded','false')}
 function placeholder(){
-  if(state.mode==='student')return'Tìm tên hoặc mã học sinh…';
+  if(state.mode==='student')return'Tìm tên học sinh…';
   if(state.mode==='teacher')return'Tìm tên giáo viên…';
-  if(state.mode==='class')return'Tìm lớp hoặc mã lớp…';
+  if(state.mode==='class')return'TÌM MÃ LỚP, VD: HOA08, 12-BR2…';
   if(state.mode==='room')return'Tìm phòng học…';
   return'Tìm lớp gốc…'
 }
@@ -791,7 +929,7 @@ function currentView(){
     const s=d.byId.get(sel);if(!s)return null;for(const l of s.schedule)addLessonToMatrices(morning,afternoon,l,{lesson:l});
     const homeLessons=h?.byClass?.get(s.homeClass)||[];for(const l of homeLessons)addLessonToMatrices(morning,afternoon,l,{lesson:l});
     const morningN=matrixItemCount(morning),afternoonN=matrixItemCount(afternoon),teachers=uniq([...s.schedule.map(x=>x.teacher),...homeLessons.map(x=>x.teacher)].filter(Boolean)),days=uniq([...s.schedule.map(x=>x.day),...homeLessons.map(x=>x.day)]);
-    return{title:s.name,sub:`${s.homeClass}${s.displayId?' · '+s.displayId:''} · ${s.sourceLabel}`,badge:'Học sinh',m:morning,primaryPeriods:HOME_PERIODS,homeSections:sectionFromAfternoon(afternoon),homeClass:s.homeClass,roster:[],stats:[['Tổng tiết',morningN+afternoonN,'sáng + chiều'],['Buổi sáng',morningN,'tiết học'],['Buổi chiều',afternoonN,'tiết học'],['Giáo viên',teachers.length,`${days.length} ngày có lịch`]]}
+    return{title:s.name,sub:`${s.homeClass} · ${s.sourceLabel}`,badge:'Học sinh',m:morning,primaryPeriods:HOME_PERIODS,homeSections:sectionFromAfternoon(afternoon),homeClass:s.homeClass,roster:[],stats:[['Tổng tiết',morningN+afternoonN,'sáng + chiều'],['Buổi sáng',morningN,'tiết học'],['Buổi chiều',afternoonN,'tiết học'],['Giáo viên',teachers.length,`${days.length} ngày có lịch`]]}
   }
 
   if(state.mode==='teacher'){
@@ -812,9 +950,26 @@ function currentView(){
     return{title:sel,sub:'Lịch sử dụng phòng hợp nhất',badge:'Phòng',m:morning,primaryPeriods:HOME_PERIODS,homeSections:sectionFromAfternoon(afternoon),roster:rosterFromIds(ids),stats:[['Tổng tiết',electiveEvents+homeLessons.length,'lượt sử dụng'],['Lớp',classes.size,'lớp / mã lớp'],['Giáo viên',teachers.size,'giáo viên'],['Ngày',days.size,'ngày có lịch']]}
   }
 
-  const ids=new Set(d.homeClassStudents.get(sel)||[]),agg=aggregateElectiveForStudents(ids);for(const k of Object.keys(agg.morning))morning[k]=agg.morning[k];for(const k of Object.keys(agg.afternoon))afternoon[k]=agg.afternoon[k];
-  const homeLessons=h?.byClass?.get(sel)||[];for(const l of homeLessons)addLessonToMatrices(morning,afternoon,l,{lesson:l});const teachers=new Set(agg.teachers),rooms=new Set(agg.rooms);for(const l of homeLessons){if(l.teacher)teachers.add(l.teacher);if(l.room)rooms.add(l.room)}
-  return{title:`Lớp gốc ${sel}`,sub:'Lịch chính khóa + lịch trái buổi của học sinh trong lớp',badge:'Lớp gốc',m:morning,primaryPeriods:HOME_PERIODS,homeSections:sectionFromAfternoon(afternoon),homeClass:sel,roster:rosterFromIds(ids),stats:[['Sĩ số',ids.size,'học sinh trong dữ liệu'],['Buổi sáng',matrixItemCount(morning),'tiết / nhóm học'],['Buổi chiều',matrixItemCount(afternoon),'tiết / nhóm học'],['Giáo viên',teachers.size,`${rooms.size} phòng liên quan`]]}
+  // LỚP GỐC: tuyệt đối chỉ dùng nguồn lịch chính khóa.
+  // Không ghép học sinh hoặc lịch từ các nguồn lớp 10 / 11 / 12.
+  const homeLessons=h?.byClass?.get(sel)||[];
+  const teachers=new Set(),rooms=new Set(),subjects=new Set(),days=new Set();
+  for(const l of homeLessons){
+    addLessonToMatrices(morning,afternoon,l,{lesson:l});
+    if(l.teacher)teachers.add(l.teacher);if(l.room)rooms.add(l.room);if(l.subject)subjects.add(l.subject);days.add(l.day)
+  }
+  return{
+    title:`LỚP GỐC ${sel}`,
+    sub:'CHỈ HIỂN THỊ LỊCH CHÍNH KHÓA CỦA LỚP',
+    badge:'LỚP GỐC',
+    m:morning,primaryPeriods:HOME_PERIODS,homeSections:sectionFromAfternoon(afternoon),homeClass:sel,roster:[],
+    stats:[
+      ['TỔNG TIẾT',homeLessons.length,'CHỈ DỮ LIỆU LỚP GỐC'],
+      ['BUỔI SÁNG',homeLessons.filter(x=>x.session==='S').length,'TIẾT HỌC'],
+      ['BUỔI CHIỀU',homeLessons.filter(x=>x.session==='C').length,'TIẾT HỌC'],
+      ['GIÁO VIÊN',teachers.size,`${rooms.size} PHÒNG · ${days.size} NGÀY`]
+    ]
+  }
 }
 function lessonHtml(x){
   const l=x.lesson,style=subjectVars(l.subject||l.code),home=l.source==='home';
@@ -837,14 +992,14 @@ function gridHtml(m,periods=PERIODS){let html='<div class="ghead corner">Tiết<
 function renderGrid(m,periods=PERIODS){els.grid.innerHTML=gridHtml(m,periods)}
 function renderHomeSchedule(v){
   if(!v.homeSections?.length){els.homeArea.classList.remove('show');els.homeArea.innerHTML='';return}
-  els.homeArea.innerHTML=v.homeSections.map(sec=>{const occupied=sec.periods.reduce((n,p)=>n+DAYS.filter(d=>(sec.m[key(d,p)]||[]).length).length,0);return`<div class="home-block"><div class="section-bar"><div><h3>Buổi chiều</h3><p>Lịch chiều hợp nhất từ các nguồn trực tiếp</p></div><div class="section-right">${occupied}/${sec.periods.length*DAYS.length} ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`}).join('');els.homeArea.classList.add('show')
+  els.homeArea.innerHTML=v.homeSections.map(sec=>{const occupied=sec.periods.reduce((n,p)=>n+DAYS.filter(d=>(sec.m[key(d,p)]||[]).length).length,0);return`<div class="home-block"><div class="section-bar"><div><h3>Buổi chiều</h3><p>${state.mode==='homeClass'?'CHỈ LỊCH CHÍNH KHÓA CỦA LỚP':'LỊCH CHIỀU HỢP NHẤT TỪ CÁC NGUỒN TRỰC TIẾP'}</p></div><div class="section-right">${occupied}/${sec.periods.length*DAYS.length} ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`}).join('');els.homeArea.classList.add('show')
 }
 function renderStats(v){els.stats.innerHTML=v.stats.map(([label,value,note])=>`<div class="stat"><div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div><div class="stat-note">${esc(note)}</div></div>`).join('');els.stats.classList.add('show');els.statsZone?.classList.add('show')}
 function renderRoster(v){
-  if(!v.roster.length){els.roster.classList.remove('show');return}els.rosterTitle.textContent=state.mode==='homeClass'?`Danh sách học sinh ${v.title}`:state.mode==='class'?`Danh sách học sinh ${v.title}`:state.mode==='room'?`Học sinh có lịch tại ${v.title}`:'Học sinh liên quan';els.rosterMeta.textContent=`${v.roster.length} học sinh`;els.rosterBody.innerHTML=v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.displayId||'—')}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('');els.roster.classList.add('show')
+  if(!v.roster.length){els.roster.classList.remove('show');return}els.rosterTitle.textContent=state.mode==='homeClass'?`Danh sách học sinh ${v.title}`:state.mode==='class'?`Danh sách học sinh ${v.title}`:state.mode==='room'?`Học sinh có lịch tại ${v.title}`:'Học sinh liên quan';els.rosterMeta.textContent=`${v.roster.length} học sinh`;els.rosterBody.innerHTML=v.roster.map((s,i)=>`<tr><td>${i+1}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('');els.roster.classList.add('show')
 }
 function renderView(){
-  const v=currentView();if(!v)return clearView();els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=`${v.badge} · ${state.detailMode==='simple'?'Đơn giản':'Đầy đủ'}`;els.viewHead.classList.add('show');updateWelcome(v);els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent=state.detailMode==='simple'?(state.mode==='teacher'?'Chỉ hiển thị lớp và phòng':'Hiển thị tối giản theo chế độ đang chọn'):'Môn học được phân màu · đầy đủ lớp, giáo viên và phòng';const periods=v.primaryPeriods||HOME_PERIODS;renderGrid(v.m,periods);renderHomeSchedule(v);renderRoster(v);renderStats(v);const occupied=periods.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);els.gridNote.textContent=`${occupied}/${periods.length*DAYS.length} ô có lịch`;els.exportBtn.disabled=false
+  const v=currentView();if(!v)return clearView();els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=`${v.badge} · ${state.detailMode==='simple'?'Đơn giản':'Đầy đủ'}`;els.viewHead.classList.add('show');updateWelcome(v);els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent=state.mode==='homeClass'?'CHỈ LỊCH CHÍNH KHÓA CỦA LỚP':state.detailMode==='simple'?(state.mode==='teacher'?'CHỈ HIỂN THỊ LỚP VÀ PHÒNG':'HIỂN THỊ TỐI GIẢN THEO CHẾ ĐỘ ĐANG CHỌN'):'MÔN HỌC ĐƯỢC PHÂN MÀU · ĐẦY ĐỦ LỚP, GIÁO VIÊN VÀ PHÒNG';const periods=v.primaryPeriods||HOME_PERIODS;renderGrid(v.m,periods);renderHomeSchedule(v);renderRoster(v);renderStats(v);const occupied=periods.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);els.gridNote.textContent=`${occupied}/${periods.length*DAYS.length} ô có lịch`;els.exportBtn.disabled=false
 }
 function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===','){row.push(cell);cell=''}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell=''}else cell+=c}}if(cell.length||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}return rows}
 function gvizRows(payload,requiredHeader){
@@ -885,19 +1040,41 @@ function loadDirectSheet(sheetId,gid,requiredHeader){
 async function syncLive({silent=false,onlyIfChanged=false}={}){
   if(!silent)updateLive(true);
   try{
-    const [r10,r11,rHome]=await Promise.allSettled([
+    const [r10,r11,r12,rHome]=await Promise.allSettled([
       loadDirectSheet(ELECTIVE10_SHEET_ID,ELECTIVE10_SHEET_GID,'Student_ID'),
       loadDirectSheet(ELECTIVE11_SHEET_ID,ELECTIVE11_SHEET_GID,'HoTen'),
+      loadDirectSheet(ELECTIVE12_SHEET_ID,ELECTIVE12_SHEET_GID,'HoTen'),
       loadDirectSheet(HOME_SHEET_ID,HOME_SHEET_GID,'Activity Id')
     ]);
-    const rows10=r10.status==='fulfilled'?r10.value:null,rows11=r11.status==='fulfilled'?r11.value:null,homeRows=rHome.status==='fulfilled'?rHome.value:null;
-    if(!rows10&&!rows11)throw new Error('Không đọc được dữ liệu học sinh');
-    const v10=rows10?rowsFingerprint(rows10):null,v11=rows11?rowsFingerprint(rows11):null,vh=homeRows?rowsFingerprint(homeRows):null,checkedAt=new Date();
-    const changed=!onlyIfChanged||state.version10!==v10||state.version11!==v11||state.homeVersion!==vh||!state.data;
-    if(changed)applyRows(rows10,rows11,homeRows,checkedAt.toISOString(),v10,v11,vh);else{state.source=(rows10&&rows11&&homeRows)?'live':'partial';state.lastSync=checkedAt;updateLive(false)}
-    if(!silent)action((rows10&&rows11&&homeRows)?'Đã cập nhật 3 nguồn dữ liệu':'Đã cập nhật dữ liệu hiện có')
-  }catch(e){if(!state.data){state.source='error';els.search.disabled=true;clearView()}updateLive(false);if(!silent)action('Không kết nối được dữ liệu trực tiếp')}
-  finally{if(!silent)updateLive(false)}
+    const rows10=r10.status==='fulfilled'?r10.value:null,
+      rows11=r11.status==='fulfilled'?r11.value:null,
+      rows12=r12.status==='fulfilled'?r12.value:null,
+      homeRows=rHome.status==='fulfilled'?rHome.value:null;
+
+    if(!rows10&&!rows11&&!rows12)throw new Error('Không đọc được dữ liệu học sinh');
+
+    const v10=rows10?rowsFingerprint(rows10):null,
+      v11=rows11?rowsFingerprint(rows11):null,
+      v12=rows12?rowsFingerprint(rows12):null,
+      vh=homeRows?rowsFingerprint(homeRows):null,
+      checkedAt=new Date();
+
+    const changed=!onlyIfChanged||
+      state.version10!==v10||state.version11!==v11||state.version12!==v12||
+      state.homeVersion!==vh||!state.data;
+
+    if(changed){
+      applyRows(rows10,rows11,rows12,homeRows,checkedAt.toISOString(),v10,v11,v12,vh)
+    }else{
+      state.source=(rows10&&rows11&&rows12&&homeRows)?'live':'partial';
+      state.lastSync=checkedAt;updateLive(false)
+    }
+
+    if(!silent)action((rows10&&rows11&&rows12&&homeRows)?'Đã cập nhật 4 nguồn dữ liệu':'Đã cập nhật dữ liệu hiện có')
+  }catch(e){
+    if(!state.data){state.source='error';els.search.disabled=true;clearView()}
+    updateLive(false);if(!silent)action('Không kết nối được dữ liệu trực tiếp')
+  }finally{if(!silent)updateLive(false)}
 }
 async function checkLiveVersion(){if(document.visibilityState!=='visible')return;await syncLive({silent:true,onlyIfChanged:true})}
 function safeName(s){return clean(s).replace(/[\\/:*?"<>|]/g,'_').slice(0,80)}function ensureView(){return state.selection?currentView():null}
@@ -935,8 +1112,8 @@ function exportExcel(){
   XLSX.utils.book_append_sheet(wb,ws,'Chi tiet');
 
   if(v.roster.length){
-    ws=XLSX.utils.aoa_to_sheet([['STT','Mã HS','Họ và tên','Lớp gốc'],...v.roster.map((s,i)=>[i+1,s.displayId||'—',s.name,s.homeClass])]);
-    ws['!cols']=[{wch:7},{wch:12},{wch:34},{wch:11}];
+    ws=XLSX.utils.aoa_to_sheet([['STT','HỌ VÀ TÊN','LỚP GỐC'],...v.roster.map((s,i)=>[i+1,s.name,s.homeClass])]);
+    ws['!cols']=[{wch:7},{wch:38},{wch:14}];
     XLSX.utils.book_append_sheet(wb,ws,'Danh sach HS')
   }
   XLSX.writeFile(wb,`${safeName(v.title)}_TKB.xlsx`);action('Đã xuất Excel')
@@ -958,8 +1135,8 @@ function printableHtml(v){
 
   const roster=v.roster.length?`<section class="roster-section">
     <div class="roster-print-head"><div><h2>Danh sách học sinh</h2><p>${esc(v.title)} · ${v.roster.length} học sinh</p></div><div>Cập nhật ${fmt(state.lastSync)}</div></div>
-    <table class="r"><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead>
-    <tbody>${v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.displayId||'—')}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('')}</tbody></table>
+    <table class="r"><thead><tr><th>STT</th><th>HỌ VÀ TÊN</th><th>LỚP GỐC</th></tr></thead>
+    <tbody>${v.roster.map((s,i)=>`<tr><td>${i+1}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('')}</tbody></table>
   </section>`:'';
 
   return`<!doctype html><html><head><meta charset="utf-8"><title>${esc(fileTitle)}</title><style>
@@ -1004,8 +1181,7 @@ function printableHtml(v){
   .r th,.r td{border:1px solid #d5dce6;padding:2mm 2.2mm}
   .r th{background:#f1f4f8;color:#536178;font-size:7pt;text-transform:uppercase}
   .r th:nth-child(1),.r td:nth-child(1){width:12mm;text-align:center}
-  .r th:nth-child(2),.r td:nth-child(2){width:27mm}
-  .r th:nth-child(4),.r td:nth-child(4){width:23mm}
+  .r th:nth-child(3),.r td:nth-child(3){width:25mm}
   </style></head><body>${schedules}${roster}<script>
   window.onload=()=>{document.title=${JSON.stringify(fileTitle)};window.focus();setTimeout(()=>window.print(),260)}
   <\/script></body></html>`
