@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f9fd">
-<title>Thời khóa biểu lớp 10</title>
+<title>Thời khóa biểu lớp 10 · Lịch trái buổi + lớp gốc</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -35,6 +35,13 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
 .section-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:0 2px 8px}.section-bar h3{margin:0;font-size:13px}.section-bar p{margin:3px 0 0;color:#8994a6;font-size:10.5px}.section-right{color:#8b96a8;font-size:10px;white-space:nowrap}
 .schedule-shell{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-sm)}.schedule-grid{display:grid;grid-template-columns:76px repeat(5,minmax(176px,1fr));min-width:1040px}.ghead,.period,.slot{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.schedule-grid>*:nth-child(6n){border-right:0}.schedule-grid>*:nth-last-child(-n+6){border-bottom:0}.ghead{position:sticky;top:0;z-index:5;padding:12px 10px;text-align:center;background:rgba(249,250,253,.97);backdrop-filter:blur(8px);font-size:11.5px;font-weight:850;color:#536078}.ghead.corner{left:0;z-index:7}.period{position:sticky;left:0;z-index:4;display:grid;place-items:center;background:#fbfcfe;padding:12px 7px;font-size:11px;font-weight:850;color:#56647b}.slot{min-height:118px;padding:7px;background:#fff}.slot.blank{background:linear-gradient(145deg,#fff,#fdfdfe)}.empty{height:100%;min-height:102px}
 .lesson{min-height:102px;border:1px solid var(--tone-border);background:linear-gradient(145deg,var(--tone-a),var(--tone-b));border-radius:13px;padding:10px 10px 9px;position:relative;overflow:hidden}.lesson+.lesson{margin-top:6px}.lesson:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tone-accent)}.lesson[data-tone="0"]{--tone-a:#f6f8ff;--tone-b:#eff3ff;--tone-border:#dfe6ff;--tone-accent:#6078f2}.lesson[data-tone="1"]{--tone-a:#f4fbf8;--tone-b:#edf8f4;--tone-border:#d9eee6;--tone-accent:#2aa481}.lesson[data-tone="2"]{--tone-a:#fff9f0;--tone-b:#fff5e7;--tone-border:#f5e5cb;--tone-accent:#d99738}.lesson[data-tone="3"]{--tone-a:#faf6ff;--tone-b:#f5efff;--tone-border:#e7dcfa;--tone-accent:#8d69dc}.lesson[data-tone="4"]{--tone-a:#fff6f8;--tone-b:#fdf0f3;--tone-border:#f1dde3;--tone-accent:#d97791}.lesson[data-tone="5"]{--tone-a:#f4faff;--tone-b:#edf7ff;--tone-border:#d8eafa;--tone-accent:#4d97cc}.subject{font-size:12.5px;font-weight:880;line-height:1.3}.classcode{display:inline-flex;margin:6px 0 5px;border-radius:999px;padding:3px 7px;background:rgba(255,255,255,.72);border:1px solid rgba(86,106,145,.10);font-size:9.5px;font-weight:850;color:#465571}.meta{display:grid;gap:2px;color:#68758a;font-size:10px;line-height:1.35}.meta-row{display:flex;gap:5px;min-width:0}.meta-row span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.count-badge{margin-top:6px;display:inline-flex;border-radius:999px;background:rgba(255,255,255,.68);padding:3px 6px;color:#6f7b8e;font-size:9px;font-weight:800}
+
+.home-schedule-area{display:none;margin-top:14px}.home-schedule-area.show{display:block}
+.home-block+.home-block{margin-top:14px}.home-block .section-bar{margin-top:0}
+.session-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;font-size:9.5px;font-weight:850;background:#f0f4ff;color:#5368cc}
+.session-badge.afternoon{background:#fff4e8;color:#a76a19}
+.lesson.home-lesson{--tone-a:#fffaf2;--tone-b:#fff5e8;--tone-border:#f2dfc4;--tone-accent:#d28b31}
+.lesson.home-lesson .classcode{background:#fff8ed;color:#9b641d}
 .roster{display:none;margin-top:12px}.roster.show{display:block}.roster-card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-sm);overflow:hidden}.roster-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line)}.roster-head h3{margin:0;font-size:13px}.roster-head span{font-size:10.5px;color:#7e899b}.table-wrap{overflow:auto}.roster table{width:100%;border-collapse:collapse;min-width:620px}.roster th,.roster td{padding:9px 13px;border-bottom:1px solid #eef1f5;text-align:left;font-size:11.5px}.roster th{background:#fafbfc;color:#6f7b8f;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em}.roster tr:last-child td{border-bottom:0}.roster td:nth-child(1),.roster th:nth-child(1){width:58px;text-align:center}.roster td:nth-child(2),.roster th:nth-child(2){width:105px}.roster td:nth-child(4),.roster th:nth-child(4){width:90px}
 .footer{display:flex;justify-content:space-between;gap:12px;margin:13px 3px 0;color:#9aa4b3;font-size:9.5px}
 @media(max-width:900px){.app{padding:14px}.control{grid-template-columns:1fr auto}.segmented{grid-column:1/-1;width:100%}.seg{flex:1}.search-wrap{min-width:0}.stats{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start}.brand p{display:none}.live-chip{max-width:58vw;overflow:hidden;text-overflow:ellipsis}.view-head{align-items:flex-start}.section-right{display:none}}
@@ -42,9 +49,10 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
 @media print{body{background:#fff}.topbar,.control,.action-line,.section-bar,.footer{display:none!important}.app{padding:0}.schedule-shell{box-shadow:none;border-radius:0}}
 </style>
 <!--
-  TKB GitHub Public-Read
+  TKB GitHub Public-Read · 2 nguồn trực tiếp
   - Frontend tĩnh, phù hợp GitHub Pages.
-  - Đọc trực tiếp Google Sheet public-read bằng Google Visualization JSONP.
+  - Đọc trực tiếp 2 Google Sheet public-read bằng Google Visualization JSONP.
+  - Nguồn 1: lịch trái buổi. Nguồn 2: lịch lớp gốc.
   - Không chứa dataset học sinh/TKB nhúng sẵn.
 -->
 </head>
@@ -85,27 +93,32 @@ button,input{font:inherit}.app{width:min(1460px,100%);margin:0 auto;padding:20px
   </section>
   <section class="stats" id="stats"></section>
 
-  <div class="section-bar"><div><h3>Thời khóa biểu</h3><p>Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp</p></div><div class="section-right" id="gridNote"></div></div>
+  <div class="section-bar"><div><h3 id="primaryGridTitle">Thời khóa biểu</h3><p id="primaryGridSub">Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp</p></div><div class="section-right" id="gridNote"></div></div>
   <section class="schedule-shell"><div class="schedule-grid" id="scheduleGrid"></div></section>
 
+  <section class="home-schedule-area" id="homeScheduleArea"></section>
+
   <section class="roster" id="roster"><div class="roster-card"><div class="roster-head"><h3 id="rosterTitle">Danh sách học sinh</h3><span id="rosterMeta"></span></div><div class="table-wrap"><table><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody id="rosterBody"></tbody></table></div></div></section>
-  <footer class="footer"><span>Thời khóa biểu lớp 10</span><span id="footerTime"></span></footer>
+  <footer class="footer"><span>Thời khóa biểu lớp 10 · dữ liệu trực tiếp</span><span id="footerTime"></span></footer>
 </div>
 <script>
-const DAYS=[2,3,4,5,6],PERIODS=[1,2,3,4];
-// ===== CẤU HÌNH DỮ LIỆU PUBLIC-READ =====
-// Google Sheet phải để: Share → Anyone with the link → Viewer.
-// Không có dữ liệu TKB nào được nhúng sẵn vào file HTML này.
-const DIRECT_SHEET_ID='19OOBVAKV0J47hh-MuJIyHGlgfjcrJ5gHWR_nrPSsgtg';
-const DIRECT_SHEET_GID='0';
+const DAYS=[2,3,4,5,6],PERIODS=[1,2,3,4],HOME_PERIODS=[1,2,3,4,5];
+// ===== CẤU HÌNH 2 NGUỒN PUBLIC-READ =====
+// Không có dữ liệu học sinh / TKB nào được nhúng sẵn vào HTML.
+// Nguồn 1: lịch trái buổi.
+const ELECTIVE_SHEET_ID='19OOBVAKV0J47hh-MuJIyHGlgfjcrJ5gHWR_nrPSsgtg';
+const ELECTIVE_SHEET_GID='0';
+// Nguồn 2: lịch lớp gốc.
+const HOME_SHEET_ID='132pTSUjCeHhahXr7O2m4K_Bmcj_AxCAjfawPwzyoOG8';
+const HOME_SHEET_GID='0';
 const LIVE_POLL_MS=15000;
 // ===========================================
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const state={mode:'student',data:null,selection:null,source:'loading',lastSync:null,version:null,activeOption:-1};
-const els={search:$('#search'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
+const state={mode:'student',data:null,homeData:null,selection:null,source:'loading',lastSync:null,version:null,homeVersion:null,activeOption:-1};
+const els={search:$('#search'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
 function clean(v){return v==null?'':String(v).trim()}function norm(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}function esc(v){return clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function key(d,p){return d+'-'+p}function uniq(a){return [...new Set(a.filter(Boolean))]}function fmt(dt){if(!dt)return'';return new Intl.DateTimeFormat('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric',hour12:false}).format(dt).replace(',',' ·')}function tone(s){let h=0;for(const c of clean(s))h=(h*31+c.charCodeAt(0))>>>0;return h%6}
 let actionTimer;function action(msg){clearTimeout(actionTimer);els.actionLine.textContent=msg;els.actionLine.classList.add('show');actionTimer=setTimeout(()=>els.actionLine.classList.remove('show'),2600)}
-function blankMatrix(){const m={};for(const d of DAYS)for(const p of PERIODS)m[key(d,p)]=[];return m}
+function blankMatrix(periods=PERIODS){const m={};for(const d of DAYS)for(const p of periods)m[key(d,p)]=[];return m}
 function parseRows(rows){
   if(!rows||rows.length<2)throw new Error('Dữ liệu chưa sẵn sàng');
   const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
@@ -123,7 +136,46 @@ function parseRows(rows){
   }
   return{students,teachers:[...teachers].sort((a,b)=>a.localeCompare(b,'vi')),codes:[...codes].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),subjects:[...subjects],byId,teacherSlots,classSlots,classStudents}
 }
-function applyRows(rows,updatedAt,version){state.data=parseRows(rows);state.source='live';state.lastSync=updatedAt?new Date(updatedAt):new Date();state.version=version??state.version;els.search.disabled=false;updateLive();if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();renderSuggestionsIfOpen()}
+function parseHomeRows(rows){
+  if(!rows||rows.length<2)return{byClass:new Map(),count:0};
+  const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
+  const required=['Day','Hour','Students Sets','Subject','Teachers','Room','Comments'];
+  if(!required.every(h=>h in ix))throw new Error('Cấu trúc lịch lớp gốc chưa hợp lệ');
+  const byClass=new Map();let count=0;
+  for(const r0 of rows.slice(1)){
+    const r=Array.from({length:header.length},(_,i)=>r0?.[i]??'');
+    const dayCode=clean(r[ix['Day']]).toUpperCase(),session=dayCode.slice(0,1),day=parseInt(dayCode.slice(1),10),period=parseInt(clean(r[ix['Hour']]),10);
+    if(!['S','C'].includes(session)||!DAYS.includes(day)||!HOME_PERIODS.includes(period))continue;
+    const sets=clean(r[ix['Students Sets']]),subject=clean(r[ix['Subject']]),teacher=clean(r[ix['Teachers']]),room=clean(r[ix['Room']]),comments=clean(r[ix['Comments']]);
+    if(!sets||(!subject&&!teacher&&!room))continue;
+    const classes=sets.split(/[,;\n]+/).map(clean).filter(Boolean);
+    for(const homeClass of classes){
+      if(!byClass.has(homeClass))byClass.set(homeClass,[]);
+      byClass.get(homeClass).push({day,period,session,subject,teacher,room,comments,code:homeClass,homeClass,source:'home'});
+      count++;
+    }
+  }
+  return{byClass,count}
+}
+function homeSectionsForClass(homeClass){
+  if(!state.homeData||!homeClass)return[];
+  const lessons=state.homeData.byClass.get(homeClass)||[];
+  const groups={S:[],C:[]};for(const l of lessons)groups[l.session].push(l);
+  return ['S','C'].filter(s=>groups[s].length).map(session=>{
+    const m=blankMatrix(HOME_PERIODS);for(const l of groups[session])m[key(l.day,l.period)].push({lesson:l});
+    return{session,label:session==='S'?'Buổi sáng':'Buổi chiều',m,lessons:groups[session],periods:HOME_PERIODS}
+  });
+}
+function applyRows(rows,homeRows,updatedAt,version,homeVersion){
+  state.data=parseRows(rows);
+  state.homeData=homeRows?parseHomeRows(homeRows):{byClass:new Map(),count:0};
+  state.source=homeRows?'live':'partial';
+  state.lastSync=updatedAt?new Date(updatedAt):new Date();
+  state.version=version??state.version;state.homeVersion=homeVersion??state.homeVersion;
+  els.search.disabled=false;updateLive();
+  if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();
+  renderSuggestionsIfOpen()
+}
 function selectionExists(sel){if(!state.data)return false;if(state.mode==='student')return state.data.byId.has(sel);if(state.mode==='teacher')return state.data.teacherSlots.has(sel);return state.data.classSlots.has(sel)}
 function updateLive(syncing=false){
   els.liveChip.classList.remove('wait','warn');
@@ -131,6 +183,10 @@ function updateLive(syncing=false){
   els.syncBtn.classList.remove('spin');els.syncBtn.disabled=false;
   if(state.source==='live'&&state.lastSync){
     els.liveText.textContent=`Dữ liệu trực tiếp · ${fmt(state.lastSync)}`;
+    els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`;
+  }else if(state.source==='partial'&&state.lastSync){
+    els.liveChip.classList.add('warn');
+    els.liveText.textContent=`Đã cập nhật · thiếu lịch lớp gốc`;
     els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`;
   }else{
     els.liveChip.classList.add('warn');
@@ -146,13 +202,28 @@ function placeholder(){return state.mode==='student'?'Tìm tên hoặc mã học
 function setMode(mode){state.mode=mode;state.selection=null;els.search.value='';els.search.placeholder=placeholder();$$('.seg').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));clearView();closeSuggestions();setTimeout(()=>els.search.focus(),0)}
 function select(k){state.selection=k;const o=options().find(x=>x.key===k);els.search.value=o?.title||k;closeSuggestions();renderView();els.exportBtn.disabled=false}
 function clearSelection(){state.selection=null;els.search.value='';clearView()}
-function clearView(){els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.exportBtn.disabled=true;els.gridNote.textContent='';renderGrid(blankMatrix())}
+function clearView(){
+  els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';
+  els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.homeArea.classList.remove('show');els.homeArea.innerHTML='';
+  els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Thời khóa biểu';els.primaryGridSub.textContent='Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp';
+  renderGrid(blankMatrix())
+}
 function currentView(){
   const m=blankMatrix(),d=state.data,sel=state.selection;if(!d||!sel)return null;
   if(state.mode==='student'){
     const s=d.byId.get(sel);for(const l of s.schedule)m[key(l.day,l.period)].push({lesson:l});
-    const subjects=uniq(s.schedule.map(x=>x.subject)),codes=uniq(s.schedule.map(x=>x.code)),days=uniq(s.schedule.map(x=>x.day));
-    return{title:s.name,sub:`${s.id} · ${s.homeClass}`,badge:'Học sinh',m,roster:[],stats:[['Tiết học',s.schedule.length,'trong 20 ô lịch'],['Ngày có lịch',days.length,'trong 5 ngày'],['Mã lớp',codes.length,'lớp học khác nhau'],['Môn học',subjects.length,'môn đang học']]}
+    const homeSections=homeSectionsForClass(s.homeClass),homeLessons=homeSections.flatMap(x=>x.lessons);
+    const allDays=uniq([...s.schedule.map(x=>x.day),...homeLessons.map(x=>x.day)]);
+    const total=s.schedule.length+homeLessons.length;
+    return{
+      title:s.name,sub:`${s.id} · Lớp gốc ${s.homeClass}`,badge:'Học sinh',m,homeSections,homeClass:s.homeClass,roster:[],
+      stats:[
+        ['Tổng tiết',total,'trái buổi + lớp gốc'],
+        ['Trái buổi',s.schedule.length,'tiết đăng ký / tự chọn'],
+        ['Lớp gốc',homeLessons.length,`${s.homeClass} · tiết chính khóa`],
+        ['Ngày có lịch',allDays.length,'trong Thứ 2–6']
+      ]
+    }
   }
   if(state.mode==='teacher'){
     const sm=d.teacherSlots.get(sel);let events=0;const codes=new Set(),ids=new Set(),days=new Set();for(const [k,groups] of sm){for(const g of groups.values()){events++;if(g.code)codes.add(g.code);g.studentIds.forEach(x=>ids.add(x));days.add(g.day);m[k].push({lesson:g,count:g.studentIds.size})}}
@@ -163,13 +234,31 @@ function currentView(){
   const roster=[...ids].map(id=>d.byId.get(id)).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'vi')),first=[...sm.values()].flatMap(g=>[...g.values()])[0];
   return{title:`Mã lớp ${sel}`,sub:[...subjects].join(', ')||first?.subject||'',badge:'Mã lớp',m,roster,stats:[['Tiết học',events,'lượt học trong tuần'],['Sĩ số',ids.size,'học sinh'],['Ngày học',days.size,'trong 5 ngày'],['Giáo viên',teachers.size,'giáo viên phụ trách']]}
 }
-function lessonHtml(x){const l=x.lesson,t=tone(l.subject||l.code);return`<div class="lesson" data-tone="${t}"><div class="subject">${esc(l.subject||'Chưa có môn')}</div>${l.code?`<span class="classcode">${esc(l.code)}</span>`:''}<div class="meta">${l.teacher?`<div class="meta-row"><span>GV</span><span>${esc(l.teacher)}</span></div>`:''}${l.room?`<div class="meta-row"><span>Phòng</span><span>${esc(l.room)}</span></div>`:''}</div>${x.count?`<span class="count-badge">${x.count} học sinh</span>`:''}</div>`}
-function renderGrid(m){let html='<div class="ghead corner">Tiết</div>'+DAYS.map(d=>`<div class="ghead">Thứ ${d}</div>`).join('');for(const p of PERIODS){html+=`<div class="period">Tiết ${p}</div>`;for(const d of DAYS){const a=m[key(d,p)]||[];html+=`<div class="slot ${a.length?'':'blank'}">${a.map(lessonHtml).join('')||'<div class="empty"></div>'}</div>`}}els.grid.innerHTML=html}
+function lessonHtml(x){const l=x.lesson,t=tone(l.subject||l.code),home=l.source==='home';return`<div class="lesson ${home?'home-lesson':''}" data-tone="${t}"><div class="subject">${esc(l.subject||'Chưa có môn')}</div>${l.code?`<span class="classcode">${home?'Lớp ':''}${esc(l.code)}</span>`:''}<div class="meta">${l.teacher?`<div class="meta-row"><span>GV</span><span>${esc(l.teacher)}</span></div>`:''}${l.room?`<div class="meta-row"><span>Phòng</span><span>${esc(l.room)}</span></div>`:''}${l.comments?`<div class="meta-row"><span>Ghi chú</span><span>${esc(l.comments)}</span></div>`:''}</div>${x.count?`<span class="count-badge">${x.count} học sinh</span>`:''}</div>`}
+function gridHtml(m,periods=PERIODS){let html='<div class="ghead corner">Tiết</div>'+DAYS.map(d=>`<div class="ghead">Thứ ${d}</div>`).join('');for(const p of periods){html+=`<div class="period">Tiết ${p}</div>`;for(const d of DAYS){const a=m[key(d,p)]||[];html+=`<div class="slot ${a.length?'':'blank'}">${a.map(lessonHtml).join('')||'<div class="empty"></div>'}</div>`}}return html}
+function renderGrid(m){els.grid.innerHTML=gridHtml(m,PERIODS)}
+function renderHomeSchedule(v){
+  if(state.mode!=='student'||!v.homeSections?.length){els.homeArea.classList.remove('show');els.homeArea.innerHTML='';return}
+  els.homeArea.innerHTML=v.homeSections.map(sec=>{
+    const occupied=sec.periods.reduce((n,p)=>n+DAYS.filter(d=>(sec.m[key(d,p)]||[]).length).length,0);
+    return`<div class="home-block"><div class="section-bar"><div><h3>Lịch lớp gốc · ${esc(v.homeClass)} · ${esc(sec.label)}</h3><p>${sec.session==='C'?'C = Chiều':'S = Sáng'} · hàng là tiết · cột là thứ</p></div><div class="section-right">${occupied}/25 ô có lịch</div></div><section class="schedule-shell"><div class="schedule-grid">${gridHtml(sec.m,sec.periods)}</div></section></div>`
+  }).join('');
+  els.homeArea.classList.add('show')
+}
 function renderStats(v){els.stats.innerHTML=v.stats.map(([label,value,note])=>`<div class="stat"><div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div><div class="stat-note">${esc(note)}</div></div>`).join('');els.stats.classList.add('show')}
 function renderRoster(v){if(!v.roster.length){els.roster.classList.remove('show');return}els.rosterTitle.textContent=state.mode==='class'?`Danh sách học sinh ${v.title}`:`Học sinh liên quan`;els.rosterMeta.textContent=`${v.roster.length} học sinh`;els.rosterBody.innerHTML=v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.homeClass)}</td></tr>`).join('');els.roster.classList.add('show')}
-function renderView(){const v=currentView();if(!v)return clearView();els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=v.badge;els.viewHead.classList.add('show');renderStats(v);renderGrid(v.m);renderRoster(v);const occupied=PERIODS.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);els.gridNote.textContent=`${occupied}/20 ô có lịch`;els.exportBtn.disabled=false}
+function renderView(){
+  const v=currentView();if(!v)return clearView();
+  els.viewTitle.textContent=v.title;els.viewSub.textContent=v.sub;els.modeBadge.textContent=v.badge;els.viewHead.classList.add('show');
+  if(state.mode==='student'){els.primaryGridTitle.textContent='Lịch trái buổi';els.primaryGridSub.textContent='Lịch đăng ký / tự chọn · hàng là tiết · cột là thứ'}
+  else{els.primaryGridTitle.textContent='Thời khóa biểu';els.primaryGridSub.textContent='Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp'}
+  renderStats(v);renderGrid(v.m);renderHomeSchedule(v);renderRoster(v);
+  const occupied=PERIODS.reduce((n,p)=>n+DAYS.filter(d=>(v.m[key(d,p)]||[]).length).length,0);
+  els.gridNote.textContent=state.mode==='student'?`Trái buổi · ${occupied}/20 ô có lịch`:`${occupied}/20 ô có lịch`;
+  els.exportBtn.disabled=false
+}
 function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===','){row.push(cell);cell=''}else if(c==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell=''}else cell+=c}}if(cell.length||row.length){row.push(cell.replace(/\r$/,''));rows.push(row)}return rows}
-function gvizRows(payload){
+function gvizRows(payload,requiredHeader){
   if(!payload||payload.status==='error'||!payload.table)throw new Error('Không đọc được dữ liệu');
   const cols=(payload.table.cols||[]).map(c=>clean(c.label||c.id||''));
   const rows=(payload.table.rows||[]).map(r=>cols.map((_,i)=>{
@@ -178,7 +267,7 @@ function gvizRows(payload){
     if(c.v===undefined||c.v===null)return'';
     return clean(c.v);
   }));
-  if(!cols.includes('Student_ID'))throw new Error('Dữ liệu chưa sẵn sàng');
+  if(requiredHeader&&!cols.includes(requiredHeader))throw new Error('Dữ liệu chưa sẵn sàng');
   return [cols,...rows];
 }
 function rowsFingerprint(rows){
@@ -187,68 +276,102 @@ function rowsFingerprint(rows){
   for(let i=0;i<sample.length;i++){h^=sample.charCodeAt(i);h=Math.imul(h,16777619)}
   return (h>>>0).toString(16);
 }
-function loadDirectSheet(){
+function loadDirectSheet(sheetId,gid,requiredHeader){
   return new Promise((resolve,reject)=>{
     const cb='__tkb_gviz_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const script=document.createElement('script');
     let done=false;
     const cleanup=()=>{try{delete window[cb]}catch{};script.remove()};
-    const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Hết thời gian kết nối'))},12000);
+    const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Hết thời gian kết nối'))},14000);
     window[cb]=(payload)=>{
       if(done)return;done=true;clearTimeout(timer);
-      try{resolve(gvizRows(payload))}catch(e){reject(e)}finally{cleanup()}
+      try{resolve(gvizRows(payload,requiredHeader))}catch(e){reject(e)}finally{cleanup()}
     };
     script.onerror=()=>{if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('Không kết nối được dữ liệu'))};
     const tqx='out:json;responseHandler:'+cb;
-    script.src=`https://docs.google.com/spreadsheets/d/${DIRECT_SHEET_ID}/gviz/tq?gid=${DIRECT_SHEET_GID}&headers=1&tqx=${encodeURIComponent(tqx)}&t=${Date.now()}`;
-    script.async=true;
-    document.head.appendChild(script);
+    script.src=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?gid=${gid}&headers=1&tqx=${encodeURIComponent(tqx)}&t=${Date.now()}`;
+    script.async=true;document.head.appendChild(script);
   });
 }
 async function syncLive({silent=false,onlyIfChanged=false}={}){
   if(!silent)updateLive(true);
   try{
-    const rows=await loadDirectSheet();
-    const version=rowsFingerprint(rows);
+    const [electiveResult,homeResult]=await Promise.allSettled([
+      loadDirectSheet(ELECTIVE_SHEET_ID,ELECTIVE_SHEET_GID,'Student_ID'),
+      loadDirectSheet(HOME_SHEET_ID,HOME_SHEET_GID,'Activity Id')
+    ]);
+    if(electiveResult.status!=='fulfilled')throw electiveResult.reason||new Error('Không đọc được lịch trái buổi');
+    const rows=electiveResult.value,homeRows=homeResult.status==='fulfilled'?homeResult.value:null;
+    const version=rowsFingerprint(rows),homeVersion=homeRows?rowsFingerprint(homeRows):null;
     const checkedAt=new Date();
-    if(!onlyIfChanged||state.version!==version||!state.data){
-      applyRows(rows,checkedAt.toISOString(),version);
+    const changed=!onlyIfChanged||state.version!==version||state.homeVersion!==homeVersion||!state.data;
+    if(changed){
+      applyRows(rows,homeRows,checkedAt.toISOString(),version,homeVersion);
     }else{
-      state.source='live';
-      state.lastSync=checkedAt;
-      updateLive(false);
+      state.source=homeRows?'live':'partial';state.lastSync=checkedAt;updateLive(false);
     }
-    if(!silent)action('Đã cập nhật dữ liệu trực tiếp');
+    if(!silent)action(homeRows?'Đã cập nhật đầy đủ dữ liệu':'Đã cập nhật lịch trái buổi');
   }catch(e){
-    if(!state.data){
-      state.source='error';
-      els.search.disabled=true;
-      clearView();
-    }
-    updateLive(false);
-    if(!silent)action('Không kết nối được dữ liệu trực tiếp');
-  }finally{
-    if(!silent)updateLive(false);
-  }
+    if(!state.data){state.source='error';els.search.disabled=true;clearView()}
+    updateLive(false);if(!silent)action('Không kết nối được dữ liệu trực tiếp');
+  }finally{if(!silent)updateLive(false)}
 }
 async function checkLiveVersion(){
   if(document.visibilityState!=='visible')return;
   await syncLive({silent:true,onlyIfChanged:true});
 }
 function safeName(s){return clean(s).replace(/[\\/:*?"<>|]/g,'_').slice(0,80)}function ensureView(){return state.selection?currentView():null}
-function detailRows(v){const out=[];for(const p of PERIODS)for(const d of DAYS)for(const x of v.m[key(d,p)]||[]){const l=x.lesson;out.push([`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,x.count||''])}return out}
-function exportExcel(){const v=ensureView();if(!v)return;if(!window.XLSX){action('Không tải được thư viện Excel');return}const wb=XLSX.utils.book_new();let ws=XLSX.utils.aoa_to_sheet([['THỜI KHÓA BIỂU'],['Đối tượng',v.title],['Thông tin',v.sub],['Cập nhật đến',fmt(state.lastSync)]]);ws['!cols']=[{wch:18},{wch:54}];XLSX.utils.book_append_sheet(wb,ws,'Tong quan');const grid=[['Tiết',...DAYS.map(d=>`Thứ ${d}`)]];for(const p of PERIODS)grid.push([`Tiết ${p}`,...DAYS.map(d=>(v.m[key(d,p)]||[]).map(x=>[x.lesson.subject,x.lesson.code,x.lesson.teacher,x.lesson.room].filter(Boolean).join(' · ')).join('\n'))]);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,'Grid TKB');ws=XLSX.utils.aoa_to_sheet([['Thứ','Tiết','Môn học','Mã lớp','Giáo viên','Phòng','Số HS'],...detailRows(v)]);ws['!cols']=[{wch:10},{wch:8},{wch:20},{wch:18},{wch:28},{wch:18},{wch:9}];XLSX.utils.book_append_sheet(wb,ws,'Chi tiet');if(v.roster.length){ws=XLSX.utils.aoa_to_sheet([['STT','Mã HS','Họ và tên','Lớp gốc'],...v.roster.map((s,i)=>[i+1,s.id,s.name,s.homeClass])]);ws['!cols']=[{wch:7},{wch:12},{wch:34},{wch:11}];XLSX.utils.book_append_sheet(wb,ws,'Danh sach HS')}XLSX.writeFile(wb,`${safeName(v.title)}_TKB.xlsx`);action('Đã xuất Excel')}
+function detailRows(v){
+  const out=[];for(const p of PERIODS)for(const d of DAYS)for(const x of v.m[key(d,p)]||[]){const l=x.lesson;out.push(['Trái buổi',`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,l.comments||'',x.count||''])}
+  for(const sec of v.homeSections||[])for(const p of sec.periods)for(const d of DAYS)for(const x of sec.m[key(d,p)]||[]){const l=x.lesson;out.push([sec.label,`Thứ ${d}`,p,l.subject,l.code,l.teacher,l.room,l.comments||'',''])}
+  return out
+}
+function matrixRows(m,periods){const grid=[['Tiết',...DAYS.map(d=>`Thứ ${d}`)]];for(const p of periods)grid.push([`Tiết ${p}`,...DAYS.map(d=>(m[key(d,p)]||[]).map(x=>{const l=x.lesson;return[l.subject,l.code,l.teacher,l.room].filter(Boolean).join(' · ')}).join('\n'))]);return grid}
+function exportExcel(){
+  const v=ensureView();if(!v)return;if(!window.XLSX){action('Không tải được thư viện Excel');return}
+  const wb=XLSX.utils.book_new();
+  let ws=XLSX.utils.aoa_to_sheet([['THỜI KHÓA BIỂU'],['Đối tượng',v.title],['Thông tin',v.sub],['Cập nhật đến',fmt(state.lastSync)]]);
+  ws['!cols']=[{wch:18},{wch:54}];XLSX.utils.book_append_sheet(wb,ws,'Tong quan');
+  let grid=matrixRows(v.m,PERIODS);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,state.mode==='student'?'Trai buoi':'Grid TKB');
+  for(const sec of v.homeSections||[]){grid=matrixRows(sec.m,sec.periods);ws=XLSX.utils.aoa_to_sheet(grid);ws['!cols']=[{wch:10},...DAYS.map(()=>({wch:38}))];ws['!rows']=grid.map((_,i)=>({hpt:i?54:22}));XLSX.utils.book_append_sheet(wb,ws,`Lop goc ${sec.session}`)}
+  ws=XLSX.utils.aoa_to_sheet([['Buổi','Thứ','Tiết','Môn học','Lớp / Mã lớp','Giáo viên','Phòng','Ghi chú','Số HS'],...detailRows(v)]);
+  ws['!cols']=[{wch:14},{wch:10},{wch:8},{wch:20},{wch:18},{wch:28},{wch:18},{wch:24},{wch:9}];XLSX.utils.book_append_sheet(wb,ws,'Chi tiet');
+  if(v.roster.length){ws=XLSX.utils.aoa_to_sheet([['STT','Mã HS','Họ và tên','Lớp gốc'],...v.roster.map((s,i)=>[i+1,s.id,s.name,s.homeClass])]);ws['!cols']=[{wch:7},{wch:12},{wch:34},{wch:11}];XLSX.utils.book_append_sheet(wb,ws,'Danh sach HS')}
+  XLSX.writeFile(wb,`${safeName(v.title)}_TKB.xlsx`);action('Đã xuất Excel')
+}
 function pdfSuggestedName(v){return`TKB - ${safeName(v.title)}`}
-function printableHtml(v){const fileTitle=pdfSuggestedName(v);const rows=PERIODS.map(p=>`<tr><th>Tiết ${p}</th>${DAYS.map(d=>`<td>${(v.m[key(d,p)]||[]).map(x=>{const l=x.lesson;return`<div class="l"><b>${esc(l.subject)}</b>${l.code?`<span>${esc(l.code)}</span>`:''}<small>${[l.teacher,l.room].filter(Boolean).map(esc).join(' · ')}</small></div>`}).join('')||'—'}</td>`).join('')}</tr>`).join('');const roster=v.roster.length?`<section class="roster-section"><h2>Danh sách học sinh <span>(${v.roster.length})</span></h2><table class="r"><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody>${v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td>${esc(s.name)}</td><td>${esc(s.homeClass)}</td></tr>`).join('')}</tbody></table></section>`:'';return`<!doctype html><html><head><meta charset="utf-8"><title>${esc(fileTitle)}</title><style>@page{size:A4 portrait;margin:8mm 7mm 9mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{width:100%;margin:0;padding:0}body{font-family:Arial,"Segoe UI",sans-serif;color:#172033;font-size:8pt;line-height:1.28}.print-head{display:flex;align-items:flex-end;justify-content:space-between;gap:6mm;margin:0 0 4mm}.print-head h1{font-size:15pt;line-height:1.1;margin:0 0 1mm}.print-head p{margin:0;color:#667085;font-size:8.5pt}.updated{white-space:nowrap;color:#7b8493;font-size:7.2pt;padding-bottom:.5mm}h2{font-size:11pt;margin:6mm 0 2.2mm;color:#1f2937}h2 span{font-weight:500;color:#667085}table{width:100%;border-collapse:collapse}table.t{table-layout:fixed;border:1px solid #cfd6df}th,td{border:1px solid #cfd6df;vertical-align:top}table.t th,table.t td{padding:2mm 1.7mm}table.t thead th{background:#f1f4f8;text-align:center;font-size:7.8pt;font-weight:700}table.t th:first-child{width:12mm;text-align:center;vertical-align:middle;background:#f7f8fa}.l{min-height:11mm}.l+.l{border-top:1px dashed #d8dde5;margin-top:1.6mm;padding-top:1.6mm}.l b{display:block;font-size:7.8pt;line-height:1.22;color:#172033}.l span{display:inline-block;margin:.8mm 0 .7mm;padding:.45mm 1.1mm;background:#eef2ff;border-radius:2.6mm;font-size:6.5pt;font-weight:700;color:#465bb4}.l small{display:block;color:#606b7c;font-size:6.6pt;line-height:1.25;overflow-wrap:anywhere}.roster-section{break-before:auto}.r{table-layout:auto;font-size:7.8pt}.r th,.r td{padding:1.8mm 2mm;border:1px solid #d6dbe3}.r thead th{background:#f3f5f8;font-size:7.3pt}.r th:nth-child(1),.r td:nth-child(1){width:12mm;text-align:center}.r th:nth-child(2),.r td:nth-child(2){width:25mm}.r th:nth-child(4),.r td:nth-child(4){width:22mm}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}.note{margin-top:2.5mm;color:#7e8795;font-size:6.8pt;text-align:right}@media print{body{background:#fff}}</style><!--
-  TKB GitHub Public-Read
-  - Frontend tĩnh, phù hợp GitHub Pages.
-  - Đọc trực tiếp Google Sheet public-read bằng Google Visualization JSONP.
-  - Không chứa dataset học sinh/TKB nhúng sẵn.
--->
-</head><body><div class="print-head"><div><h1>${esc(v.title)}</h1><p>${esc(v.sub)}</p></div><div class="updated">Cập nhật ${fmt(state.lastSync)}</div></div><table class="t"><thead><tr><th>Tiết</th>${DAYS.map(d=>`<th>Thứ ${d}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>${roster}<div class="note">Khổ A4 dọc</div><script>window.onload=()=>{document.title=${JSON.stringify(fileTitle)};window.focus();setTimeout(()=>window.print(),220)}<\/script></body></html>`}
+function printGridTable(title,m,periods){
+  const rows=periods.map(p=>`<tr><th>Tiết ${p}</th>${DAYS.map(d=>`<td>${(m[key(d,p)]||[]).map(x=>{const l=x.lesson;return`<div class="l"><b>${esc(l.subject)}</b>${l.code?`<span>${l.source==='home'?'Lớp ':''}${esc(l.code)}</span>`:''}<small>${[l.teacher,l.room,l.comments].filter(Boolean).map(esc).join(' · ')}</small></div>`}).join('')||'—'}</td>`).join('')}</tr>`).join('');
+  return`<section class="print-section"><h2>${esc(title)}</h2><table class="t"><thead><tr><th>Tiết</th>${DAYS.map(d=>`<th>Thứ ${d}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></section>`
+}
+function printableHtml(v){
+  const fileTitle=pdfSuggestedName(v);
+  const primaryTitle=state.mode==='student'?'Lịch trái buổi':'Thời khóa biểu';
+  const schedules=printGridTable(primaryTitle,v.m,PERIODS)+(v.homeSections||[]).map(sec=>printGridTable(`Lịch lớp gốc ${v.homeClass} · ${sec.label}`,sec.m,sec.periods)).join('');
+  const roster=v.roster.length?`<section class="roster-section"><h2>Danh sách học sinh <span>(${v.roster.length})</span></h2><table class="r"><thead><tr><th>STT</th><th>Mã HS</th><th>Họ và tên</th><th>Lớp gốc</th></tr></thead><tbody>${v.roster.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.id)}</td><td>${esc(s.name)}</td><td>${esc(s.homeClass)}</td></tr>`).join('')}</tbody></table></section>`:'';
+  return`<!doctype html><html><head><meta charset="utf-8"><title>${esc(fileTitle)}</title><style>@page{size:A4 portrait;margin:8mm 7mm 9mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{width:100%;margin:0;padding:0}body{font-family:Arial,"Segoe UI",sans-serif;color:#172033;font-size:8pt;line-height:1.28}.print-head{display:flex;align-items:flex-end;justify-content:space-between;gap:6mm;margin:0 0 4mm}.print-head h1{font-size:15pt;line-height:1.1;margin:0 0 1mm}.print-head p{margin:0;color:#667085;font-size:8.5pt}.updated{white-space:nowrap;color:#7b8493;font-size:7.2pt;padding-bottom:.5mm}.print-section{break-inside:avoid;margin-bottom:6mm}.print-section+.print-section{break-before:page}h2{font-size:11pt;margin:0 0 2.2mm;color:#1f2937}h2 span{font-weight:500;color:#667085}table{width:100%;border-collapse:collapse}table.t{table-layout:fixed;border:1px solid #cfd6df}th,td{border:1px solid #cfd6df;vertical-align:top}table.t th,table.t td{padding:1.8mm 1.45mm}table.t thead th{background:#f1f4f8;text-align:center;font-size:7.6pt;font-weight:700}table.t th:first-child{width:11mm;text-align:center;vertical-align:middle;background:#f7f8fa}.l+.l{border-top:1px dashed #d8dde5;margin-top:1.2mm;padding-top:1.2mm}.l b{display:block;font-size:7.4pt;line-height:1.18}.l span{display:inline-block;margin:.6mm 0;padding:.4mm 1mm;background:#eef2ff;border-radius:2.6mm;font-size:6.2pt;font-weight:700;color:#465bb4}.l small{display:block;color:#606b7c;font-size:6.2pt;line-height:1.22;overflow-wrap:anywhere}.roster-section{break-before:page}.r{table-layout:auto;font-size:7.8pt}.r th,.r td{padding:1.8mm 2mm;border:1px solid #d6dbe3}.r thead th{background:#f3f5f8;font-size:7.3pt}.r th:nth-child(1),.r td:nth-child(1){width:12mm;text-align:center}.r th:nth-child(2),.r td:nth-child(2){width:25mm}.r th:nth-child(4),.r td:nth-child(4){width:22mm}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}.note{margin-top:2.5mm;color:#7e8795;font-size:6.8pt;text-align:right}</style></head><body><div class="print-head"><div><h1>${esc(v.title)}</h1><p>${esc(v.sub)}</p></div><div class="updated">Cập nhật ${fmt(state.lastSync)}</div></div>${schedules}${roster}<div class="note">Khổ A4 dọc</div><script>window.onload=()=>{document.title=${JSON.stringify(fileTitle)};window.focus();setTimeout(()=>window.print(),220)}<\/script></body></html>`
+}
 function exportPdf(){const v=ensureView();if(!v)return;const w=window.open('','_blank');if(!w){action('Trình duyệt đang chặn cửa sổ in');return}w.document.open();w.document.write(printableHtml(v));w.document.close();action(`PDF A4 dọc · tên lưu: ${pdfSuggestedName(v)}`)}
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}function wrap(ctx,text,x,y,maxW,lineH,max=4){const words=clean(text).split(/\s+/),lines=[];let line='';for(const word of words){const t=line?line+' '+word:word;if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=word}else line=t}if(line)lines.push(line);const use=lines.slice(0,max);if(lines.length>max)use[max-1]=use[max-1].replace(/\s+\S*$/,'')+'…';use.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH));return use.length*lineH}
-function exportPng(){const v=ensureView();if(!v)return;const c=document.createElement('canvas');c.width=1080;c.height=2400;const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,1080,2400);g.addColorStop(0,'#f8faff');g.addColorStop(1,'#eef2fb');ctx.fillStyle=g;ctx.fillRect(0,0,1080,2400);ctx.fillStyle='#18233a';ctx.font='800 48px Arial';wrap(ctx,v.title,58,92,940,58,2);ctx.fillStyle='#6f7c91';ctx.font='23px Arial';wrap(ctx,v.sub,58,210,940,32,2);ctx.fillStyle='#fff';roundRect(ctx,50,300,980,1825,32);const x0=68,y0=342,labelW=82,colW=174,rowH=420;ctx.textAlign='center';ctx.fillStyle='#556279';ctx.font='700 21px Arial';DAYS.forEach((d,i)=>ctx.fillText(`Thứ ${d}`,x0+labelW+i*colW+colW/2,y0+26));for(let pi=0;pi<4;pi++){const p=PERIODS[pi],y=y0+52+pi*rowH;ctx.fillStyle='#7e899c';ctx.font='700 19px Arial';ctx.fillText(`Tiết ${p}`,x0+labelW/2,y+42);for(let di=0;di<4;di++){const d=DAYS[di],x=x0+labelW+di*colW+5;ctx.fillStyle='#f6f8fc';roundRect(ctx,x,y,colW-10,rowH-12,18);const list=v.m[key(d,p)]||[];ctx.textAlign='left';let ty=y+32;if(!list.length){ctx.fillStyle='#b4bdca';ctx.font='16px Arial';ctx.fillText('—',x+15,ty)}else list.slice(0,2).forEach((it,n)=>{if(n){ctx.fillStyle='#dfe4ec';ctx.fillRect(x+14,ty-7,colW-38,1);ty+=18}const l=it.lesson;ctx.fillStyle='#1b263b';ctx.font='700 16px Arial';ty+=wrap(ctx,l.subject,x+12,ty,colW-30,22,3)+6;ctx.fillStyle='#5368cc';ctx.font='700 12px Arial';if(l.code){ctx.fillText(l.code,x+12,ty);ty+=20}ctx.fillStyle='#6b778b';ctx.font='12px Arial';ty+=wrap(ctx,l.teacher,x+12,ty,colW-30,18,3)+3;if(l.room)ty+=wrap(ctx,l.room,x+12,ty,colW-30,18,2)+3})}}ctx.textAlign='left';ctx.fillStyle='#6f7c91';ctx.font='17px Arial';ctx.fillText(`Cập nhật ${fmt(state.lastSync)}`,58,2200);ctx.fillStyle='#ffffff';roundRect(ctx,58,2260,405,80,20);ctx.fillStyle='#576ad2';ctx.font='700 17px Arial';ctx.fillText('1080 × 2400 · Mobile Wallpaper',82,2309);const a=document.createElement('a');a.download=`${safeName(v.title)}_mobile.png`;a.href=c.toDataURL('image/png');a.click();action('Đã xuất ảnh PNG')}
+function drawCanvasGrid(ctx,m,periods,x0,y0,w,h,title){
+  const labelW=72,colW=(w-labelW)/DAYS.length,headH=45,rowH=(h-headH)/periods.length;
+  ctx.fillStyle='#1d2a42';ctx.font='700 22px Arial';ctx.textAlign='left';ctx.fillText(title,x0,y0-18);
+  ctx.textAlign='center';ctx.fillStyle='#68758a';ctx.font='700 15px Arial';DAYS.forEach((d,i)=>ctx.fillText(`T${d}`,x0+labelW+i*colW+colW/2,y0+27));
+  for(let pi=0;pi<periods.length;pi++){const p=periods[pi],y=y0+headH+pi*rowH;ctx.fillStyle='#7e899c';ctx.font='700 14px Arial';ctx.fillText(`T${p}`,x0+labelW/2,y+27);
+    for(let di=0;di<DAYS.length;di++){const d=DAYS[di],x=x0+labelW+di*colW+4;ctx.fillStyle='#f7f9fc';roundRect(ctx,x,y,colW-8,rowH-7,12);const list=m[key(d,p)]||[];ctx.textAlign='left';let ty=y+22;if(!list.length){ctx.fillStyle='#b7c0cd';ctx.font='13px Arial';ctx.fillText('—',x+10,ty)}else{for(const it of list.slice(0,2)){const l=it.lesson;ctx.fillStyle='#1b263b';ctx.font='700 12px Arial';ty+=wrap(ctx,l.subject,x+9,ty,colW-20,16,2)+2;ctx.fillStyle='#66738a';ctx.font='10px Arial';ty+=wrap(ctx,l.teacher,x+9,ty,colW-20,13,2)+2}}}
+  }
+}
+function exportPng(){
+  const v=ensureView();if(!v)return;const c=document.createElement('canvas');c.width=1080;c.height=2400;const ctx=c.getContext('2d'),g=ctx.createLinearGradient(0,0,1080,2400);g.addColorStop(0,'#f8faff');g.addColorStop(1,'#eef2fb');ctx.fillStyle=g;ctx.fillRect(0,0,1080,2400);
+  ctx.fillStyle='#18233a';ctx.font='800 46px Arial';wrap(ctx,v.title,55,82,970,54,2);ctx.fillStyle='#6f7c91';ctx.font='22px Arial';wrap(ctx,v.sub,55,190,970,30,2);
+  ctx.fillStyle='#fff';roundRect(ctx,42,285,996,1940,30);
+  if(state.mode==='student'&&v.homeSections?.length){
+    drawCanvasGrid(ctx,v.m,PERIODS,62,365,956,690,'Lịch trái buổi');
+    let y=1160;for(const sec of v.homeSections.slice(0,1)){drawCanvasGrid(ctx,sec.m,sec.periods,62,y,956,850,`Lịch lớp gốc · ${v.homeClass} · ${sec.label}`)}
+  }else drawCanvasGrid(ctx,v.m,PERIODS,62,380,956,1450,'Thời khóa biểu');
+  ctx.textAlign='left';ctx.fillStyle='#778398';ctx.font='16px Arial';ctx.fillText(`Cập nhật ${fmt(state.lastSync)}`,55,2300);
+  const a=document.createElement('a');a.download=`${safeName(v.title)}_mobile.png`;a.href=c.toDataURL('image/png');a.click();action('Đã xuất ảnh PNG')
+}
 $$('.seg').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));els.search.addEventListener('focus',renderSuggestions);els.search.addEventListener('input',renderSuggestions);els.search.addEventListener('keydown',e=>{const opts=$$('.option[data-key]');if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!opts.length)return;state.activeOption=(state.activeOption+(e.key==='ArrowDown'?1:-1)+opts.length)%opts.length;opts.forEach((o,i)=>o.classList.toggle('active',i===state.activeOption));opts[state.activeOption]?.scrollIntoView({block:'nearest'})}else if(e.key==='Enter'){e.preventDefault();const o=opts[state.activeOption]||opts[0];if(o)select(o.dataset.key)}else if(e.key==='Escape')closeSuggestions()});document.addEventListener('mousedown',e=>{if(!e.target.closest('.search-wrap'))closeSuggestions();if(!e.target.closest('.export-wrap'))els.exportMenu.classList.remove('open')});els.exportBtn.addEventListener('click',e=>{e.stopPropagation();if(!els.exportBtn.disabled)els.exportMenu.classList.toggle('open')});$('#excelBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportExcel()};$('#pdfBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPdf()};$('#pngBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPng()};els.syncBtn.onclick=()=>syncLive();
 els.search.disabled=true;clearView();updateLive(true);syncLive({silent:true}).finally(()=>updateLive(false));setInterval(checkLiveVersion,LIVE_POLL_MS);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkLiveVersion()});window.addEventListener('focus',checkLiveVersion);
 </script>
