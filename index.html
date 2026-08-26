@@ -413,6 +413,38 @@ body{
 }
 </style>
 
+
+<style id="search-on-demand-v11">
+.search-empty-state{
+  display:flex;align-items:center;gap:18px;
+  min-height:210px;margin:18px 1px 12px;padding:28px 30px;
+  border:1px solid #dfe6f0;border-radius:24px;
+  background:
+    radial-gradient(circle at 92% 15%,rgba(102,91,231,.09),transparent 27%),
+    linear-gradient(145deg,rgba(255,255,255,.98),rgba(247,249,255,.96));
+  box-shadow:0 18px 50px rgba(31,47,80,.07)
+}
+.search-empty-state.hidden{display:none}
+.search-empty-icon{
+  width:68px;height:68px;display:grid;place-items:center;flex:none;
+  border-radius:20px;color:#5d68d9;
+  background:linear-gradient(145deg,#edf0ff,#f8f9ff);
+  border:1px solid #dde3ff;box-shadow:0 10px 26px rgba(81,91,190,.10)
+}
+.search-empty-icon svg{width:30px;height:30px}
+.search-empty-kicker{font-size:9px;font-weight:950;letter-spacing:.18em;color:#7e8aa0;margin-bottom:7px}
+.search-empty-copy h2{margin:0;font-size:20px;font-weight:950;letter-spacing:-.02em;color:#1a2841}
+.search-empty-copy p{margin:7px 0 0;font-size:10.5px;font-weight:700;line-height:1.55;color:#7a879a}
+#primarySectionBar.search-hidden,#primaryScheduleShell.search-hidden{display:none!important}
+@media(max-width:720px){
+  .search-empty-state{min-height:175px;margin:12px 0 10px;padding:21px 18px;border-radius:18px;gap:13px}
+  .search-empty-icon{width:50px;height:50px;border-radius:15px}
+  .search-empty-icon svg{width:23px;height:23px}
+  .search-empty-copy h2{font-size:15px}
+  .search-empty-copy p{font-size:9px}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -456,12 +488,25 @@ body{
     <div class="welcome-meta" id="welcomeMeta">Nguyễn Khuyến</div>
   </section>
 
+  <section class="search-empty-state" id="searchEmptyState">
+    <div class="search-empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>
+      </svg>
+    </div>
+    <div class="search-empty-copy">
+      <div class="search-empty-kicker">TRA CỨU THỜI KHÓA BIỂU</div>
+      <h2 id="searchEmptyTitle">NHẬP HỌ VÀ TÊN HỌC SINH</h2>
+      <p id="searchEmptyText">THỜI KHÓA BIỂU CHỈ XUẤT HIỆN SAU KHI BẠN NHẬP VÀ CHỌN ĐÚNG HỌ TÊN.</p>
+    </div>
+  </section>
+
   <section class="view-head" id="viewHead">
     <div class="view-title"><h2 id="viewTitle"></h2><p id="viewSub"></p></div>
     <span class="mode-badge" id="modeBadge"></span>
   </section>
-  <div class="section-bar"><div><h3 id="primaryGridTitle">Thời khóa biểu</h3><p id="primaryGridSub">Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp</p></div><div class="section-right" id="gridNote"></div></div>
-  <section class="schedule-shell"><div class="schedule-grid" id="scheduleGrid"></div></section>
+  <div class="section-bar" id="primarySectionBar"><div><h3 id="primaryGridTitle">Thời khóa biểu</h3><p id="primaryGridSub">Hàng là tiết · cột là thứ · mỗi ô hiển thị đầy đủ thông tin lớp</p></div><div class="section-right" id="gridNote"></div></div>
+  <section class="schedule-shell" id="primaryScheduleShell"><div class="schedule-grid" id="scheduleGrid"></div></section>
 
   <section class="home-schedule-area" id="homeScheduleArea"></section>
 
@@ -477,8 +522,8 @@ body{
 
 const DAYS=[2,3,4,5,6],PERIODS=[1,2,3,4,5],HOME_PERIODS=PERIODS;
 // ===== 4 NGUỒN GOOGLE SHEET PUBLIC-READ =====
-// Nguồn 10: lịch học sinh lớp 10 (buổi sáng).
-const ELECTIVE10_SHEET_ID='19OOBVAKV0J47hh-MuJIyHGlgfjcrJ5gHWR_nrPSsgtg';
+// Nguồn 10 HKI 26-27: lịch học sinh lớp 10 (buổi sáng), gồm môn tự chọn, GDTC, CTNT, AVBN, MOS.
+const ELECTIVE10_SHEET_ID='1c9lY0pbOvj47IN3kE-lUtdvYFaWETsx6Fe0EcWUGAk4';
 const ELECTIVE10_SHEET_GID='0';
 // Nguồn lớp gốc: lịch chính khóa S/C.
 const HOME_SHEET_ID='132pTSUjCeHhahXr7O2m4K_Bmcj_AxCAjfawPwzyoOG8';
@@ -493,7 +538,7 @@ const LIVE_POLL_MS=15000;
 // =============================================
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const state={mode:'student',detailMode:'full',data:null,homeData:null,selection:null,source:'loading',lastSync:null,version10:null,version11:null,version12:null,homeVersion:null,activeOption:-1};
-const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
+const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),primarySectionBar:$('#primarySectionBar'),primaryScheduleShell:$('#primaryScheduleShell'),searchEmptyState:$('#searchEmptyState'),searchEmptyTitle:$('#searchEmptyTitle'),searchEmptyText:$('#searchEmptyText'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
 function clean(v){return v==null?'':String(v).trim()}
 function upperData(v){return clean(v).toLocaleUpperCase('vi-VN')}
 function norm(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
@@ -554,6 +599,7 @@ function parseGdtcSlots(value){
   return out
 }
 
+// Parser tự nhận các cột lịch Sáng/Chiều T2–T6 theo Môn học/Mã lớp/Giáo viên/Phòng.
 function parseElectiveRows(rows,sourceKey,sourceLabel){
   if(!rows||rows.length<2)return[];
   const header=rows[0].map(clean),ix=Object.fromEntries(header.map((h,i)=>[h,i]));
@@ -886,16 +932,36 @@ function options(){
 }
 function renderSuggestionsIfOpen(){if(els.suggestions.classList.contains('open'))renderSuggestions()}
 function updateSearchClear(){els.searchClear?.classList.toggle('show',!!clean(els.search.value))}
-function renderSuggestions(){
-  const q=norm(els.search.value),all=options();
-  let arr=q?all.filter(o=>norm(state.mode==='student'?(o.title+' '+o.sub):(o.title+' '+o.sub+' '+o.key)).includes(q)):all;
+function renderSuggestions({allowAutoSelect=true}={}){
+  const raw=clean(els.search.value),q=norm(raw);
+  if(!q){
+    closeSuggestions();updateSearchClear();return
+  }
+
+  const all=options();
+  let arr=all.filter(o=>norm(state.mode==='student'?(o.title+' '+o.sub):(o.title+' '+o.sub+' '+o.key)).includes(q));
+
+  // Khi nhập đúng hoàn toàn một tên/mã duy nhất, hiện thời khóa biểu ngay.
+  if(allowAutoSelect){
+    const exact=arr.filter(o=>norm(o.title)===q);
+    if(exact.length===1){
+      select(exact[0].key);return
+    }
+  }
+
   const total=arr.length;arr=arr.slice(0,60);state.activeOption=-1;
-  const modeName={student:'Học sinh',teacher:'Giáo viên',class:'Lớp / mã',room:'Phòng',homeClass:'Lớp gốc'}[state.mode]||'Kết quả';
+  const modeName={student:'HỌC SINH',teacher:'GIÁO VIÊN',class:'LỚP / MÃ',room:'PHÒNG',homeClass:'LỚP GỐC'}[state.mode]||'KẾT QUẢ';
   els.suggestions.innerHTML=
-    `<div class="suggestion-head"><b>${esc(modeName)}</b><span>${total}${total>60?' · hiện 60':''} kết quả</span></div>`+
-    (arr.length?arr.map(o=>`<div class="option" role="option" data-key="${esc(o.key)}"><div class="option-main"><b>${esc(o.title)}</b><small>${esc(o.sub)}</small></div><span class="option-tag">${esc(o.tag)}</span></div>`).join(''):`<div class="empty-option">Không có kết quả phù hợp</div>`);
-  els.suggestions.classList.add('open');els.searchBox?.setAttribute('aria-expanded','true');updateSearchClear();
-  $$('.option[data-key]').forEach(o=>o.addEventListener('mousedown',e=>{e.preventDefault();select(o.dataset.key)}))
+    `<div class="suggestion-head"><b>${esc(modeName)}</b><span>${total}${total>60?' · HIỆN 60':''} KẾT QUẢ</span></div>`+
+    (arr.length?arr.map(o=>`<div class="option" role="option" data-key="${esc(o.key)}"><div class="option-main"><b>${esc(o.title)}</b><small>${esc(o.sub)}</small></div><span class="option-tag">${esc(o.tag)}</span></div>`).join(''):`<div class="empty-option">KHÔNG CÓ KẾT QUẢ PHÙ HỢP</div>`);
+
+  els.suggestions.classList.add('open');
+  els.searchBox?.setAttribute('aria-expanded','true');
+  updateSearchClear();
+
+  $$('.option[data-key]').forEach(o=>o.addEventListener('mousedown',e=>{
+    e.preventDefault();select(o.dataset.key)
+  }))
 }
 function closeSuggestions(){els.suggestions.classList.remove('open');els.searchBox?.setAttribute('aria-expanded','false')}
 function placeholder(){
@@ -905,6 +971,27 @@ function placeholder(){
   if(state.mode==='room')return'Tìm phòng học…';
   return'Tìm lớp gốc…'
 }
+function updateEmptySearchPrompt(){
+  const map={
+    student:['NHẬP HỌ VÀ TÊN HỌC SINH','THỜI KHÓA BIỂU CỦA HỌC SINH CHỈ HIỆN SAU KHI BẠN NHẬP TÊN VÀ CHỌN ĐÚNG KẾT QUẢ.'],
+    teacher:['NHẬP HỌ VÀ TÊN GIÁO VIÊN','THỜI KHÓA BIỂU GIẢNG DẠY CHỈ HIỆN SAU KHI BẠN NHẬP TÊN VÀ CHỌN ĐÚNG GIÁO VIÊN.'],
+    class:['NHẬP MÃ LỚP','VÍ DỤ HOA08, 12-BR2. THỜI KHÓA BIỂU CHỈ HIỆN SAU KHI CHỌN KẾT QUẢ.'],
+    room:['NHẬP TÊN PHÒNG','LỊCH SỬ DỤNG PHÒNG CHỈ HIỆN SAU KHI CHỌN ĐÚNG PHÒNG.'],
+    homeClass:['NHẬP LỚP GỐC','LỊCH LỚP GỐC CHỈ LẤY TỪ NGUỒN THỜI KHÓA BIỂU CHÍNH KHÓA.']
+  };
+  const [title,body]=map[state.mode]||map.student;
+  els.searchEmptyTitle.textContent=title;els.searchEmptyText.textContent=body
+}
+function showSearchOnly(){
+  els.searchEmptyState?.classList.remove('hidden');
+  els.primarySectionBar?.classList.add('search-hidden');
+  els.primaryScheduleShell?.classList.add('search-hidden')
+}
+function showTimetable(){
+  els.searchEmptyState?.classList.add('hidden');
+  els.primarySectionBar?.classList.remove('search-hidden');
+  els.primaryScheduleShell?.classList.remove('search-hidden')
+}
 function updateWelcome(v){
   if(state.mode==='student'&&state.selection&&v){
     els.welcomeMessage.innerHTML=`Nguyễn Khuyến là nhà của <strong>${esc(v.title)}</strong>`;
@@ -912,12 +999,12 @@ function updateWelcome(v){
     els.welcomeStrip.classList.add('show')
   }else{els.welcomeStrip.classList.remove('show');els.welcomeMessage.textContent='';els.welcomeMeta.textContent='Nguyễn Khuyến'}
 }
-function setMode(mode){state.mode=mode;state.selection=null;els.search.value='';els.search.placeholder=placeholder();updateSearchClear();$$('.seg').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));clearView();closeSuggestions();setTimeout(()=>els.search.focus(),0)}
+function setMode(mode){state.mode=mode;state.selection=null;els.search.value='';els.search.placeholder=placeholder();updateSearchClear();updateEmptySearchPrompt();$$('.seg').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));clearView();closeSuggestions();setTimeout(()=>els.search.focus(),0)}
 function setDetailMode(mode){state.detailMode=mode==='simple'?'simple':'full';document.body.classList.toggle('simple-view',state.detailMode==='simple');$$('.detail-btn').forEach(b=>b.classList.toggle('active',b.dataset.detail===state.detailMode));if(state.selection)renderView()}
-function select(k){state.selection=k;const o=options().find(x=>x.key===k);els.search.value=o?.title||k;updateSearchClear();closeSuggestions();renderView();els.exportBtn.disabled=false}
+function select(k){state.selection=k;const o=options().find(x=>x.key===k);els.search.value=o?.title||k;updateSearchClear();closeSuggestions();showTimetable();renderView();els.exportBtn.disabled=false}
 function clearSelection(){state.selection=null;els.search.value='';updateSearchClear();clearView();setTimeout(()=>els.search.focus(),0)}
 function clearView(){
-  els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';els.statsZone?.classList.remove('show');els.welcomeStrip?.classList.remove('show');els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.homeArea.classList.remove('show');els.homeArea.innerHTML='';els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent='Lịch hợp nhất theo đúng buổi';renderGrid(blankMatrix(),HOME_PERIODS)
+  showSearchOnly();updateEmptySearchPrompt();els.viewHead.classList.remove('show');els.stats.classList.remove('show');els.stats.innerHTML='';els.statsZone?.classList.remove('show');els.welcomeStrip?.classList.remove('show');els.roster.classList.remove('show');els.rosterBody.innerHTML='';els.homeArea.classList.remove('show');els.homeArea.innerHTML='';els.exportBtn.disabled=true;els.gridNote.textContent='';els.primaryGridTitle.textContent='Buổi sáng';els.primaryGridSub.textContent='Lịch hợp nhất theo đúng buổi';renderGrid(blankMatrix(),HOME_PERIODS)
 }
 function addGroupedSlots(sm,morning,afternoon,collect){
   let events=0;if(!sm)return events;for(const groups of sm.values())for(const g of groups.values()){events++;addLessonToMatrices(morning,afternoon,g,{lesson:g,count:g.studentIds?.size||0});collect?.(g)}return events
@@ -1235,8 +1322,19 @@ function exportPng(){
 }
 $$('.seg').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 $$('.detail-btn').forEach(b=>b.addEventListener('click',()=>setDetailMode(b.dataset.detail)));
-els.search.addEventListener('focus',renderSuggestions);
-els.search.addEventListener('input',()=>{updateSearchClear();renderSuggestions()});
+els.search.addEventListener('focus',()=>{if(clean(els.search.value)&&!state.selection)renderSuggestions()});
+els.search.addEventListener('input',()=>{
+  updateSearchClear();
+  const q=clean(els.search.value);
+  if(state.selection){
+    const selected=options().find(x=>x.key===state.selection);
+    if(!selected||norm(selected.title)!==norm(q)){
+      state.selection=null;clearView()
+    }
+  }
+  if(!q){closeSuggestions();return}
+  renderSuggestions({allowAutoSelect:true})
+});
 els.search.addEventListener('keydown',e=>{
   const opts=$$('.option[data-key]');
   if(e.key==='ArrowDown'||e.key==='ArrowUp'){
@@ -1248,10 +1346,10 @@ els.search.addEventListener('keydown',e=>{
     e.preventDefault();const o=opts[state.activeOption]||opts[0];if(o)select(o.dataset.key)
   }else if(e.key==='Escape')closeSuggestions()
 });
-els.searchClear?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();clearSelection();renderSuggestions()});
+els.searchClear?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();clearSelection();closeSuggestions()});
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
-    e.preventDefault();els.search.focus();renderSuggestions()
+    e.preventDefault();els.search.focus();if(clean(els.search.value)&&!state.selection)renderSuggestions()
   }
 });
 document.addEventListener('mousedown',e=>{
@@ -1263,6 +1361,6 @@ $('#excelBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportExcel(
 $('#pdfBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPdf()};
 $('#pngBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPng()};
 els.syncBtn.onclick=()=>syncLive();
-els.search.disabled=true;setDetailMode('full');updateSearchClear();clearView();updateLive(true);syncLive({silent:true}).finally(()=>updateLive(false));setInterval(checkLiveVersion,LIVE_POLL_MS);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkLiveVersion()});window.addEventListener('focus',checkLiveVersion);
+els.search.disabled=true;setDetailMode('full');updateEmptySearchPrompt();updateSearchClear();clearView();updateLive(true);syncLive({silent:true}).finally(()=>updateLive(false));setInterval(checkLiveVersion,LIVE_POLL_MS);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkLiveVersion()});window.addEventListener('focus',checkLiveVersion);
 </script>
 </body></html>
