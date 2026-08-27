@@ -7,6 +7,9 @@
 <title>Thời khóa biểu học sinh · Premium</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{
   --bg:#f6f8fc;--card:#fff;--text:#19243a;--muted:#718096;--line:#e7ebf3;
@@ -445,6 +448,22 @@ body{
 }
 </style>
 
+
+<style id="bulk-export-v13">
+.control{grid-template-columns:auto minmax(300px,1fr) auto auto auto!important}
+.bulk-wrap{position:relative;z-index:3200}
+.bulk-btn{height:46px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;border:1px solid #dce4f0;border-radius:15px;background:linear-gradient(145deg,#fff,#f8faff);color:#33455f;font:850 10.5px/1 inherit;cursor:pointer;box-shadow:0 6px 18px rgba(31,48,78,.055);white-space:nowrap;transition:.16s ease}
+.bulk-btn:hover:not(:disabled){transform:translateY(-1px);border-color:#cfd8eb;box-shadow:0 10px 24px rgba(31,48,78,.10)}
+.bulk-btn:disabled{opacity:.45;cursor:not-allowed}.bulk-btn svg{width:18px;height:18px;color:#5b67d9}
+.bulk-menu{display:none;position:absolute;right:0;top:calc(100% + 9px);width:340px;padding:8px;border:1px solid #dce4ef;border-radius:19px;background:rgba(255,255,255,.98);backdrop-filter:blur(20px);box-shadow:0 28px 70px rgba(29,43,73,.20);z-index:99999}
+.bulk-menu.open{display:block}.bulk-menu-head{padding:10px 11px 9px;border-bottom:1px solid #edf0f5;margin-bottom:5px}.bulk-menu-head b{display:block;font-size:10px;letter-spacing:.12em;color:#46546a}.bulk-menu-head small{display:block;margin-top:4px;font-size:9px;color:#8994a6}.bulk-item{width:100%;text-align:left}
+.bulk-progress{display:none;position:fixed;inset:0;z-index:200000;align-items:center;justify-content:center;padding:20px;background:rgba(19,29,48,.34);backdrop-filter:blur(8px)}
+.bulk-progress.show{display:flex}.bulk-progress-card{width:min(520px,100%);padding:24px;border-radius:24px;background:rgba(255,255,255,.985);border:1px solid rgba(255,255,255,.9);box-shadow:0 32px 90px rgba(17,29,52,.28)}
+.bulk-progress-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.bulk-progress-kicker{font-size:8.5px;font-weight:950;letter-spacing:.18em;color:#7b87a0}.bulk-progress-top h3{margin:6px 0 0;font-size:19px;letter-spacing:-.02em;color:#19283f}.bulk-progress-count{flex:none;padding:7px 9px;border-radius:10px;background:#eef1ff;color:#5362c9;font-size:10px;font-weight:900}.bulk-progress-name{margin-top:20px;min-height:17px;font-size:10.5px;font-weight:850;color:#536178;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bulk-progress-track{height:8px;margin-top:10px;border-radius:999px;background:#edf0f5;overflow:hidden}.bulk-progress-bar{width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#536de7,#7359e4);transition:width .18s ease}.bulk-progress-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px}.bulk-progress-foot span{font-size:8.5px;font-weight:750;color:#919bad}.bulk-progress-foot button{border:0;border-radius:10px;padding:8px 12px;background:#f3f5f8;color:#68758a;font:850 9px/1 inherit;cursor:pointer}.bulk-progress-foot button:hover{background:#eceff4;color:#44536a}
+@media(max-width:1180px){.control{grid-template-columns:minmax(0,1fr) auto auto auto!important}.segmented{grid-column:1/-1}.bulk-label{display:none}.bulk-btn{width:46px;padding:0}}
+@media(max-width:720px){.control{grid-template-columns:minmax(0,1fr) auto auto auto!important}.bulk-btn{width:42px;height:42px;border-radius:13px}.bulk-menu{position:fixed;left:10px;right:10px;top:auto;bottom:12px;width:auto;border-radius:20px}.bulk-progress-card{padding:20px 17px;border-radius:20px}.bulk-progress-top h3{font-size:16px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -480,8 +499,31 @@ body{
         <button class="menu-item" id="pngBtn"><span class="menu-icon">PNG</span><span><b>PNG Môn + Phòng</b><small>Chỉ giữ môn học và phòng, chữ lớn dễ xem</small></span></button>
       </div>
     </div>
+    <div class="bulk-wrap">
+      <button class="bulk-btn" id="bulkExportBtn" disabled type="button" title="Xuất PDF hàng loạt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 7h16M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M8 11h8M8 15h5"/></svg>
+        <span class="bulk-label">Xuất toàn trường</span>
+      </button>
+      <div class="bulk-menu" id="bulkMenu">
+        <div class="bulk-menu-head"><b>XUẤT PDF HÀNG LOẠT</b><small>Mỗi đối tượng là một PDF riêng trong ZIP</small></div>
+        <button class="menu-item bulk-item" id="bulkHomeBtn"><span class="menu-icon">ZIP</span><span><b>Toàn bộ Lớp gốc</b><small>1 PDF / lớp · chỉ nguồn chính khóa</small></span></button>
+        <button class="menu-item bulk-item" id="bulkTeacherBtn"><span class="menu-icon">ZIP</span><span><b>Toàn bộ Giáo viên</b><small>1 PDF / giáo viên · lịch dạy hợp nhất</small></span></button>
+      </div>
+    </div>
   </section>
   <div class="action-line" id="actionLine"></div>
+
+  <div class="bulk-progress" id="bulkProgress" aria-live="polite" aria-hidden="true">
+    <div class="bulk-progress-card">
+      <div class="bulk-progress-top">
+        <div><div class="bulk-progress-kicker">ĐANG TẠO GÓI PDF</div><h3 id="bulkProgressTitle">XUẤT HÀNG LOẠT</h3></div>
+        <div class="bulk-progress-count" id="bulkProgressCount">0 / 0</div>
+      </div>
+      <div class="bulk-progress-name" id="bulkProgressName">ĐANG CHUẨN BỊ…</div>
+      <div class="bulk-progress-track"><div class="bulk-progress-bar" id="bulkProgressBar"></div></div>
+      <div class="bulk-progress-foot"><span id="bulkProgressNote">VUI LÒNG GIỮ TRANG NÀY ĐANG MỞ</span><button id="bulkCancelBtn" type="button">DỪNG</button></div>
+    </div>
+  </div>
 
   <section class="welcome-strip" id="welcomeStrip" aria-live="polite">
     <div class="welcome-copy"><div class="welcome-eyebrow">Chào mừng trở về</div><div class="welcome-message" id="welcomeMessage"></div></div>
@@ -538,7 +580,7 @@ const LIVE_POLL_MS=15000;
 // =============================================
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const state={mode:'student',detailMode:'full',data:null,homeData:null,selection:null,source:'loading',lastSync:null,version10:null,version11:null,version12:null,homeVersion:null,activeOption:-1};
-const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),primarySectionBar:$('#primarySectionBar'),primaryScheduleShell:$('#primaryScheduleShell'),searchEmptyState:$('#searchEmptyState'),searchEmptyTitle:$('#searchEmptyTitle'),searchEmptyText:$('#searchEmptyText'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime')};
+const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),primarySectionBar:$('#primarySectionBar'),primaryScheduleShell:$('#primaryScheduleShell'),searchEmptyState:$('#searchEmptyState'),searchEmptyTitle:$('#searchEmptyTitle'),searchEmptyText:$('#searchEmptyText'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime'),bulkExportBtn:$('#bulkExportBtn'),bulkMenu:$('#bulkMenu'),bulkProgress:$('#bulkProgress'),bulkProgressTitle:$('#bulkProgressTitle'),bulkProgressCount:$('#bulkProgressCount'),bulkProgressName:$('#bulkProgressName'),bulkProgressBar:$('#bulkProgressBar'),bulkProgressNote:$('#bulkProgressNote'),bulkCancelBtn:$('#bulkCancelBtn')};
 function clean(v){return v==null?'':String(v).trim()}
 function upperData(v){return clean(v).toLocaleUpperCase('vi-VN')}
 function norm(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
@@ -883,7 +925,7 @@ function applyRows(rows10,rows11,rows12,homeRows,updatedAt,version10,version11,v
   const sourceCount=(rows10?1:0)+(rows11?1:0)+(rows12?1:0)+(homeRows?1:0);state.source=sourceCount===4?'live':'partial';
   state.lastSync=updatedAt?new Date(updatedAt):new Date();
   state.version10=version10??state.version10;state.version11=version11??state.version11;state.version12=version12??state.version12;state.homeVersion=homeVersion??state.homeVersion;
-  els.search.disabled=false;updateLive();if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();renderSuggestionsIfOpen()
+  els.search.disabled=false;if(els.bulkExportBtn)els.bulkExportBtn.disabled=false;updateLive();if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();renderSuggestionsIfOpen()
 }
 function selectionExists(sel){
   if(!state.data)return false;
@@ -1159,11 +1201,11 @@ async function syncLive({silent=false,onlyIfChanged=false}={}){
 
     if(!silent)action((rows10&&rows11&&rows12&&homeRows)?'Đã cập nhật 4 nguồn dữ liệu':'Đã cập nhật dữ liệu hiện có')
   }catch(e){
-    if(!state.data){state.source='error';els.search.disabled=true;clearView()}
+    if(!state.data){state.source='error';els.search.disabled=true;if(els.bulkExportBtn)els.bulkExportBtn.disabled=true;clearView()}
     updateLive(false);if(!silent)action('Không kết nối được dữ liệu trực tiếp')
   }finally{if(!silent)updateLive(false)}
 }
-async function checkLiveVersion(){if(document.visibilityState!=='visible')return;await syncLive({silent:true,onlyIfChanged:true})}
+async function checkLiveVersion(){if(bulkRunning||document.visibilityState!=='visible')return;await syncLive({silent:true,onlyIfChanged:true})}
 function safeName(s){return clean(s).replace(/[\\/:*?"<>|]/g,'_').slice(0,80)}function ensureView(){return state.selection?currentView():null}
 function detailRows(v){
   const out=[],periods=v.primaryPeriods||HOME_PERIODS;
@@ -1274,6 +1316,91 @@ function printableHtml(v){
   <\/script></body></html>`
 }
 function exportPdf(){const v=ensureView();if(!v)return;const w=window.open('','_blank');if(!w){action('Trình duyệt đang chặn cửa sổ in');return}w.document.open();w.document.write(printableHtml(v));w.document.close();action(`PDF A4 dọc · tên lưu: ${pdfSuggestedName(v)}`)}
+
+let bulkRunning=false,bulkAbort=false;
+function bulkLibrariesReady(){return !!(window.JSZip&&window.html2canvas&&window.jspdf?.jsPDF)}
+function bulkItems(kind){
+  if(kind==='home'){
+    return [...(state.homeData?.classes||[])].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})).map(key=>({key,name:key}))
+  }
+  const map=new Map();
+  for(const [key,name] of state.data?.teacherNames||[])map.set(key,name);
+  for(const t of state.homeData?.teachers||[])if(!map.has(t.key))map.set(t.key,t.name);
+  return [...map.entries()].map(([key,name])=>({key,name})).sort((a,b)=>a.name.localeCompare(b.name,'vi'))
+}
+function setBulkProgress(title,index,total,name,note='VUI LÒNG GIỮ TRANG NÀY ĐANG MỞ'){
+  els.bulkProgressTitle.textContent=title;els.bulkProgressCount.textContent=`${index} / ${total}`;els.bulkProgressName.textContent=name||'ĐANG CHUẨN BỊ…';els.bulkProgressBar.style.width=`${total?Math.max(0,Math.min(100,index/total*100)):0}%`;els.bulkProgressNote.textContent=note
+}
+function showBulkProgress(title,total){bulkAbort=false;els.bulkProgress.classList.add('show');els.bulkProgress.setAttribute('aria-hidden','false');setBulkProgress(title,0,total,'ĐANG CHUẨN BỊ…')}
+function hideBulkProgress(){els.bulkProgress.classList.remove('show');els.bulkProgress.setAttribute('aria-hidden','true')}
+function waitFrame(){return new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)))}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
+function noPrintHtml(v){
+  const clone={...v,roster:[]};
+  return printableHtml(clone).replace(/<script>[\s\S]*?<\/script>/i,'')
+}
+async function timetablePdfBlob(v){
+  const {jsPDF}=window.jspdf;
+  const frame=document.createElement('iframe');frame.setAttribute('aria-hidden','true');frame.style.cssText='position:fixed;left:-12000px;top:0;width:794px;height:1123px;border:0;visibility:hidden;pointer-events:none;';document.body.appendChild(frame);
+  try{
+    const doc=frame.contentDocument;doc.open();doc.write(noPrintHtml(v));doc.close();
+    await new Promise(r=>setTimeout(r,90));
+    if(doc.fonts?.ready)try{await doc.fonts.ready}catch(_){ }
+    const sections=[...doc.querySelectorAll('.print-session')];
+    if(!sections.length)throw new Error('Không tạo được trang PDF');
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
+    const pageW=210,pageH=297,margin=4,availW=pageW-margin*2,availH=pageH-margin*2;
+    let firstPage=true;
+    for(const section of sections){
+      if(bulkAbort)throw new Error('__CANCEL__');
+      const canvas=await html2canvas(section,{scale:1.22,backgroundColor:'#ffffff',logging:false,useCORS:true,scrollX:0,scrollY:0,windowWidth:794});
+      const slicePx=Math.max(1,Math.floor(canvas.width*availH/availW));
+      for(let sy=0;sy<canvas.height;sy+=slicePx){
+        if(!firstPage)pdf.addPage('a4','portrait');firstPage=false;
+        const sh=Math.min(slicePx,canvas.height-sy),slice=document.createElement('canvas');slice.width=canvas.width;slice.height=sh;
+        const sctx=slice.getContext('2d');sctx.fillStyle='#fff';sctx.fillRect(0,0,slice.width,slice.height);sctx.drawImage(canvas,0,sy,canvas.width,sh,0,0,canvas.width,sh);
+        const img=slice.toDataURL('image/jpeg',.80),h=availW*sh/canvas.width;
+        pdf.addImage(img,'JPEG',margin,margin,availW,Math.min(availH,h),undefined,'FAST');
+        slice.width=1;slice.height=1
+      }
+      canvas.width=1;canvas.height=1;await waitFrame()
+    }
+    return pdf.output('blob')
+  }finally{frame.remove()}
+}
+async function exportBulkZip(kind){
+  if(bulkRunning)return;
+  if(!state.data||!state.homeData){action('Dữ liệu chưa sẵn sàng');return}
+  if(!bulkLibrariesReady()){action('Không tải được thư viện ZIP/PDF');return}
+  const items=bulkItems(kind);if(!items.length){action('Không có dữ liệu để xuất');return}
+  const title=kind==='home'?'TOÀN BỘ THỜI KHÓA BIỂU LỚP GỐC':'TOÀN BỘ THỜI KHÓA BIỂU GIÁO VIÊN';
+  const zipName=kind==='home'?'TKB_Lop_Goc_Toan_Truong.zip':'TKB_Giao_Vien_Toan_Truong.zip';
+  const saved={mode:state.mode,selection:state.selection};bulkRunning=true;bulkAbort=false;els.bulkExportBtn.disabled=true;els.syncBtn.disabled=true;showBulkProgress(title,items.length);
+  try{
+    const zip=new JSZip();let done=0;
+    for(const item of items){
+      if(bulkAbort)break;
+      setBulkProgress(title,done,items.length,`ĐANG TẠO PDF · ${upperData(item.name)}`);
+      state.mode=kind==='home'?'homeClass':'teacher';state.selection=item.key;
+      const raw=currentView();
+      if(raw){
+        const v={...raw,roster:[]};
+        const blob=await timetablePdfBlob(v);
+        const prefix=kind==='home'?'TKB_LOP_GOC':'TKB_GIAO_VIEN';
+        zip.file(`${prefix}_${safeName(upperData(item.name))}.pdf`,blob)
+      }
+      done++;setBulkProgress(title,done,items.length,upperData(item.name));await waitFrame()
+    }
+    if(bulkAbort){action('Đã dừng xuất hàng loạt');return}
+    setBulkProgress(title,items.length,items.length,'ĐANG ĐÓNG GÓI FILE ZIP…','ĐANG NÉN CÁC FILE PDF');
+    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},meta=>{els.bulkProgressNote.textContent=`ĐANG NÉN ZIP · ${Math.round(meta.percent)}%`});
+    downloadBlob(blob,zipName);action(`Đã xuất ${items.length} PDF trong 1 file ZIP`)
+  }catch(e){if(e?.message!=='__CANCEL__')action('Không thể hoàn tất gói PDF hàng loạt')}
+  finally{
+    state.mode=saved.mode;state.selection=saved.selection;bulkRunning=false;bulkAbort=false;els.bulkExportBtn.disabled=!state.data;els.syncBtn.disabled=false;hideBulkProgress()
+  }
+}
+
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
 function wrapLines(ctx,text,maxW,maxLines=99){
   const words=clean(text).split(/\s+/).filter(Boolean),lines=[];let line='';
@@ -1354,9 +1481,13 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('mousedown',e=>{
   if(!e.target.closest('.search-wrap'))closeSuggestions();
-  if(!e.target.closest('.export-wrap'))els.exportMenu.classList.remove('open')
+  if(!e.target.closest('.export-wrap'))els.exportMenu.classList.remove('open');if(!e.target.closest('.bulk-wrap'))els.bulkMenu.classList.remove('open')
 });
 els.exportBtn.addEventListener('click',e=>{e.stopPropagation();if(!els.exportBtn.disabled)els.exportMenu.classList.toggle('open')});
+els.bulkExportBtn.addEventListener('click',e=>{e.stopPropagation();if(!els.bulkExportBtn.disabled){els.exportMenu.classList.remove('open');els.bulkMenu.classList.toggle('open')}});
+$('#bulkHomeBtn').onclick=()=>{els.bulkMenu.classList.remove('open');exportBulkZip('home')};
+$('#bulkTeacherBtn').onclick=()=>{els.bulkMenu.classList.remove('open');exportBulkZip('teacher')};
+els.bulkCancelBtn.onclick=()=>{bulkAbort=true;els.bulkProgressNote.textContent='ĐANG DỪNG SAU FILE HIỆN TẠI…'};
 $('#excelBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportExcel()};
 $('#pdfBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPdf()};
 $('#pngBtn').onclick=()=>{els.exportMenu.classList.remove('open');exportPng()};
