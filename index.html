@@ -740,7 +740,7 @@ const ELECTIVE11_SHEET_GID='0';
 const ELECTIVE12_SHEET_ID='1LxkeTQ2e1oPmQWwqPlXm1aziaNhz74IeH7ks8WSJaiA';
 const ELECTIVE12_SHEET_GID='0';
 // Nguồn 5: fallback phòng học theo Lớp gốc × Buổi × Thứ.
-// QUY TẮC: phòng đã có trong 4 nguồn chính luôn được giữ nguyên.
+// QUY TẮC: phòng đã có trong 4 nguồn chính luôn được giữ nguyên. BÓNG RỔ/CẦU LÔNG không map phòng học; nếu trống -> SÂN TRƯỜNG.
 const ROOMMAP_SHEET_ID='10KmNYHCkKReBgv6TFslRi_FQAS9W7dk1bE8dqOZey-w';
 const ROOMMAP_SHEET_GID='0';
 const LIVE_POLL_MS=15000;
@@ -828,6 +828,24 @@ function parseRoomMapRows(rows){
   }
   return map
 }
+function isOutdoorCourtLesson(lesson){
+  const subject=norm(lesson?.subject||'');
+  const code=norm(lesson?.code||lesson?.classCode||'');
+  if(subject.includes('bong ro')||subject.includes('cau long'))return true;
+
+  // Nhận các mã lớp thể thao phổ biến:
+  // 10-BR1, 11-BR2, 12-BR3, 10-CL14, 11-CL8...
+  if(/(^|[^a-z0-9])br\d*($|[^a-z0-9])/.test(code))return true;
+  if(/(^|[^a-z0-9])cl\d*($|[^a-z0-9])/.test(code))return true;
+  return false
+}
+function fallbackRoomForLesson(roomMap,homeClass,lesson){
+  // BÓNG RỔ / CẦU LÔNG: không lấy phòng từ Mapping.
+  // Nếu nguồn gốc chưa có phòng thì hiển thị SÂN TRƯỜNG.
+  if(isOutdoorCourtLesson(lesson))return'SÂN TRƯỜNG';
+  return mappedRoomFor(roomMap,homeClass,lesson?.session,lesson?.day,lesson?.period)
+}
+
 function mappedRoomFor(roomMap,homeClass,session,day,period){
   // Mapping phòng không thay đổi vị trí tiết. period được truyền vào để
   // nhấn mạnh fallback chỉ áp dụng cho chính tiết đang xử lý.
@@ -840,10 +858,11 @@ function applyRoomFallbackToStudents(students,roomMap){
     for(const lesson of s.schedule||[]){
       // PHÒNG CÓ SẴN = GIỮ NGUYÊN. Chỉ bổ sung khi thật sự trống.
       if(clean(lesson.room))continue;
-      const mapped=mappedRoomFor(roomMap,s.homeClass,lesson.session,lesson.day,lesson.period);
+      const mapped=fallbackRoomForLesson(roomMap,s.homeClass,lesson);
       if(mapped){
         lesson.room=mapped;
-        lesson.roomMapped=true
+        lesson.roomMapped=true;
+        lesson.roomFallbackType=isOutdoorCourtLesson(lesson)?'OUTDOOR':'MAPPING'
       }
     }
   }
@@ -1113,8 +1132,17 @@ function parseHomeRows(rows,roomMap){
     for(const homeClass of classNames){
       // Room từ nguồn chính khóa được ưu tiên tuyệt đối.
       // Chỉ khi trống mới lấy fallback theo Lớp gốc × Buổi × Thứ.
-      const resolvedRoom=room||mappedRoomFor(roomMap,homeClass,session,day,period);
-      const l={...base,room:resolvedRoom,roomMapped:!room&&!!resolvedRoom,code:homeClass,homeClass};
+      const preview={...base,code:homeClass,homeClass};
+      const fallbackRoom=fallbackRoomForLesson(roomMap,homeClass,preview);
+      const resolvedRoom=room||fallbackRoom;
+      const l={
+        ...base,
+        room:resolvedRoom,
+        roomMapped:!room&&!!resolvedRoom,
+        roomFallbackType:!room&&isOutdoorCourtLesson(preview)?'OUTDOOR':(!room&&fallbackRoom?'MAPPING':''),
+        code:homeClass,
+        homeClass
+      };
       lessons.push(l);count++;classesSet.add(homeClass);
       if(!byClass.has(homeClass))byClass.set(homeClass,[]);
       byClass.get(homeClass).push(l);
