@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#f3f8fb">
-<title>Hệ thống thời khóa biểu trường THPT Nguyễn Khuyến</title>
+<title>Hệ thống thời khóa biểu · Aurora</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -1787,7 +1787,7 @@ body{
       </div>
       <div class="brand-copy">
         <span class="brand-eyebrow">SMART TIMETABLE</span>
-        <h1>HỆ THỐNG THỜI KHÓA BIỂU TRƯỜNG THPT NGUYỄN KHUYẾN</h1>
+        <h1>HỆ THỐNG THỜI KHÓA BIỂU</h1>
         <p>TRA CỨU NHANH · GIAO DIỆN ĐA THIẾT BỊ · DỮ LIỆU TRỰC TIẾP</p>
       </div>
     </div>
@@ -1949,7 +1949,7 @@ body{
 <script>
 
 const DAYS=[2,3,4,5,6],PERIODS=[1,2,3,4,5],HOME_PERIODS=PERIODS;
-// ===== 5 NGUỒN GOOGLE SHEET PUBLIC-READ =====
+// ===== 6 NGUỒN GOOGLE SHEET PUBLIC-READ =====
 // Nguồn 10 HKI 26-27: lịch học sinh lớp 10 (buổi sáng), gồm môn tự chọn, GDTC, CTNT, AVBN, MOS.
 const ELECTIVE10_SHEET_ID='1c9lY0pbOvj47IN3kE-lUtdvYFaWETsx6Fe0EcWUGAk4';
 const ELECTIVE10_SHEET_GID='0';
@@ -1966,10 +1966,14 @@ const ELECTIVE12_SHEET_GID='0'; // Parser v22 tách riêng khối GDTC và TN th
 // QUY TẮC: phòng đã có trong 4 nguồn chính luôn được giữ nguyên. BÓNG RỔ/CẦU LÔNG không map phòng học; nếu trống -> SÂN TRƯỜNG.
 const ROOMMAP_SHEET_ID='10KmNYHCkKReBgv6TFslRi_FQAS9W7dk1bE8dqOZey-w';
 const ROOMMAP_SHEET_GID='0';
+// Nguồn 6: phòng tự chọn khối 12, khóa Mã lớp × Tiết (Chiều Thứ Hai).
+const ELECTIVE12_ROOM_SHEET_ID='1KBQS-uaYtjm_UzdhEIcZs36N4YVzK0liVd9B1stkpWM';
+const ELECTIVE12_ROOM_SHEET_NAME='Trang tính1';
 const LIVE_POLL_MS=15000;
+let liveSyncInFlight=false;
 // =============================================
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const state={mode:'student',detailMode:'full',data:null,homeData:null,roomMap:new Map(),selection:null,source:'loading',lastSync:null,version10:null,version11:null,version12:null,homeVersion:null,roomMapVersion:null,activeOption:-1,uiScale:'medium',mobileLite:false};
+const state={mode:'student',detailMode:'full',data:null,homeData:null,roomMap:new Map(),elective12RoomMap:new Map(),selection:null,source:'loading',sourceCount:0,unavailableSources:[],lastSync:null,version10:null,version11:null,version12:null,homeVersion:null,roomMapVersion:null,elective12RoomMapVersion:null,activeOption:-1,uiScale:'medium',mobileLite:false};
 const els={search:$('#search'),searchClear:$('#searchClear'),searchBox:$('.searchbox'),suggestions:$('#suggestions'),grid:$('#scheduleGrid'),homeArea:$('#homeScheduleArea'),primaryGridTitle:$('#primaryGridTitle'),primaryGridSub:$('#primaryGridSub'),primarySectionBar:$('#primarySectionBar'),primaryScheduleShell:$('#primaryScheduleShell'),searchEmptyState:$('#searchEmptyState'),searchEmptyTitle:$('#searchEmptyTitle'),searchEmptyText:$('#searchEmptyText'),viewHead:$('#viewHead'),viewTitle:$('#viewTitle'),viewSub:$('#viewSub'),modeBadge:$('#modeBadge'),stats:$('#stats'),statsZone:$('#statsZone'),welcomeStrip:$('#welcomeStrip'),welcomeMessage:$('#welcomeMessage'),welcomeMeta:$('#welcomeMeta'),roster:$('#roster'),rosterTitle:$('#rosterTitle'),rosterMeta:$('#rosterMeta'),rosterBody:$('#rosterBody'),exportBtn:$('#exportBtn'),exportMenu:$('#exportMenu'),liveChip:$('#liveChip'),liveText:$('#liveText'),syncBtn:$('#syncBtn'),actionLine:$('#actionLine'),gridNote:$('#gridNote'),footerTime:$('#footerTime'),bulkExportBtn:$('#bulkExportBtn'),bulkMenu:$('#bulkMenu'),bulkProgress:$('#bulkProgress'),bulkProgressKicker:$('#bulkProgressKicker'),bulkProgressTitle:$('#bulkProgressTitle'),bulkProgressCount:$('#bulkProgressCount'),bulkProgressName:$('#bulkProgressName'),bulkProgressBar:$('#bulkProgressBar'),bulkProgressNote:$('#bulkProgressNote'),bulkCancelBtn:$('#bulkCancelBtn'),freeRoomPanel:$('#freeRoomPanel'),freeRoomTitle:$('#freeRoomTitle'),freeRoomSub:$('#freeRoomSub'),freeRoomCount:$('#freeRoomCount'),freeRoomMetrics:$('#freeRoomMetrics'),freeRoomGrid:$('#freeRoomGrid'),zoomOutBtn:$('#zoomOutBtn'),zoomResetBtn:$('#zoomResetBtn'),zoomInBtn:$('#zoomInBtn'),mobileLiteBtn:$('#mobileLiteBtn'),pngMenuTitle:$('#pngMenuTitle'),pngMenuDesc:$('#pngMenuDesc'),
 schoolStatsPanel:$('#schoolStatsPanel'),schoolStatsLive:$('#schoolStatsLive'),schoolKpiGrid:$('#schoolKpiGrid'),
 schoolStudentTotal:$('#schoolStudentTotal'),schoolLessonTotal:$('#schoolLessonTotal'),schoolGradeBars:$('#schoolGradeBars'),
@@ -2055,6 +2059,37 @@ function parseRoomMapRows(rows){
   }
   return map
 }
+function elective12RoomMapKey(code,period){return`${norm(code)}|C|2|${period}`}
+function parseElective12RoomMapRows(rows){
+  const map=new Map();
+  if(!rows?.length)return map;
+  const header=rows[0].map(h=>norm(h).replace(/[–—−]/g,'-').replace(/\s+/g,' ').trim());
+  const codeIndex=header.findIndex(h=>['ma lop','ma mon','ma mon hoc','phan lop'].includes(h));
+  const defs=[];
+  header.forEach((h,index)=>{
+    const match=h.match(/^(?:chieu (?:thu (?:hai|2)|t2)\s*-\s*)?tiet ([23])$/);
+    if(match)defs.push({index,period:Number(match[1])});
+  });
+  if(codeIndex<0||defs.filter(d=>d.period===2).length!==1||defs.filter(d=>d.period===3).length!==1){
+    throw new Error('Nguồn 6 cần Mã lớp và hai cột Chiều Thứ Hai – Tiết 2 / Tiết 3');
+  }
+  for(const row of rows.slice(1)){
+    const code=upperData(row[codeIndex]);
+    if(!code)continue;
+    for(const def of defs){
+      const room=upperData(row[def.index]);
+      if(!room||['-','–','—'].includes(room))continue;
+      const k=elective12RoomMapKey(code,def.period);
+      if(map.has(k)&&map.get(k)!==room)throw new Error('Nguồn 6 có nhiều phòng cho cùng mã lớp và tiết');
+      map.set(k,room);
+    }
+  }
+  return map;
+}
+function elective12RoomForLesson(roomMap,lesson){
+  if(lesson?.sourceKey!=='g12'||lesson.session!=='C'||lesson.day!==2||![2,3].includes(lesson.period))return'';
+  return roomMap?.get(elective12RoomMapKey(lesson.code,lesson.period))||'';
+}
 function isOutdoorCourtLesson(lesson){
   const subject=norm(lesson?.subject||'');
   const code=norm(lesson?.code||lesson?.classCode||'');
@@ -2079,17 +2114,17 @@ function mappedRoomFor(roomMap,homeClass,session,day,period){
   if(!roomMap||!homeClass||!session||!day||!period)return'';
   return roomMap.get(roomMapKey(homeClass,session,day))||''
 }
-function applyRoomFallbackToStudents(students,roomMap){
-  if(!roomMap?.size)return students;
+function applyRoomFallbackToStudents(students,roomMap,elective12RoomMap=new Map()){
   for(const s of students||[]){
     for(const lesson of s.schedule||[]){
       // PHÒNG CÓ SẴN = GIỮ NGUYÊN. Chỉ bổ sung khi thật sự trống.
       if(clean(lesson.room))continue;
-      const mapped=fallbackRoomForLesson(roomMap,s.homeClass,lesson);
+      const codeRoom=isOutdoorCourtLesson(lesson)?'':elective12RoomForLesson(elective12RoomMap,lesson);
+      const mapped=codeRoom||fallbackRoomForLesson(roomMap,s.homeClass,lesson);
       if(mapped){
         lesson.room=mapped;
         lesson.roomMapped=true;
-        lesson.roomFallbackType=isOutdoorCourtLesson(lesson)?'OUTDOOR':'MAPPING'
+        lesson.roomFallbackType=isOutdoorCourtLesson(lesson)?'OUTDOOR':codeRoom?'CODE_MAPPING':'MAPPING'
       }
     }
   }
@@ -2367,13 +2402,13 @@ function buildElectiveData(students){
   const cleanStudents=[...byId.values()].sort((a,b)=>a.name.localeCompare(b.name,'vi'));
   return{students:cleanStudents,byId,teacherSlots,classSlots,roomSlots,classStudents,homeClassStudents,teacherNames,codes:[...codes].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),rooms:[...rooms].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})),subjects:[...subjects]}
 }
-function parseRows(rows10,rows11,rows12,roomMap){
+function parseRows(rows10,rows11,rows12,roomMap,elective12RoomMap=new Map()){
   const students=[
     ...parseElectiveRows(rows10,'g10','LỚP 10'),
     ...parseElectiveRows(rows11,'g11','LỚP 11'),
     ...parseGrade12Rows(rows12)
   ];
-  applyRoomFallbackToStudents(students,roomMap);
+  applyRoomFallbackToStudents(students,roomMap,elective12RoomMap);
   return buildElectiveData(students)
 }
 function parseHomeRows(rows,roomMap){
@@ -2454,14 +2489,17 @@ function aggregateElectiveForStudents(ids){
   return{morning,afternoon,codes,teachers,rooms,subjects,days,events}
 }
 function teacherDisplay(key){return state.data?.teacherNames?.get(key)||state.homeData?.teachers?.find(t=>t.key===key)?.name||key}
-function applyRows(rows10,rows11,rows12,homeRows,roomMapRows,updatedAt,version10,version11,version12,homeVersion,roomMapVersion){
+function applyRows(rows10,rows11,rows12,homeRows,roomMapRows,updatedAt,version10,version11,version12,homeVersion,roomMapVersion,elective12RoomRows=null,elective12RoomMapVersion=null){
   const roomMap=parseRoomMapRows(roomMapRows||[]);
+  const elective12RoomMap=parseElective12RoomMapRows(elective12RoomRows||[]);
   state.roomMap=roomMap;
-  state.data=parseRows(rows10||[],rows11||[],rows12||[],roomMap);
+  state.elective12RoomMap=elective12RoomMap;
+  state.data=parseRows(rows10||[],rows11||[],rows12||[],roomMap,elective12RoomMap);
   state.homeData=homeRows?parseHomeRows(homeRows,roomMap):{byClass:new Map(),byTeacher:new Map(),byRoom:new Map(),teachers:[],rooms:[],classes:[],lessons:[],count:0};
-  const sourceCount=(rows10?1:0)+(rows11?1:0)+(rows12?1:0)+(homeRows?1:0)+(roomMapRows?1:0);state.source=sourceCount===5?'live':'partial';
+  setSourceAvailability([rows10,rows11,rows12,homeRows,roomMapRows,elective12RoomRows]);
   state.lastSync=updatedAt?new Date(updatedAt):new Date();
   state.version10=version10??state.version10;state.version11=version11??state.version11;state.version12=version12??state.version12;state.homeVersion=homeVersion??state.homeVersion;state.roomMapVersion=roomMapVersion??state.roomMapVersion;
+  state.elective12RoomMapVersion=elective12RoomMapVersion;
   els.search.disabled=false;if(els.bulkExportBtn)els.bulkExportBtn.disabled=false;updateLive();if(state.selection&&!selectionExists(state.selection))clearSelection();else if(state.selection)renderView();renderSuggestionsIfOpen()
 }
 
@@ -2478,7 +2516,8 @@ function classroomInventory(){
   const rooms=new Set([
     ...(state.data?.rooms||[]),
     ...(state.homeData?.rooms||[]),
-    ...[...(state.roomMap?.values?.()||[])]
+    ...[...(state.roomMap?.values?.()||[])],
+    ...[...(state.elective12RoomMap?.values?.()||[])]
   ].map(upperData).filter(Boolean));
 
   // SÂN TRƯỜNG là khu thể thao, không tính vào tồn kho "phòng học".
@@ -2841,11 +2880,16 @@ function selectionExists(sel){
   if(state.mode==='stats')return sel==='overview';
   if(state.mode==='homeClass')return !!state.homeData?.byClass?.has(sel);return false
 }
+function setSourceAvailability(rows){
+  state.sourceCount=rows.filter(Boolean).length;
+  state.unavailableSources=rows.flatMap((r,i)=>r?[]:[i+1]);
+  state.source=state.sourceCount===6?'live':'partial';
+}
 function updateLive(syncing=false){
-  els.liveChip.classList.remove('wait','warn');if(syncing){els.liveChip.classList.add('wait');els.liveText.textContent='Đang đồng bộ 5 nguồn…';els.syncBtn.classList.add('spin');els.syncBtn.disabled=true;return}
-  els.syncBtn.classList.remove('spin');els.syncBtn.disabled=false;
-  if(state.source==='live'&&state.lastSync){els.liveText.textContent=`5 nguồn trực tiếp · ${fmt(state.lastSync)}`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
-  else if(state.source==='partial'&&state.lastSync){els.liveChip.classList.add('warn');els.liveText.textContent=`Đã cập nhật · một nguồn chưa sẵn sàng`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
+  els.liveChip.classList.remove('wait','warn');if(syncing){els.liveChip.classList.add('wait');els.liveText.textContent='Đang đồng bộ 6 nguồn…';els.syncBtn.classList.add('spin');els.syncBtn.disabled=true;return}
+  els.syncBtn.classList.remove('spin');els.syncBtn.disabled=bulkRunning;
+  if(state.source==='live'&&state.lastSync){els.liveText.textContent=`6 nguồn trực tiếp · ${fmt(state.lastSync)}`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
+  else if(state.source==='partial'&&state.lastSync){els.liveChip.classList.add('warn');els.liveText.textContent=`${state.sourceCount}/6 nguồn trực tiếp · Nguồn ${state.unavailableSources.join(', ')} chưa sẵn sàng`;els.footerTime.textContent=`Cập nhật ${fmt(state.lastSync)}`}
   else{els.liveChip.classList.add('warn');els.liveText.textContent='Chưa kết nối dữ liệu trực tiếp';els.footerTime.textContent=''}
 }
 function options(){
@@ -3242,7 +3286,7 @@ function rowsFingerprint(rows){
   for(let i=0;i<sample.length;i++){h^=sample.charCodeAt(i);h=Math.imul(h,16777619)}
   return (h>>>0).toString(16);
 }
-function loadDirectSheet(sheetId,gid,requiredHeader){
+function loadDirectSheet(sheetId,gid,requiredHeader,sheetName=''){
   return new Promise((resolve,reject)=>{
     const cb='__tkb_gviz_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const script=document.createElement('script');
@@ -3255,26 +3299,35 @@ function loadDirectSheet(sheetId,gid,requiredHeader){
     };
     script.onerror=()=>{if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('Không kết nối được dữ liệu'))};
     const tqx='out:json;responseHandler:'+cb;
-    script.src=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?gid=${gid}&headers=1&tqx=${encodeURIComponent(tqx)}&t=${Date.now()}`;
+    const sheetQuery=sheetName?`sheet=${encodeURIComponent(sheetName)}`:`gid=${encodeURIComponent(gid)}`;
+    script.src=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?${sheetQuery}&headers=1&tqx=${encodeURIComponent(tqx)}&t=${Date.now()}`;
     script.async=true;document.head.appendChild(script);
   });
 }
 async function syncLive({silent=false,onlyIfChanged=false}={}){
+  if(liveSyncInFlight||bulkRunning)return;
+  liveSyncInFlight=true;
   if(!silent)updateLive(true);
   try{
-    const [r10,r11,r12,rHome,rRoomMap]=await Promise.allSettled([
+    const [r10,r11,r12,rHome,rRoomMap,rElective12Room]=await Promise.allSettled([
       loadDirectSheet(ELECTIVE10_SHEET_ID,ELECTIVE10_SHEET_GID,'Student_ID'),
       loadDirectSheet(ELECTIVE11_SHEET_ID,ELECTIVE11_SHEET_GID,'HoTen'),
       loadDirectSheet(ELECTIVE12_SHEET_ID,ELECTIVE12_SHEET_GID,'HoTen'),
       loadDirectSheet(HOME_SHEET_ID,HOME_SHEET_GID,'Activity Id'),
-      loadDirectSheet(ROOMMAP_SHEET_ID,ROOMMAP_SHEET_GID,'Buổi sáng thứ hai')
+      loadDirectSheet(ROOMMAP_SHEET_ID,ROOMMAP_SHEET_GID,'Buổi sáng thứ hai'),
+      loadDirectSheet(ELECTIVE12_ROOM_SHEET_ID,'','',ELECTIVE12_ROOM_SHEET_NAME).then(rows=>{
+        parseElective12RoomMapRows(rows);return rows;
+      })
     ]);
+    // Không áp dụng kết quả đồng bộ nếu xuất hàng loạt đã bắt đầu trong lúc chờ tải.
+    if(bulkRunning)return;
 
     const rows10=r10.status==='fulfilled'?r10.value:null,
       rows11=r11.status==='fulfilled'?r11.value:null,
       rows12=r12.status==='fulfilled'?r12.value:null,
       homeRows=rHome.status==='fulfilled'?rHome.value:null,
-      roomMapRows=rRoomMap.status==='fulfilled'?rRoomMap.value:null;
+      roomMapRows=rRoomMap.status==='fulfilled'?rRoomMap.value:null,
+      elective12RoomRows=rElective12Room.status==='fulfilled'?rElective12Room.value:null;
 
     if(!rows10&&!rows11&&!rows12)throw new Error('Không đọc được dữ liệu học sinh');
 
@@ -3283,22 +3336,23 @@ async function syncLive({silent=false,onlyIfChanged=false}={}){
       v12=rows12?rowsFingerprint(rows12):null,
       vh=homeRows?rowsFingerprint(homeRows):null,
       vr=roomMapRows?rowsFingerprint(roomMapRows):null,
+      ve=elective12RoomRows?rowsFingerprint(elective12RoomRows):null,
       checkedAt=new Date();
 
     const changed=!onlyIfChanged||
       state.version10!==v10||state.version11!==v11||state.version12!==v12||
-      state.homeVersion!==vh||state.roomMapVersion!==vr||!state.data;
+      state.homeVersion!==vh||state.roomMapVersion!==vr||state.elective12RoomMapVersion!==ve||!state.data;
 
     if(changed){
-      applyRows(rows10,rows11,rows12,homeRows,roomMapRows,checkedAt.toISOString(),v10,v11,v12,vh,vr)
+      applyRows(rows10,rows11,rows12,homeRows,roomMapRows,checkedAt.toISOString(),v10,v11,v12,vh,vr,elective12RoomRows,ve)
     }else{
-      state.source=(rows10&&rows11&&rows12&&homeRows&&roomMapRows)?'live':'partial';
+      setSourceAvailability([rows10,rows11,rows12,homeRows,roomMapRows,elective12RoomRows]);
       state.lastSync=checkedAt;updateLive(false)
     }
 
     if(!silent)action(
-      (rows10&&rows11&&rows12&&homeRows&&roomMapRows)
-        ?'Đã cập nhật 5 nguồn dữ liệu'
+      (rows10&&rows11&&rows12&&homeRows&&roomMapRows&&elective12RoomRows)
+        ?'Đã cập nhật 6 nguồn dữ liệu'
         :'Đã cập nhật dữ liệu hiện có'
     )
   }catch(e){
@@ -3311,6 +3365,7 @@ async function syncLive({silent=false,onlyIfChanged=false}={}){
     updateLive(false);
     if(!silent)action('Không kết nối được dữ liệu trực tiếp')
   }finally{
+    liveSyncInFlight=false;
     if(!silent)updateLive(false)
   }
 }
@@ -3684,35 +3739,33 @@ function pngVariant(){
   }
 }
 function pngColumnLayout(ctx,m,variant,scale=1){
-  const labelW=70*scale,gap=5*scale,padX=15*scale;
+  const labelW=64*scale,gap=4*scale,pad=28*scale;
+  const minCol=72*scale,maxCol=(variant.tertiary?172:186)*scale;
+  const wrappedWidth=(text,fontPx,maxLines)=>{
+    const value=clean(text),words=value.split(/\s+/).filter(Boolean);
+    ctx.font=`900 ${fontPx*scale}px "Segoe UI",Arial,sans-serif`;
+    const full=ctx.measureText(value).width;
+    const longest=words.reduce((w,word)=>Math.max(w,ctx.measureText(word).width),0);
+    // Cột chỉ đủ cho từ dài nhất hoặc trung bình số dòng cho phép.
+    // Phần còn lại tự xuống dòng thay vì kéo rộng cả cột.
+    return Math.max(longest,full/Math.max(1,maxLines))+pad
+  };
   const cols=DAYS.map(day=>{
-    let maxW=96*scale;
+    let maxW=minCol;
     ctx.font=`900 ${15*scale}px "Segoe UI",Arial,sans-serif`;
-    maxW=Math.max(maxW,ctx.measureText(`THỨ ${day}`).width+24*scale);
+    maxW=Math.max(maxW,ctx.measureText(`THỨ ${day}`).width+20*scale);
 
     for(const p of HOME_PERIODS){
       for(const it of (m[key(day,p)]||[])){
         const l=it.lesson||{};
-
-        ctx.font=`900 ${26*scale}px "Segoe UI",Arial,sans-serif`;
-        const subject=clean(l.subject)||'CHƯA CÓ MÔN';
-        const subjectW=Math.min(ctx.measureText(subject).width+padX*2+10*scale,230*scale);
-
-        ctx.font=`900 ${21*scale}px "Segoe UI",Arial,sans-serif`;
-        const secondary=variant.secondary(l);
-        const secondaryW=Math.min(ctx.measureText(secondary).width+padX*2+10*scale,210*scale);
-
-        let tertiaryW=0;
-        if(variant.tertiary){
-          ctx.font=`900 ${19*scale}px "Segoe UI",Arial,sans-serif`;
-          tertiaryW=Math.min(ctx.measureText(variant.tertiary(l)).width+padX*2+10*scale,210*scale)
-        }
-
-        maxW=Math.max(maxW,subjectW,secondaryW,tertiaryW)
+        const subjectW=wrappedWidth(clean(l.subject)||'CHƯA CÓ MÔN',26,variant.tertiary?2:3);
+        const secondaryW=wrappedWidth(variant.secondary(l),21,2);
+        const tertiaryW=variant.tertiary?wrappedWidth(variant.tertiary(l),19,2):0;
+        maxW=Math.max(maxW,Math.min(maxCol,subjectW),Math.min(maxCol,secondaryW),Math.min(maxCol,tertiaryW))
       }
     }
 
-    return Math.round(Math.max(92*scale,Math.min(220*scale,maxW)))
+    return Math.round(Math.max(minCol,Math.min(maxCol,maxW)))
   });
 
   const totalW=labelW+cols.reduce((a,b)=>a+b,0)+gap*(DAYS.length-1);
